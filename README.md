@@ -41,3 +41,8 @@ Whoops. Saving `result.json` wasn't enough because the image URLs themselves are
 
 ---
 Wrote `scraper.js` to grab images from the "landscape" hashtag, download them to the `assets` folder, and then write the image names to a JSON file. The app now reads the image names and serves them locally. Since I now have the potential to scrape a lot of images I decided to remove the `assets` folder from the repository and create it via the scraper script. The script can be invoked with `npm run scrape`.
+
+### 2021-11-28
+Made the square size smaller and the image base size bigger and that greatly improves the beauty and impressiveness of the result regardless of the quality of the images. The problem with that is that it lengthens the render time significantly. I added a percentage completion display so that it's clear that something is happening and an elapsed time display so that we can keep track of how long all of the resizing and cropping takes. With the current settings it's averaging about 50 seconds.
+
+It takes an additional minute or so to actually render all of the squares into the tables, but that isn't accounted for in the displayed time. It's cool to see the rows gradually populating themselves, but the browser chrome becomes unresponsive. It would be better to make this faster, but I'm not sure how to do that at the moment besides assembling the squares as a giant image instead of rendering them out in the DOM.

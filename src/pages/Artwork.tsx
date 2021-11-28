@@ -5,12 +5,12 @@ import { handleMediaFile, MediaFileHandlerData, MediaFileHandlerOptions } from '
 const Artwork = () => {
   // Configurable values
   const imgHashtag = 'landscape';
-  const numImages = 25;
-  const imgBaseSize = 3;
-  const imgSquareSize = 25;
+  const numImagesSqrt = 5;
+  const imgBaseSize = 10;
+  const imgSquareSize = 10;
   const imgQuality = 0.8;
   // Computed values
-  const numImagesSqrt = Math.floor(Math.sqrt(numImages));
+  const numImages = Math.pow(numImagesSqrt, 2);
   const imgWidth = imgSquareSize * imgBaseSize * 3;
   const imgHeight = imgSquareSize * imgBaseSize * 2;
   const imgResizeOpts = {
@@ -20,6 +20,9 @@ const Artwork = () => {
     quality: imgQuality
   };
   const imgDefaultName = 'image.jpg';
+  const [percentLoaded, setPercentLoaded] = useState<string>("0");
+  const [startTime, setStartTime] = useState<Date>(new Date());
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [resizedImages, setResizedImages] = useState<string[] | null>(null); 
   const [splitImages, setSplitImages] = useState<string[][][] | null>(null);
 
@@ -81,10 +84,11 @@ const Artwork = () => {
         for (let img = 0; img < images.length; img++) {
           output[row][col][img] = await getImageSquareUrl(images[img], splitSize, row, col);
           idx++;
-          console.log(idx / lastIdx * 100);
+          setPercentLoaded((idx / lastIdx * 100).toFixed(2));
         }
       }
     }
+    setElapsedTime((new Date()).valueOf() - startTime.valueOf())
     return output;
   };
   const updateImages = async (): Promise<void> => {
@@ -92,7 +96,6 @@ const Artwork = () => {
     const resizedData: MediaFileHandlerData[] = [];
     const resizedUrls: string[] = [];
     for (let i = 0; i < numImages; i++) {
-      console.log(`Resizing image ${hashtagImageUrls[i]}`);
       resizedData[i] = await getResizedImage(hashtagImageUrls[i], imgResizeOpts);
       resizedUrls[i] = resizedData[i].base64;
     }
@@ -113,32 +116,35 @@ const Artwork = () => {
       }
     }
     return (
-      <table>
-        {images.map((rows, i) => <tr class={`pixel-row-${i}`}>{rows.map((x, j) => (<td class={`pixel-col-${j}`}><img src={x} /></td>))}</tr>)}
+      <table style={{height: imgSquareSize * numImagesSqrt}}>
+        {images.map((rows) => <tr style={{width: imgSquareSize * numImagesSqrt}}>{rows.map((x) => (<td style={{width: imgSquareSize, height: imgSquareSize}}><img src={x} /></td>))}</tr>)}
       </table>
     );
   };
-  const ImageRow = (props: {urls: string[][], rowIdx: number}) => {
+  const ImageRow = (props: {urls: string[][]}) => {
     return (
-      <tr class={`table-row-${props.rowIdx}`}>
-        {props.urls.map((x, i) => (<td class={`table-col-${i}`}><ImagePixel urls={x} /></td>))}
+      <tr style={{width: imgWidth * numImagesSqrt}}>
+        {props.urls.map((x) => (<td><ImagePixel urls={x} /></td>))}
       </tr>
     );
   };
   const ImageTable = (props: {urls: string[][][]}) => {
     return (
-      <table class="imageTable">
-        {props.urls.map((x, i) => (<ImageRow urls={x} rowIdx={i} />))}
+      <table class="imageTable" style={{height: imgHeight * numImagesSqrt}}>
+        {props.urls.map((x) => (<ImageRow urls={x} />))}
       </table>
     );
   };
 
   return (
-    <div>
-      <div>
-        {splitImages ? <ImageTable urls={splitImages} /> : "Loading..."}
+    <div class="artwork" style={{width: `${imgWidth * numImagesSqrt}px`}}>
+      <div style={{height: `${imgHeight * numImagesSqrt}px`, textAlign: "center"}}>
+        {splitImages ? <ImageTable urls={splitImages} /> : `${percentLoaded}%`}
       </div>
-      <div>
+      <div style={{textAlign: "center"}}>
+        {elapsedTime ? `${elapsedTime / 1000} seconds` : "Loading..."}
+      </div>
+      <div class="resizedImages" style={{height: `${imgHeight * numImagesSqrt}px`}}>
         {resizedImages ? resizedImages.map(x => <div><img src={x} /></div>) : ""}
       </div>
     </div>
