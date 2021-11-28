@@ -1,0 +1,12 @@
+.imageTable {
+  border-collapse: collapse;
+}
+.imageTable td {
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+}
+.imageTable img {
+  margin: 0;
+  padding: 0;
+}

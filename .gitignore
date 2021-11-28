@@ -1,3 +1,6 @@
+# Project-specific
+.parcel-cache
+
 # Logs
 logs
 *.log
