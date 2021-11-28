@@ -10,6 +10,7 @@
     "clean:all": "npm run clean && npm run clean:cache",
     "copy-assets": "ncp ./assets ./dist/assets",
     "mkdir:assets": "mkdirp ./dist/assets",
+    "scrape": "node ./src/scraper.js",
     "serve": "http-server -a localhost -p 8000 ./dist",
     "start": "npm run clean && npm run mkdir:assets && npm run copy-assets && npm run start:js",
     "start:js": "parcel src/index.html --port 8000",

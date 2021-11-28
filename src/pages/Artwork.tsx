@@ -4,6 +4,7 @@ import { handleMediaFile, MediaFileHandlerData, MediaFileHandlerOptions } from '
 
 const Artwork = () => {
   // Configurable values
+  const imgHashtag = 'landscape';
   const numImages = 25;
   const imgBaseSize = 3;
   const imgSquareSize = 25;
@@ -12,7 +13,6 @@ const Artwork = () => {
   const numImagesSqrt = Math.floor(Math.sqrt(numImages));
   const imgWidth = imgSquareSize * imgBaseSize * 3;
   const imgHeight = imgSquareSize * imgBaseSize * 2;
-  const imgUrl = window.location + "assets/CWy8gMzhVMx.jpg";
   const imgResizeOpts = {
     mimeType: 'image/jpeg',
     width: imgWidth,
@@ -23,6 +23,20 @@ const Artwork = () => {
   const [resizedImages, setResizedImages] = useState<string[] | null>(null); 
   const [splitImages, setSplitImages] = useState<string[][][] | null>(null);
 
+  // Durstenfeld shuffle taken from here: https://stackoverflow.com/a/12646864/2001558
+  const shuffleArray = (array: any[]): any[] => {
+    const arr = array.slice();
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  };
+  const getHashtagImageUrls = async (hashtag: string): Promise<string[]> => {
+    const response = await fetch(window.location + 'assets/imageNames.json');
+    const imageNames = shuffleArray(await response.json());
+    return imageNames.map((x: string) => `${window.location}assets/${x}`);
+  };
   const getFileFromBlob = (blob: Blob, imgName: string = imgDefaultName): File => {
     return new File([blob], imgName, {type: blob.type});
   };
@@ -73,20 +87,21 @@ const Artwork = () => {
     }
     return output;
   };
-  const updateImages = async (url: string): Promise<void> => {
+  const updateImages = async (): Promise<void> => {
+    const hashtagImageUrls = await getHashtagImageUrls(imgHashtag);
     const resizedData: MediaFileHandlerData[] = [];
     const resizedUrls: string[] = [];
     for (let i = 0; i < numImages; i++) {
-      resizedData[i] = await getResizedImage(url, imgResizeOpts);
+      console.log(`Resizing image ${hashtagImageUrls[i]}`);
+      resizedData[i] = await getResizedImage(hashtagImageUrls[i], imgResizeOpts);
       resizedUrls[i] = resizedData[i].base64;
-      console.log(`Resized image ${i}`);
     }
     setResizedImages(resizedUrls);
     setSplitImages(await getSplitImages(resizedData.map(x => x.blob), imgWidth, imgHeight, imgSquareSize));
   };
 
   useEffect(() => {
-    updateImages(imgUrl);
+    updateImages();
   }, []);
 
   const ImagePixel = (props: {urls: string[]}) => {
