@@ -1,6 +1,18 @@
 # terra-incognita
 A sort of luminous, geometric, incandescent immensity.
 
+## Getting Started
+To install the necessary dependencies and start a local server at http://localhost:8000:
+```bash
+npm install
+npm run start
+```
+
+To download 70 of the latest Instagram images in the `landscape` hashtag:
+```bash
+npm run scrape
+```
+
 ## Journal
 ### 2021-11-27
 My original idea was to use the official [Instagram Hashtag Search API](https://developers.facebook.com/docs/instagram-api/guides/hashtag-search/), but it requires that you have a Business or Creator account and that the app undergo an [App Review](https://developers.facebook.com/docs/apps/review) process that seemed much too involved for the amount of usage this app is going to get. Instead, I'm going to use [`scraper-instagram`](https://www.npmjs.com/package/scraper-instagram) to grab images directly from the Instagram public website.
@@ -42,7 +54,21 @@ Whoops. Saving `result.json` wasn't enough because the image URLs themselves are
 ---
 Wrote `scraper.js` to grab images from the "landscape" hashtag, download them to the `assets` folder, and then write the image names to a JSON file. The app now reads the image names and serves them locally. Since I now have the potential to scrape a lot of images I decided to remove the `assets` folder from the repository and create it via the scraper script. The script can be invoked with `npm run scrape`.
 
+[8 hours]
+
 ### 2021-11-28
 Made the square size smaller and the image base size bigger and that greatly improves the beauty and impressiveness of the result regardless of the quality of the images. The problem with that is that it lengthens the render time significantly. I added a percentage completion display so that it's clear that something is happening and an elapsed time display so that we can keep track of how long all of the resizing and cropping takes. With the current settings it's averaging about 50 seconds.
 
 It takes an additional minute or so to actually render all of the squares into the tables, but that isn't accounted for in the displayed time. It's cool to see the rows gradually populating themselves, but the browser chrome becomes unresponsive. It would be better to make this faster, but I'm not sure how to do that at the moment besides assembling the squares as a giant image instead of rendering them out in the DOM.
+
+---
+Met with Ron and we played around with the values a bit. Larger square sizes makes it feel more chaotic, a smaller image square root makes it feel more cohesive, and a larger base image size makes it feel more impressive. I feel like the values that I have it at now strick a good balance, but later we will add sliders so that these values can be adjusted by the viewer.
+
+During our meeting Ron suggested that there be UI for eliminating images that the viewer doesn't like. Instead of a database, I think it should just pick a new image and re-generate on-the-fly. He also suggested that the UI be on a different device, which I thought was interesting. To implement that, the artwork and the UI each need to be on a client device and there also needs to be a server that communicates between the two. I'm not going to worry about how to implement that now though.
+
+The biggest immediate challenge is that the render times need to come way down. It might be possible by drawing directly on a `canvas` element instead of generating thousands of DOM elements.
+
+[1 hour + 1 hour meeting]
+
+### 2021-12-08
+Branching the current work to attempt a first pass at `canvas` rendering. I think I put off working on it for a while because I'm not familiar with `canvas` drawing at all.
