@@ -72,3 +72,12 @@ The biggest immediate challenge is that the render times need to come way down. 
 
 ### 2021-12-08
 Branching the current work to attempt a first pass at `canvas` rendering. I think I put off working on it for a while because I'm not familiar with `canvas` drawing at all.
+
+---
+It took me a while to figure it out, but rendering with `canvas` is faster than I ever thought possible. It basically renders as soon as the images are done loading and resizing. Incredible!
+
+The only major issue I ran into is that you have to be very careful to not use `setState` or do anything else that might trigger a re-render because the `canvas` element is very finnicky and will re-render at the drop of a hat. I also had to learn to use `useMemo` so that the expensive function that does the rendering doesn't get called again unless there is a change in the memo's inputs. The syntax of the memoized function looks strange, but I love how it works.
+
+The best part is that I ended up with less lines of code than when I started.
+
+[3 hours]
