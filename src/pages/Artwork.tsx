@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState, useMemo } from 'preact/hooks';
 import { handleMediaFile, MediaFileHandlerData, MediaFileHandlerOptions } from 'image-process';
 
 const Artwork = () => {
@@ -20,11 +20,7 @@ const Artwork = () => {
     quality: imgQuality
   };
   const imgDefaultName = 'image.jpg';
-  const [percentLoaded, setPercentLoaded] = useState<string>("0");
-  const [startTime, setStartTime] = useState<Date>(new Date());
-  const [elapsedTime, setElapsedTime] = useState<number>(0);
-  const [resizedImages, setResizedImages] = useState<string[] | null>(null); 
-  const [splitImages, setSplitImages] = useState<string[][][] | null>(null);
+  const [resizedImages, setResizedImages] = useState<string[] | null>(null);
 
   // Durstenfeld shuffle taken from here: https://stackoverflow.com/a/12646864/2001558
   const shuffleArray = (array: any[]): any[] => {
@@ -54,95 +50,86 @@ const Artwork = () => {
     const file = await getFileFromUrl(url);
     return await handleMediaFile(file, options);
   };
-  const getImageSquareUrl = async (image: Blob, squareSize: number, col: number, row: number): Promise<string> => {
-    const options = {
-      width: squareSize,
-      height: squareSize,
-      quality: imgQuality,
-      cropInfo: {
-        sx: row * squareSize,
-        sy: col * squareSize,
-        sw: squareSize,
-        sh: squareSize
-      }
-    }
-    return (await handleMediaFile(getFileFromBlob(image), options)).base64;
-  };
-  const getSplitImages = async (images: Blob[], width: number, height: number, splitSize: number): Promise<string[][][]> => {
-    if (splitSize > width || splitSize > height) {
-      throw new Error("Square size exceeds dimensions of the image!");
-    }
-    const maxRows = Math.floor(height / splitSize);
-    const maxCols = Math.floor(width / splitSize);
-    let idx = 0;
-    const lastIdx = maxRows * maxCols * images.length;
-    const output: string[][][] = [];
-    for (let row = 0; row < maxRows; row++) {
-      output[row] = [];
-      for (let col = 0; col < maxCols; col++) {
-        output[row][col] = [];
-        for (let img = 0; img < images.length; img++) {
-          output[row][col][img] = await getImageSquareUrl(images[img], splitSize, row, col);
-          idx++;
-          setPercentLoaded((idx / lastIdx * 100).toFixed(2));
-        }
-      }
-    }
-    setElapsedTime((new Date()).valueOf() - startTime.valueOf())
-    return output;
-  };
   const updateImages = async (): Promise<void> => {
     const hashtagImageUrls = await getHashtagImageUrls(imgHashtag);
     const resizedData: MediaFileHandlerData[] = [];
     const resizedUrls: string[] = [];
     for (let i = 0; i < numImages; i++) {
       resizedData[i] = await getResizedImage(hashtagImageUrls[i], imgResizeOpts);
-      resizedUrls[i] = resizedData[i].base64;
+      resizedUrls[i] = resizedData[i].url;
     }
     setResizedImages(resizedUrls);
-    setSplitImages(await getSplitImages(resizedData.map(x => x.blob), imgWidth, imgHeight, imgSquareSize));
   };
 
   useEffect(() => {
     updateImages();
   }, []);
 
-  const ImagePixel = (props: {urls: string[]}) => {
-    const images: string[][] = [];
-    for (let row = 0; row < numImagesSqrt; row++) {
-      images[row] = [];
-      for (let col = 0; col < numImagesSqrt; col++) {
-        images[row][col] = props.urls[row * numImagesSqrt + col];
+  const Canvas = (props: {
+    images: string[], width: number, height: number, splitSize: number, pixelSize: number, baseSize: number
+  }) => {
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    const [drawCtx, setDrawCtx] = useState<CanvasRenderingContext2D | null>(null);
+
+    const getImage = (url: string): Promise<HTMLImageElement> => {
+      return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = (ev: Event) => {
+          resolve(image);
+        };
+        image.src = url;
+      });
+    };
+    const drawImages = useMemo(async () => {
+      if (!drawCtx) {
+        return;
       }
-    }
+      const w = props.width;
+      const h = props.height;
+      const s = props.splitSize;
+      const p = props.pixelSize;
+      const images = props.images;
+      if (s > w || s > h) {
+        throw new Error("Square size exceeds dimensions of the image!");
+      }
+      const yMax = Math.floor(h / s);
+      const xMax = Math.floor(w / s);
+      const pixelWidth = s * p;
+      
+      for (let imgIdx = 0; imgIdx < images.length; imgIdx++) {
+        const image = await getImage(images[imgIdx]);
+        const [imgX, imgY] = [imgIdx % p, Math.floor(imgIdx / p)];
+        for (let x = 0; x < xMax; x++) {
+          for (let y = 0; y < yMax; y++) {
+            // ctx.drawImage(image, srcX, srcY, srcWidth, srcHeight, dstX, dstY, dstWidth, dstHeight);
+            drawCtx.drawImage(image, x * s, y * s, s, s, x * pixelWidth + imgX * s, y * pixelWidth + imgY * s, s, s);
+          }
+        }
+      }
+    }, [drawCtx]);
+
+    useEffect(() => {
+      if (canvasRef.current) {
+        const context2d = canvasRef.current.getContext("2d");
+        setDrawCtx(context2d);
+        if (context2d) {
+          drawImages;
+        }
+      }
+    }, [canvasRef]);
+
     return (
-      <table style={{height: imgSquareSize * numImagesSqrt}}>
-        {images.map((rows) => <tr style={{width: imgSquareSize * numImagesSqrt}}>{rows.map((x) => (<td style={{width: imgSquareSize, height: imgSquareSize}}><img src={x} /></td>))}</tr>)}
-      </table>
-    );
-  };
-  const ImageRow = (props: {urls: string[][]}) => {
-    return (
-      <tr style={{width: imgWidth * numImagesSqrt}}>
-        {props.urls.map((x) => (<td><ImagePixel urls={x} /></td>))}
-      </tr>
-    );
-  };
-  const ImageTable = (props: {urls: string[][][]}) => {
-    return (
-      <table class="imageTable" style={{height: imgHeight * numImagesSqrt}}>
-        {props.urls.map((x) => (<ImageRow urls={x} />))}
-      </table>
+      <canvas width={props.width * props.baseSize} height={props.height * props.baseSize} ref={canvasRef}></canvas>
     );
   };
 
   return (
     <div class="artwork" style={{width: `${imgWidth * numImagesSqrt}px`}}>
       <div style={{height: `${imgHeight * numImagesSqrt}px`, textAlign: "center"}}>
-        {splitImages ? <ImageTable urls={splitImages} /> : `${percentLoaded}%`}
+        {resizedImages ? <Canvas images={resizedImages} width={imgWidth} height={imgHeight} splitSize={imgSquareSize} pixelSize={numImagesSqrt} baseSize={imgBaseSize} /> : ""}
       </div>
       <div style={{textAlign: "center"}}>
-        {elapsedTime ? `${elapsedTime / 1000} seconds` : "Loading..."}
+        &nbsp;
       </div>
       <div class="resizedImages" style={{height: `${imgHeight * numImagesSqrt}px`}}>
         {resizedImages ? resizedImages.map(x => <div><img src={x} /></div>) : ""}
