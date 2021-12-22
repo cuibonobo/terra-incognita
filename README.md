@@ -81,3 +81,10 @@ The only major issue I ran into is that you have to be very careful to not use `
 The best part is that I ended up with less lines of code than when I started.
 
 [3 hours]
+
+### 2021-12-21
+Met with Ron to discuss the different possibilities for serving content. For now we are going to have a server component hosted on the cloud and two clients: a display component and a UI component. To maintain constant communication between all the components, [Cloudflare Durable Objects](https://developers.cloudflare.com/workers/runtime-apis/durable-objects) seems like a good fit.
+
+I'll split up the repository over the next few days into its component parts and should hopefully have something working by the next time we meet.
+
+[1 hour]
