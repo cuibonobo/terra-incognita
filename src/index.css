@@ -2,18 +2,10 @@
   margin: 0;
   padding: 0;
 }
-.artwork {
+.main {
   margin: 0 auto;
 }
-.imageTable, .imageTable table {
-  border-collapse: collapse;
-  border-spacing: 0;
-  border: none;
-}
-.imageTable td {
-  line-height: 0;
-}
-.resizedImages {
+.imageGrid {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;

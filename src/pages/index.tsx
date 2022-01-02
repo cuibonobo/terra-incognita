@@ -1,3 +1,4 @@
+import Admin from './Admin';
 import Artwork from './Artwork';
 
-export { Artwork };
+export { Admin, Artwork };
