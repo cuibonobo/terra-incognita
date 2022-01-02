@@ -88,3 +88,10 @@ Met with Ron to discuss the different possibilities for serving content. For now
 I'll split up the repository over the next few days into its component parts and should hopefully have something working by the next time we meet.
 
 [1 hour]
+
+### 2022-01-01
+Created a new `/admin` route and a corresponding page component. Split up the repo to better reuse code across the Admin and Artwork pages.
+
+Splitting up the pages helped me find a bug where the `Canvas` component wasn't sized properly.
+
+[2 hours]
