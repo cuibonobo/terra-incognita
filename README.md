@@ -95,3 +95,10 @@ Created a new `/admin` route and a corresponding page component. Split up the re
 Splitting up the pages helped me find a bug where the `Canvas` component wasn't sized properly.
 
 [2 hours]
+
+### 2022-01-12
+Met with Ron to play around with different settings, explain what controls are available, and discuss how to approach the admin interface design.
+
+Later had an email exchange with Mackenzie about the initial wireframes.
+
+[1 hour]
