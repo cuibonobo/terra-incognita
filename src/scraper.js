@@ -59,7 +59,11 @@ const main = async () => {
   const result = await getHashtagResult(imgHashtag);
   for (let i = 0; i < result.lastPosts.length; i++) {
     console.log(`Downloading image ${i}...`);
-    await downloadImage(result.lastPosts[i].thumbnail, `./assets/${result.lastPosts[i].shortcode}.jpg`);
+    try {
+      await downloadImage(result.lastPosts[i].thumbnail, `./assets/${result.lastPosts[i].shortcode}.jpg`);
+    } catch (e) {
+      console.error(`Couldn't download image ${i}: ${e}`);
+    }
   }
   await writeImageNames();
 };

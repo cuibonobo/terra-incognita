@@ -102,3 +102,10 @@ Met with Ron to play around with different settings, explain what controls are a
 Later had an email exchange with Mackenzie about the initial wireframes.
 
 [1 hour]
+
+### 2021-01-19
+Met with Ron and Maddie, the curator, to discuss the technology needs for the piece.
+
+Also added a `try/catch` to the scraper script so that it would continue if there was ever a download error.
+
+[1 hour]
