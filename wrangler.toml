@@ -1,0 +1,21 @@
+name = "terra-incognita"
+type = "javascript"
+
+account_id = ""
+workers_dev = true
+# route = ""
+# zone_id = ""
+
+compatibility_date = "2021-11-15"
+compatibility_flags = []
+
+[build]
+command = "npm run build:worker"
+
+[build.upload]
+format = "modules"
+dir = "dist"
+main = "./worker.mjs"
+
+[miniflare]
+durable_objects_persist = true
