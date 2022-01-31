@@ -1,23 +1,25 @@
-const fs = require('fs');
-const util = require('util');
-const https = require('https');
-const Scraper = require('scraper-instagram');
-const Stream = require('stream').Transform;
+/// <reference types="./scraper" />
+import fs from 'fs';
+import util from 'util';
+import https from 'https';
+import Scraper from 'scraper-instagram';
+import { IncomingMessage } from 'http';
+import { Transform } from 'stream';
 
 const imgHashtag = 'landscape';
 
 const mkdir = util.promisify(fs.mkdir);
 const exists = util.promisify(fs.exists);
 
-const getHashtagResult = async (hashtag) => {
+const getHashtagResult = async (hashtag: string): Promise<any> => {
   const client = new Scraper();
   return await client.getHashtag(hashtag);
 };
 
-const downloadImage = async (url, destName) => {
+const downloadImage = async (url: string, destName: string): Promise<void> => {
   return new Promise((resolve, reject) => {
-    https.request(url, (response) => {
-      const data = new Stream();
+    https.request(url, (response: IncomingMessage) => {
+      const data = new Transform();
 
       response.on('data', (chunk) => {
         data.push(chunk);
@@ -35,7 +37,7 @@ const downloadImage = async (url, destName) => {
   });
 };
 
-let writeImageNames = async () => {
+const writeImageNames = async (): Promise<void> => {
   return new Promise((resolve, reject) => {
     fs.readdir('./assets/', (readDirErr, files) => {
       if (readDirErr) {
@@ -52,7 +54,7 @@ let writeImageNames = async () => {
   });
 };
 
-const main = async () => {
+const main = async (): Promise<void> => {
   try {
     if (!(await exists('./assets'))) {
       await mkdir('./assets')
@@ -60,7 +62,7 @@ const main = async () => {
   } catch(e) {
     console.error(`Couldn't create assets folder: ${e}`);
   }
-  let result = null;
+  let result: any = null;
   try {
     console.log(`Getting images for #${imgHashtag}...`);
     result = await getHashtagResult(imgHashtag);
@@ -76,10 +78,12 @@ const main = async () => {
     }
   }
   try {
+    console.log("Writing image index...");
     await writeImageNames();
   } catch(e) {
     console.error(`Couldn't write image names to index: ${e}`);
   }
+  console.log("Done!");
 };
 
 main();

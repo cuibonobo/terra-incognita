@@ -10,7 +10,7 @@
     "clean:all": "npm run clean && npm run clean:cache",
     "copy-assets": "ncp ./assets ./dist/assets",
     "mkdir:assets": "mkdirp ./dist/assets",
-    "scrape": "node ./src/scraper.js",
+    "scrape": "node --loader ts-node/esm --experimental-modules --es-module-specifier-resolution=node --no-warnings ./src/scraper.ts",
     "serve": "http-server -a localhost -p 8000 ./dist",
     "start": "npm run clean && npm run mkdir:assets && npm run copy-assets && npm run start:js",
     "start:js": "parcel src/index.html --port 8000",
@@ -39,6 +39,7 @@
     "ncp": "^2.0.0",
     "parcel": "^2.0.1",
     "rimraf": "^3.0.2",
+    "ts-node": "^10.4.0",
     "typescript": "^4.5.2"
   },
   "dependencies": {
