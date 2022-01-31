@@ -103,9 +103,20 @@ Later had an email exchange with Mackenzie about the initial wireframes.
 
 [1 hour]
 
-### 2021-01-19
+### 2022-01-19
 Met with Ron and Maddie, the curator, to discuss the technology needs for the piece.
 
 Also added a `try/catch` to the scraper script so that it would continue if there was ever a download error.
 
 [1 hour]
+
+### 2022-01-31
+Added more error catching to the scraper script and converted it to TypeScript. Then I spent a long time researching how [Cloudflare Durable Objects](https://developers.cloudflare.com/workers/learning/using-durable-objects) should work. DO is a fairly new product so there is a lot of conflicting information, different build configurations, etc. I struggled for a while to find _any_ concrete examples that looked like what I was trying to build.
+
+I decided on using [Miniflare](https://miniflare.dev/) to test the worker in my local environment before deploying, and used [this example](https://github.com/mrbbot/miniflare-typescript-esbuild-jest) for building a TypeScript worker via [esbuild](https://esbuild.github.io/). For now it's just a `Hello, world!`, but I need to let my brain settle.
+
+The overall plan is to save the Instagram images and the compiled site to Backblaze B2 and serve those files with a Worker. The image names correspond to the Instagram shortcode for the post, which is based on the post's timestamp. This will allow images to sort themselves automatically based on date. On initialization, the worker will choose the last 100 images and list them in order in an array saved on [KV](https://developers.cloudflare.com/workers/learning/how-kv-works). Every minute, a new image will be added to the list and the last image will be removed. The number of images and the pixel size will be saved in separate KV keys and will affect how many images are displayed on the canvas (but don't affect that there are always 100 images in the 'latest' list). If a user selects an image for removal, a new image ID is selected at random and its ID will replace the image that was selected.
+
+The DO is what will allow for realtime communication via WebSockets to pass that information back and forth between the clients, but I'm very fuzzy on the details. The [Cloudflare DO chat demo](https://github.com/cloudflare/workers-chat-demo) should point me in the right direction. Unfortunately the server code is in a single `.mjs` file and the client code is all in an `.html` file so it will take some time to decode everything that's happening.
+
+[2 hours]
