@@ -53,10 +53,20 @@ let writeImageNames = async () => {
 };
 
 const main = async () => {
-  if (!(await exists('./assets'))) {
-    await mkdir('./assets')
+  try {
+    if (!(await exists('./assets'))) {
+      await mkdir('./assets')
+    }
+  } catch(e) {
+    console.error(`Couldn't create assets folder: ${e}`);
   }
-  const result = await getHashtagResult(imgHashtag);
+  let result = null;
+  try {
+    console.log(`Getting images for #${imgHashtag}...`);
+    result = await getHashtagResult(imgHashtag);
+  } catch (e) {
+    console.error(`Couldn't get #${imgHashtag} data: ${e}`);
+  }
   for (let i = 0; i < result.lastPosts.length; i++) {
     console.log(`Downloading image ${i}...`);
     try {
@@ -65,7 +75,11 @@ const main = async () => {
       console.error(`Couldn't download image ${i}: ${e}`);
     }
   }
-  await writeImageNames();
+  try {
+    await writeImageNames();
+  } catch(e) {
+    console.error(`Couldn't write image names to index: ${e}`);
+  }
 };
 
 main();
