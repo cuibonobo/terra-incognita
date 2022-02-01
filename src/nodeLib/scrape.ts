@@ -1,64 +1,101 @@
 /// <reference types="../global" />
+import path from 'path';
 import Scraper from 'scraper-instagram';
 import fetch from 'node-fetch';
-import { mkdir, exists, writeFile, readDir } from './fs';
+import { writeFile, readDir, ensureDir } from './fs';
+import { getAuthenticatedClient } from './b2';
 
-const getHashtagResult = async (hashtag: string): Promise<any> => {
+const bucketDir = 'images';
+const indexName = 'imageNames.json';
+
+interface HashtagImage {
+  shortcode: string,
+  caption: string[],
+  comments: number,
+  likes: number,
+  thumbnail: string,
+  timestamp: number
+}
+
+const getLatestHashtagImages = async (hashtag: string): Promise<HashtagImage[]> => {
   const client = new Scraper();
-  return await client.getHashtag(hashtag);
+  const result = await client.getHashtag(hashtag);
+  return result.lastPosts;
 };
 
-const downloadImage = async (url: string, destName: string): Promise<void> => {
+const downloadImage = async (url: string, destPath: string): Promise<void> => {
   const response = await fetch(url);
   const arrayBuffer = await response.arrayBuffer();
-  await writeFile(destName, Buffer.from(arrayBuffer));
+  await writeFile(destPath, Buffer.from(arrayBuffer));
 };
 
-const writeImageNames = async (): Promise<void> => {
-  return new Promise(async (resolve, reject) => {
+const downloadImages = async (images: HashtagImage[], destDir: string): Promise<string[]> => {
+  const errors: string[] = [];
+  for (const image of images) {
     try {
-      const files = await readDir('./assets/');
-      const imageNames = files.filter((v) => v.endsWith('.jpg'));
-      try {
-        await writeFile('./assets/imageNames.json', JSON.stringify(imageNames), 'utf-8');
-        resolve();
-      } catch (writeFileErr) {
-        reject(writeFileErr);
-      }
-    } catch(readDirErr) {
-      return reject(readDirErr);
+      await downloadImage(image.thumbnail, path.join(destDir, `${image.shortcode}.jpg`));
+    } catch (e) {
+      errors.push(`Couldn't download image ${image.shortcode}: ${e}`);
     }
-  });
+  }
+  return errors;
+};
+
+const writeImageNames = async (imageDir: string): Promise<void> => {
+  const files = await readDir(imageDir);
+  const imageNames = files.filter((v) => v.endsWith('.jpg'));
+  await writeFile(path.join(imageDir, indexName), JSON.stringify(imageNames), 'utf-8');
+};
+
+const uploadImagesToBucket = async (images: HashtagImage[], imageDir: string, credentialsDir: string = './') => {
+  const client = await getAuthenticatedClient(credentialsDir);
+  const imagePaths = images.map(i => path.join(imageDir, `${i.shortcode}.jpg`));
+  return await client.uploadFile(imagePaths, bucketDir);
+};
+
+const uploadIndexToBucket = async (imageDir: string, credentialsDir: string = './') => {
+  const client = await getAuthenticatedClient(credentialsDir);
+  return await client.uploadFile(path.join(imageDir, indexName), bucketDir);
 };
 
 const scrape = async (imgHashtag: string): Promise<void> => {
+  // TODO: Current scraper assumes destDir and bucket have the same contents
+  const destDir = './assets';
   try {
-    if (!(await exists('./assets'))) {
-      await mkdir('./assets')
-    }
+    await ensureDir(destDir);
   } catch(e) {
     console.error(`Couldn't create assets folder: ${e}`);
+    return;
   }
-  let result: any = null;
+  let images: HashtagImage[] = [];
   try {
     console.log(`Getting images for #${imgHashtag}...`);
-    result = await getHashtagResult(imgHashtag);
+    images = await getLatestHashtagImages(imgHashtag);
   } catch (e) {
     console.error(`Couldn't get #${imgHashtag} data: ${e}`);
+    return;
   }
-  for (let i = 0; i < result.lastPosts.length; i++) {
-    console.log(`Downloading image ${i}...`);
-    try {
-      await downloadImage(result.lastPosts[i].thumbnail, `./assets/${result.lastPosts[i].shortcode}.jpg`);
-    } catch (e) {
-      console.error(`Couldn't download image ${i}: ${e}`);
-    }
+  try {
+    const errors = await downloadImages(images, destDir);
+    console.log(`Downloaded ${images.length - errors.length} out of ${images.length} images`)
+  } catch (e) {
+    console.error(`Couldn't download images: ${e}`);
+    return;
   }
   try {
     console.log("Writing image index...");
-    await writeImageNames();
+    await writeImageNames(destDir);
   } catch(e) {
     console.error(`Couldn't write image names to index: ${e}`);
+    return;
+  }
+  try {
+    console.log("Upload to B2 bucket...");
+    await uploadImagesToBucket(images, destDir);
+    await uploadIndexToBucket(destDir);
+  } catch(e) {
+    console.error(`Couldn't upload to bucket: ${e}`);
+    return;
   }
   console.log("Done!");
 };

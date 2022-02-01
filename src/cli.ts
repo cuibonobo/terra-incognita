@@ -1,10 +1,8 @@
 import { Command } from 'commander';
 import 'dotenv/config';
 import scrape from './nodeLib/scrape';
-import { authenticate, B2Client, Credentials } from './nodeLib/b2';
-import { writeFile, readFile } from './nodeLib/fs';
+import { authenticate, setCredentials, getAuthenticatedClient } from './nodeLib/b2';
 
-const credentialsFile = './credentials.json';
 const program = new Command();
 
 program
@@ -28,7 +26,7 @@ program
       }
       console.log("Authenticating...");
       const credentials = await authenticate(process.env.B2_WRITE_APP_KEY_ID, process.env.B2_WRITE_APP_KEY);
-      await writeFile(credentialsFile, JSON.stringify(credentials));
+      await setCredentials(credentials);
     } catch (e) {
       console.error(e);
     }
@@ -39,8 +37,7 @@ program
   .description('Upload a file to Backblaze B2')
   .action(async (filePath: string) => {
     try {
-      const credentials: Credentials = JSON.parse((await readFile(credentialsFile)).toString());
-      const client = new B2Client(credentials);
+      const client = await getAuthenticatedClient();
       console.log("Uploading...");
       console.log(await client.uploadFile(filePath));
     } catch (e) {

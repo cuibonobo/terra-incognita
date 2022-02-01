@@ -2,9 +2,11 @@ import path from 'path';
 import crypto from 'crypto';
 import { escape } from 'querystring';
 import fetch, { BodyInit, HeadersInit, Response } from 'node-fetch';
-import { readFile } from './fs';
+import { readFile, writeFile } from './fs';
 
-export interface Credentials {
+const credentialsFile = 'credentials.json';
+
+interface Credentials {
   absoluteMinimumPartSize: number,
   accountId: string,
   allowed: {
@@ -93,6 +95,18 @@ const post = async <OutputT>(url: string, body: BodyInit, headers: HeadersInit =
   return response.json() as Promise<OutputT>;
 };
 
+export const getCredentials = async (credentialsDir: string = './'): Promise<Credentials> => {
+  return JSON.parse((await readFile(path.join(credentialsDir, credentialsFile))).toString());
+};
+
+export const setCredentials = async (credentials: Credentials, credentialsDir: string = './') => {
+  await writeFile(path.join(credentialsDir, credentialsFile), JSON.stringify(credentials));
+};
+
+export const getAuthenticatedClient = async (credentialsDir: string = './'): Promise<B2Client> => {
+  return new B2Client(await getCredentials(credentialsDir));
+};
+
 export const authenticate = async (appKeyId: string, appKey: string): Promise<Credentials> => {
   const encodedBase64 = Buffer.from(appKeyId + ':' + appKey).toString('base64');
   return post('https://api.backblazeb2.com/b2api/v1/b2_authorize_account', JSON.stringify({}), {'Authorization': `Basic ${encodedBase64}`});
@@ -105,22 +119,32 @@ export class B2Client {
     this.credentials = credentials;
   }
 
-  uploadFile = async (filePath: string | string[], destFolder: string = '', bucketId: string = this.credentials.allowed.bucketId): Promise<UploadFile[]> => {
+  _uploadFile = async (uploadUrl: UploadUrl, uploadName: string, fileBuffer: Buffer): Promise<UploadFile> => {
+    return post(uploadUrl.uploadUrl, fileBuffer, {
+      'Authorization': uploadUrl.authorizationToken,
+      'X-Bz-File-Name': uploadName,
+      'Content-Type': 'b2/x-auto',
+      'Content-Length': Buffer.byteLength(fileBuffer).toString(),
+      'X-Bz-Content-Sha1': this.getSha1(fileBuffer)
+    });
+  };
+
+  uploadFile = async (filePath: string | string[], destFolder: string = '', bucketId: string = this.credentials.allowed.bucketId): Promise<{uploads: UploadFile[], errors: string[]}> => {
     const filePaths: string[] = typeof filePath === 'string' ? [filePath] : filePath;
     const uploadUrl: UploadUrl = await this.getUploadUrl(bucketId);
     const uploads: UploadFile[] = [];
+    const errors: string[] = [];
     for (const file of filePaths) {
       const absPath: string = path.resolve(file);
-      const fileBuffer: Buffer = await readFile(absPath);
-      uploads.push(await post(uploadUrl.uploadUrl, fileBuffer, {
-        'Authorization': uploadUrl.authorizationToken,
-        'X-Bz-File-Name': this.getUploadName(absPath, destFolder),
-        'Content-Type': 'b2/x-auto',
-        'Content-Length': Buffer.byteLength(fileBuffer).toString(),
-        'X-Bz-Content-Sha1': this.getSha1(fileBuffer)
-      }));
+      try {
+        const fileBuffer: Buffer = await readFile(absPath);
+        const upload = await this._uploadFile(uploadUrl, this.getUploadName(absPath, destFolder), fileBuffer);
+        uploads.push(upload);
+      } catch(e) {
+        errors.push(`Couldn't upload ${file}: ${e}`);
+      }
     }
-    return uploads;
+    return {uploads, errors};
   };
 
   getSha1 = (fileBuffer: Buffer): string => {
