@@ -120,3 +120,11 @@ The overall plan is to save the Instagram images and the compiled site to Backbl
 The DO is what will allow for realtime communication via WebSockets to pass that information back and forth between the clients, but I'm very fuzzy on the details. The [Cloudflare DO chat demo](https://github.com/cloudflare/workers-chat-demo) should point me in the right direction. Unfortunately the server code is in a single `.mjs` file and the client code is all in an `.html` file so it will take some time to decode everything that's happening.
 
 [2 hours]
+
+### 2022-02-01
+
+Spent a long time stuck on an issue where uploads to B2 weren't working. Added a CLI so that scripts are easier to add and experiment with.
+
+Scraper will now upload images to B2 in addition to downloading to the `assets` directory. Next step is to get the app to read from B2 instead of the local directory.
+
+[6 hours]
