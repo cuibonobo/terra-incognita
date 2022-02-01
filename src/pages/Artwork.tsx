@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
-import { numImagesSqrt, imgWidth, imgHeight, imgSquareSize } from '../lib/values';
-import { getGridStyle, getResizedImageUrls } from '../lib/images';
+import { numImagesSqrt, imgWidth, imgHeight, imgSquareSize } from '../browserLib/values';
+import { getGridStyle, getResizedImageUrls } from '../browserLib/images';
 import Canvas from './Canvas';
 
 const Artwork = () => {

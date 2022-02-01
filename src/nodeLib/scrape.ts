@@ -1,15 +1,7 @@
-/// <reference types="./scraper" />
-import fs from 'fs';
-import util from 'util';
-import https from 'https';
+/// <reference types="../global" />
 import Scraper from 'scraper-instagram';
-import { IncomingMessage } from 'http';
-import { Transform } from 'stream';
-
-const imgHashtag = 'landscape';
-
-const mkdir = util.promisify(fs.mkdir);
-const exists = util.promisify(fs.exists);
+import fetch from 'node-fetch';
+import { mkdir, exists, writeFile, readDir } from './fs';
 
 const getHashtagResult = async (hashtag: string): Promise<any> => {
   const client = new Scraper();
@@ -17,44 +9,29 @@ const getHashtagResult = async (hashtag: string): Promise<any> => {
 };
 
 const downloadImage = async (url: string, destName: string): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    https.request(url, (response: IncomingMessage) => {
-      const data = new Transform();
-
-      response.on('data', (chunk) => {
-        data.push(chunk);
-      });
-
-      response.on('end', () => {
-        fs.writeFile(destName, data.read(), (err) => {
-          if (err) {
-            return reject(err);
-          }
-          resolve();
-        })
-      });
-    }).end();
-  });
+  const response = await fetch(url);
+  const arrayBuffer = await response.arrayBuffer();
+  await writeFile(destName, Buffer.from(arrayBuffer));
 };
 
 const writeImageNames = async (): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    fs.readdir('./assets/', (readDirErr, files) => {
-      if (readDirErr) {
-        return reject(readDirErr);
-      }
+  return new Promise(async (resolve, reject) => {
+    try {
+      const files = await readDir('./assets/');
       const imageNames = files.filter((v) => v.endsWith('.jpg'));
-      fs.writeFile('./assets/imageNames.json', JSON.stringify(imageNames), 'utf-8', (writeFileErr) => {
-        if (writeFileErr) {
-          return reject(writeFileErr);
-        }
-        return resolve();
-      })
-    });
+      try {
+        await writeFile('./assets/imageNames.json', JSON.stringify(imageNames), 'utf-8');
+        resolve();
+      } catch (writeFileErr) {
+        reject(writeFileErr);
+      }
+    } catch(readDirErr) {
+      return reject(readDirErr);
+    }
   });
 };
 
-const main = async (): Promise<void> => {
+const scrape = async (imgHashtag: string): Promise<void> => {
   try {
     if (!(await exists('./assets'))) {
       await mkdir('./assets')
@@ -86,4 +63,4 @@ const main = async (): Promise<void> => {
   console.log("Done!");
 };
 
-main();
+export default scrape;

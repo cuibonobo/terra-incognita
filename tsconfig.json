@@ -5,6 +5,7 @@
     "jsxFactory": "h",
     "jsxFragmentFactory": "Fragment",
     "lib": ["dom", "esnext"],
+    "module": "esnext",
     "moduleResolution": "node",
     "strict": true,
     "target": "es5",

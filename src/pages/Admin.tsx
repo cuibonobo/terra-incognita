@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
-import { getResizedImageUrls, getGridStyle } from '../lib/images';
+import { getResizedImageUrls, getGridStyle } from '../browserLib/images';
 
 const Admin = () => {
   const [resizedImages, setResizedImages] = useState<string[] | null>(null);

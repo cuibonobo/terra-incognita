@@ -1,6 +1,7 @@
 # Project-specific
 /.parcel-cache
 /assets
+/credentials.json
 
 # Logs
 logs
