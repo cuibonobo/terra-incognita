@@ -123,8 +123,16 @@ The DO is what will allow for realtime communication via WebSockets to pass that
 
 ### 2022-02-01
 
-Spent a long time stuck on an issue where uploads to B2 weren't working. Added a CLI so that scripts are easier to add and experiment with.
+Spent a long time stuck on an issue where uploads to B2 weren't working. The issue ended up being a dumb thing where I had copied some of the code from a different project and didn't notice that the body of `POST` requests was always being JSON stringified just before being sent. This would create a situation where the SHA1 of the file wouldn't match the contents in the body, so my upload requests to B2 were being rejected. When I found the `JSON.stringify` line I felt so stupid.
 
-Scraper will now upload images to B2 in addition to downloading to the `assets` directory. Next step is to get the app to read from B2 instead of the local directory.
+Added a CLI script so that one-off management operations are easier to script and deploy. I also fixed an issue where Node was suddenly rejecting my `.ts` scripts with cryptic errors. I had already been using the `--loader ts-node/esm` argument so that I could run TypeScript files without a build step. I'm also using `--es-module-specifier-resolution=node` so that I don't have to specify the file extensions for any modules those scripts import. The part that I was missing was adding `"module": "esnext"` to the `tsconfig.json` file. All of these setting are [described in this `ts-node` issue](https://github.com/TypeStrong/ts-node/issues/1007), but I hadn't understood how they all work together until today.
 
-[6 hours]
+In addition to the existing Instagram scraper code, I also added a CLI script to upload one-off files to B2. Also, the scraper will now upload images to B2 in addition to downloading them to the `assets` directory.
+
+The next steps are:
+- Getting the web app to read from B2 instead of the local `assets` directory
+- Designing the image index so that there's an accurate list of all B2 images
+- Changing the app to read from the image index datastore instead of a JSON file on B2
+- Downloading scraper images to a temp directory and eliminating the `assets` directory API
+
+[5 hours]
