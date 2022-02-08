@@ -136,3 +136,16 @@ The next steps are:
 - Downloading scraper images to a temp directory and eliminating the `assets` directory API
 
 [5 hours]
+
+### 2022-02-08
+Updated the CORS rules for the B2 Bucket to allow all cross-origin requests. (I'll need to change it to a specific domain once I'm done with development.) I've decided that writing the images to a JSON index in the B2 bucket is a bad idea, but the idea of moving it all over to KV feels overwhelming right now. For the moment I'm going to only make small adjustments that still produce a working site instead of making huge breaking changes.
+
+The first thing I noticed is that now downloading the images feels extremely slow. My browser development tools are even complaining that the server response time was longer than 500 ms for most of the image requests. Still, it "works".
+
+---
+I was worried I would have to convert my code to use some sort of static site generator, but I followed [these instructions on how to deploy a React app to Backblaze and Cloudflare](https://itnext.io/deploy-your-react-app-on-backblaze-and-cloudflare-with-github-actions-93f09f2c67d5) and it's working great (but still slow).
+
+---
+I noticed the cascade in my network requests and realized that I could download my images in parallel instead of one-by-one. Now the draw feels faster than before!
+
+[2 hours]

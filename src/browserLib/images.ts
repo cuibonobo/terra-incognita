@@ -1,7 +1,10 @@
 
 import { h } from 'preact';
 import { handleMediaFile, MediaFileHandlerData, MediaFileHandlerOptions } from 'image-process';
-import { imgDefaultName, numImages, imgHashtag, imgResizeOpts, imgWidth, imgHeight, numImagesSqrt } from './values';
+import { imgDefaultName, numImages, imgResizeOpts, imgWidth, imgHeight, numImagesSqrt } from './values';
+
+const imagesBaseUrl = "https://terra-images.cuibonobo.com"
+const assetListUrl = `${imagesBaseUrl}/imageNames.json`;
 
 // Durstenfeld shuffle taken from here: https://stackoverflow.com/a/12646864/2001558
 const shuffleArray = (array: any[]): any[] => {
@@ -26,21 +29,17 @@ const getResizedImage = async (url: string, options: Partial<MediaFileHandlerOpt
   const file = await getFileFromUrl(url);
   return await handleMediaFile(file, options);
 };
-const getHashtagImageUrls = async (hashtag: string): Promise<string[]> => {
-  const assetListUrl = new URL('/assets/imageNames.json', window.location.href);
-  const response = await fetch(assetListUrl.href);
+const getImageUrls = async (): Promise<string[]> => {
+  const response = await fetch(assetListUrl);
   const imageNames = shuffleArray(await response.json());
-  return imageNames.map((x: string) => (new URL(`/assets/${x}`, window.location.href).href));
+  return imageNames.map((x: string) => (`${imagesBaseUrl}/${x}`));
 };
 export const getResizedImageUrls = async (): Promise<string[]> => {
-  const hashtagImageUrls = await getHashtagImageUrls(imgHashtag);
-  const resizedData: MediaFileHandlerData[] = [];
-  const resizedUrls: string[] = [];
-  for (let i = 0; i < numImages; i++) {
-    resizedData[i] = await getResizedImage(hashtagImageUrls[i], imgResizeOpts);
-    resizedUrls[i] = resizedData[i].url;
-  }
-  return resizedUrls;
+  const imageUrls = (await getImageUrls()).slice(0, numImages);
+  return Promise.all(imageUrls.map(async (imageUrl: string) => {
+    const resizedImage = await getResizedImage(imageUrl, imgResizeOpts);
+    return resizedImage.url;
+  }));
 };
 export const getGridStyle = (): h.JSX.CSSProperties => {
   return {

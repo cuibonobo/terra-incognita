@@ -4,7 +4,7 @@
   "description": "A sort of luminous, geometric, incandescent immensity.",
   "type": "module",
   "scripts": {
-    "build": "cross-env NODE_ENV=production parcel build src/index.html",
+    "build": "npm run clean && cross-env NODE_ENV=production parcel build src/index.html",
     "build:worker": "node build.js",
     "clean": "rimraf ./dist",
     "clean:cache": "rimraf ./.parcel-cache",
