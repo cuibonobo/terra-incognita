@@ -153,4 +153,7 @@ I also refactored the code so that the final image width and height are inputs a
 ---
 Met with Ron and Mackenzie to discuss the themes for the artist statement and talk about some logistics regarding the display at the museum.
 
-[3 hours]
+---
+Figured out how to initialize a Workers KV binding to Miniflare and to production. The production version of the worker is published at https://terra-incognita.haverstack.workers.dev.
+
+[4 hours]

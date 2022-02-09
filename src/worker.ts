@@ -9,7 +9,16 @@ const worker: ExportedHandler<Bindings> = {
 };
 
 const handleRequest = async (request: Request, env: Bindings) => {
-  return new Response("Hello, world!");
+  const { pathname } = new URL(request.url);
+
+  if (pathname.startsWith("/api")) {
+    return new Response(JSON.stringify({ pathname }), {
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const value = await env.DATA.get("foo");
+  return new Response(value ? value : "No key 'foo'");
 };
 
 export default worker;

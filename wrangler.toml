@@ -9,6 +9,10 @@ workers_dev = true
 compatibility_date = "2021-11-15"
 compatibility_flags = []
 
+kv_namespaces = [
+  { binding = "DATA", id = "b0dd6f3a041e4f48939e47e900f42a9c" }
+]
+
 [build]
 command = "npm run build:worker"
 
@@ -19,3 +23,4 @@ main = "./worker.mjs"
 
 [miniflare]
 durable_objects_persist = true
+kv_persist = true

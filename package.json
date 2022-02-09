@@ -11,7 +11,9 @@
     "clean:all": "npm run clean && npm run clean:cache",
     "cli": "node --loader ts-node/esm --experimental-modules --es-module-specifier-resolution=node --no-warnings ./src/cli.ts",
     "copy-assets": "ncp ./assets ./dist/assets",
+    "init": "node --experimental-vm-modules --no-warnings ./init.js",
     "mkdir:assets": "mkdirp ./dist/assets",
+    "publish": "wrangler publish",
     "scrape": "npm run cli -- scrape landscape",
     "serve": "http-server -a localhost -p 8000 ./dist",
     "start": "npm run clean && npm run mkdir:assets && npm run copy-assets && npm run start:js",
@@ -36,6 +38,7 @@
   "homepage": "https://github.com/cuibonobo/terra-incognita#readme",
   "devDependencies": {
     "@cloudflare/workers-types": "^3.3.1",
+    "@cloudflare/wrangler": "^1.19.8",
     "@types/node": "^16.11.10",
     "commander": "^9.0.0",
     "cross-env": "^7.0.3",
