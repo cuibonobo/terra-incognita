@@ -148,4 +148,9 @@ I was worried I would have to convert my code to use some sort of static site ge
 ---
 I noticed the cascade in my network requests and realized that I could download my images in parallel instead of one-by-one. Now the draw feels faster than before!
 
-[2 hours]
+I also refactored the code so that the final image width and height are inputs and other values are computed based on that. This allowed me to simplify some of the size calculations. More importantly, I can give a 'final' canvas size at the beginning so that we can adjust based on the size of the display.
+
+---
+Met with Ron and Mackenzie to discuss the themes for the artist statement and talk about some logistics regarding the display at the museum.
+
+[3 hours]

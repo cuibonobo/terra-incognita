@@ -13,15 +13,19 @@ const Canvas = (props: {
       image.onload = (ev: Event) => {
         resolve(image);
       };
-      image.src = url;
+      try {
+        image.src = url;
+      } catch (e) {
+        reject(e);
+      }
     });
   };
   const drawImages = useMemo(async () => {
     if (!drawCtx) {
       return;
     }
-    const w = props.width;
-    const h = props.height;
+    const w = props.width / props.pixelSize;
+    const h = props.height / props.pixelSize;
     const s = props.splitSize;
     const p = props.pixelSize;
     const images = props.images;
@@ -55,7 +59,7 @@ const Canvas = (props: {
   }, [canvasRef]);
 
   return (
-    <canvas width={props.width * props.pixelSize} height={props.height * props.pixelSize} ref={canvasRef}></canvas>
+    <canvas width={props.width} height={props.height} ref={canvasRef}></canvas>
   );
 };
 

@@ -1,10 +1,16 @@
 
 import { h } from 'preact';
 import { handleMediaFile, MediaFileHandlerData, MediaFileHandlerOptions } from 'image-process';
-import { imgDefaultName, numImages, imgResizeOpts, imgWidth, imgHeight, numImagesSqrt } from './values';
+import { imgWidth, imgHeight, numImagesSqrt } from './values';
 
 const imagesBaseUrl = "https://terra-images.cuibonobo.com"
 const assetListUrl = `${imagesBaseUrl}/imageNames.json`;
+const imgResizeOpts = {
+  mimeType: 'image/jpeg',
+  width: imgWidth / numImagesSqrt,
+  height: imgHeight / numImagesSqrt,
+  quality: 0.8
+};
 
 // Durstenfeld shuffle taken from here: https://stackoverflow.com/a/12646864/2001558
 const shuffleArray = (array: any[]): any[] => {
@@ -15,12 +21,12 @@ const shuffleArray = (array: any[]): any[] => {
   }
   return arr;
 };
-const getFileFromBlob = (blob: Blob, imgName: string = imgDefaultName): File => {
+const getFileFromBlob = (blob: Blob, imgName: string = 'image.jpg'): File => {
   return new File([blob], imgName, {type: blob.type});
 };
-const getFileFromUrl = async (url: string, defaultImgName: string = imgDefaultName): Promise<File> => {
+const getFileFromUrl = async (url: string): Promise<File> => {
   const parsedUrl = new URL(url);
-  const imgName = parsedUrl.pathname.length > 1 ? parsedUrl.pathname.slice(1) : defaultImgName;
+  const imgName = parsedUrl.pathname.length > 1 ? parsedUrl.pathname.slice(1) : undefined;
   const response = await fetch(url);
   const blob = await response.blob();
   return getFileFromBlob(blob, imgName);
@@ -35,7 +41,7 @@ const getImageUrls = async (): Promise<string[]> => {
   return imageNames.map((x: string) => (`${imagesBaseUrl}/${x}`));
 };
 export const getResizedImageUrls = async (): Promise<string[]> => {
-  const imageUrls = (await getImageUrls()).slice(0, numImages);
+  const imageUrls = (await getImageUrls()).slice(0, Math.pow(numImagesSqrt, 2));
   return Promise.all(imageUrls.map(async (imageUrl: string) => {
     const resizedImage = await getResizedImage(imageUrl, imgResizeOpts);
     return resizedImage.url;
@@ -43,7 +49,7 @@ export const getResizedImageUrls = async (): Promise<string[]> => {
 };
 export const getGridStyle = (): h.JSX.CSSProperties => {
   return {
-    width: `${imgWidth * numImagesSqrt}px`,
-    height: `${imgHeight * numImagesSqrt}px`
+    width: `${imgWidth}px`,
+    height: `${imgHeight}px`
   };
 };
