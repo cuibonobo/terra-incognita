@@ -174,4 +174,6 @@ Added a GitHub Action to automatically build the site and sync it to a Backblaze
 ---
 Added a small router library to get data from the worker API. Removed the hard-coded values to use the API instead.
 
-[2.5 hours]
+One thing I've noticed is that there are a lot of moving parts and it can be easy to miss a step. New data needs to be initialized, changes to the worker need to be published, etc. It might be possible to also automate these steps, but I want to see how much friction they cause first before going that route.
+
+[3 hours]
