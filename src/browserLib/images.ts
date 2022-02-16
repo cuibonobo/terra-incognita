@@ -1,16 +1,9 @@
 
 import { h } from 'preact';
 import { handleMediaFile, MediaFileHandlerData, MediaFileHandlerOptions } from 'image-process';
-import { imgWidth, imgHeight, numImagesSqrt } from './values';
 
 const imagesBaseUrl = "https://terra-images.cuibonobo.com"
 const assetListUrl = `${imagesBaseUrl}/imageNames.json`;
-const imgResizeOpts = {
-  mimeType: 'image/jpeg',
-  width: imgWidth / numImagesSqrt,
-  height: imgHeight / numImagesSqrt,
-  quality: 0.8
-};
 
 // Durstenfeld shuffle taken from here: https://stackoverflow.com/a/12646864/2001558
 const shuffleArray = (array: any[]): any[] => {
@@ -20,6 +13,14 @@ const shuffleArray = (array: any[]): any[] => {
       [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
+};
+export const getImageResizeOpts = (imgWidth: number, imgHeight: number, numImagesSqrt: number): Partial<MediaFileHandlerOptions> => {
+  return {
+    mimeType: 'image/jpeg',
+    width: imgWidth / numImagesSqrt,
+    height: imgHeight / numImagesSqrt,
+    quality: 0.8
+  };
 };
 const getFileFromBlob = (blob: Blob, imgName: string = 'image.jpg'): File => {
   return new File([blob], imgName, {type: blob.type});
@@ -40,14 +41,14 @@ const getImageUrls = async (): Promise<string[]> => {
   const imageNames = shuffleArray(await response.json());
   return imageNames.map((x: string) => (`${imagesBaseUrl}/${x}`));
 };
-export const getResizedImageUrls = async (): Promise<string[]> => {
+export const getResizedImageUrls = async (numImagesSqrt: number, imgResizeOpts: Partial<MediaFileHandlerOptions>): Promise<string[]> => {
   const imageUrls = (await getImageUrls()).slice(0, Math.pow(numImagesSqrt, 2));
   return Promise.all(imageUrls.map(async (imageUrl: string) => {
     const resizedImage = await getResizedImage(imageUrl, imgResizeOpts);
     return resizedImage.url;
   }));
 };
-export const getGridStyle = (): h.JSX.CSSProperties => {
+export const getGridStyle = (imgWidth: number, imgHeight: number): h.JSX.CSSProperties => {
   return {
     width: `${imgWidth}px`,
     height: `${imgHeight}px`

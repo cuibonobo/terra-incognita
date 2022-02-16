@@ -18,6 +18,8 @@ Merging into the `main` branch will automatically build the web application and 
 - `B2_APPLICATION_KEY_ID`
 - `B2_APPLICATION_KEY`
 
+> **Note:** The Backblaze application key created for this purpose must have read and write access permissions.
+
 ## Journal
 ### 2021-11-27
 My original idea was to use the official [Instagram Hashtag Search API](https://developers.facebook.com/docs/instagram-api/guides/hashtag-search/), but it requires that you have a Business or Creator account and that the app undergo an [App Review](https://developers.facebook.com/docs/apps/review) process that seemed much too involved for the amount of usage this app is going to get. Instead, I'm going to use [`scraper-instagram`](https://www.npmjs.com/package/scraper-instagram) to grab images directly from the Instagram public website.
@@ -167,6 +169,9 @@ Figured out how to initialize a Workers KV binding to Miniflare and to productio
 Updated the initialization script so that it sets data for both Miniflare and Workers KV. This will allow me to set the same data for both without any manual setup.
 
 ---
-Added a GitHub Action to automatically build the site and sync it to a Backblaze B2 bucket.
+Added a GitHub Action to automatically build the site and sync it to a Backblaze B2 bucket. Testing and debugging the action took about as long as researching and writing it.
 
-[1 hour]
+---
+Added a small router library to get data from the worker API. Removed the hard-coded values to use the API instead.
+
+[2.5 hours]

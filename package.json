@@ -56,6 +56,7 @@
   },
   "dependencies": {
     "image-process": "^4.1.1",
+    "itty-router": "^2.4.10",
     "preact": "^10.6.1",
     "react-router-dom": "^6.0.2",
     "scraper-instagram": "^1.0.17"
