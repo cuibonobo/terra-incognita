@@ -13,6 +13,11 @@ To download 70 of the latest Instagram images in the `landscape` hashtag:
 npm run scrape
 ```
 
+## GitHub Actions
+Merging into the `main` branch will automatically build the web application and sync it to a Backblaze B2 bucket. To accomplish this, the following secrets must be set on the repository:
+- `B2_APPLICATION_KEY_ID`
+- `B2_APPLICATION_KEY`
+
 ## Journal
 ### 2021-11-27
 My original idea was to use the official [Instagram Hashtag Search API](https://developers.facebook.com/docs/instagram-api/guides/hashtag-search/), but it requires that you have a Business or Creator account and that the app undergo an [App Review](https://developers.facebook.com/docs/apps/review) process that seemed much too involved for the amount of usage this app is going to get. Instead, I'm going to use [`scraper-instagram`](https://www.npmjs.com/package/scraper-instagram) to grab images directly from the Instagram public website.
@@ -161,4 +166,7 @@ Figured out how to initialize a Workers KV binding to Miniflare and to productio
 ### 2022-02-15
 Updated the initialization script so that it sets data for both Miniflare and Workers KV. This will allow me to set the same data for both without any manual setup.
 
-[0.5 hours]
+---
+Added a GitHub Action to automatically build the site and sync it to a Backblaze B2 bucket.
+
+[1 hour]
