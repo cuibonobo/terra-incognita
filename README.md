@@ -157,3 +157,8 @@ Met with Ron and Mackenzie to discuss the themes for the artist statement and ta
 Figured out how to initialize a Workers KV binding to Miniflare and to production. The production version of the worker is published at https://terra-incognita.haverstack.workers.dev.
 
 [4 hours]
+
+### 2022-02-15
+Updated the initialization script so that it sets data for both Miniflare and Workers KV. This will allow me to set the same data for both without any manual setup.
+
+[0.5 hours]
