@@ -25,7 +25,7 @@ for (const namespace of Object.keys(kvData)) {
   const ns = await mf.getKVNamespace(namespace);
   const nsData = kvData[namespace];
   for (const key of Object.keys(nsData)) {
-    const value = typeof(nsData[key]) === "string" ? nsData[key] : JSON.stringify(nsData[key]);
+    const value = typeof(nsData[key]) === "string" ? nsData[key] : JSON.stringify(JSON.stringify(nsData[key]));
     try {
       await ns.put(key, value);
     } catch (e) {
