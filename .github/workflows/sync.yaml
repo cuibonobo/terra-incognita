@@ -18,7 +18,7 @@ jobs:
           node-version: '16'
 
       - run: npm install
-      - run: npm build
+      - run: npm run build
 
       - uses: sylwit/install-b2-cli-action@v1.0.0
         env:
