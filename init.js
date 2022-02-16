@@ -21,18 +21,26 @@ const mf = new Miniflare({
   modules: true
 });
 
+const stringify = (value, escapeQuotes = false) => {
+  let output = typeof(value) === "string" ? value : JSON.stringify(value);
+  if (escapeQuotes) {
+    output = JSON.stringify(output);
+  }
+  return output;
+};
+
 for (const namespace of Object.keys(kvData)) {
   const ns = await mf.getKVNamespace(namespace);
   const nsData = kvData[namespace];
   for (const key of Object.keys(nsData)) {
-    const value = typeof(nsData[key]) === "string" ? nsData[key] : JSON.stringify(JSON.stringify(nsData[key]));
+    const value = nsData[key];
     try {
-      await ns.put(key, value);
+      await ns.put(key, stringify(value));
     } catch (e) {
       console.error(`Couldn't set '${key}' to MiniFlare: ${e}`);
     }
     try {
-      const {stderr} = await execAsync(`wrangler kv:key put --binding=${namespace} "${key}" "${value}"`);
+      const {stderr} = await execAsync(`wrangler kv:key put --binding=${namespace} "${key}" "${stringify(value, true)}"`);
       if (stderr) {
         throw new Error(stderr);
       }
