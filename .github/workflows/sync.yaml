@@ -22,6 +22,7 @@ jobs:
         with:
           node-version: '16'
 
+      - run: cd app
       - run: npm install
       - run: npm run build
 
@@ -31,4 +32,4 @@ jobs:
           B2_APPLICATION_KEY: ${{ secrets.B2_APPLICATION_KEY }}
 
       - name: deploy
-        run: b2 sync --delete --replaceNewer ./dist b2://terra-public/site
+        run: b2 sync --delete --replaceNewer ./app/dist b2://terra-public/site
