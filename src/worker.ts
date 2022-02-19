@@ -3,7 +3,15 @@ import { Router } from 'itty-router';
 const router = Router();
 
 router.get('/meta', async (request: Request, env: Bindings) => {
-  return jsonifyResponse(await env.DATA.get("meta"));
+  return jsonifyResponse(await env.DATA.get('meta'));
+});
+
+router.get('/numImagesSqrt', async (request: Request, env: Bindings) => {
+  return jsonifyResponse(await env.DATA.get('numImagesSqrt'));
+});
+
+router.get('/imgSquareSize', async (request: Request, env: Bindings) => {
+  return jsonifyResponse(await env.DATA.get('imgSquareSize'));
 });
 
 // 404 for everything else
@@ -28,7 +36,7 @@ const jsonifyResponse = (value: any, opts: ResponseInit = {}): Response => {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
   };
-  return new Response(typeof(value) === "string" ? value : JSON.stringify(value), opts);
+  return new Response(typeof(value) === 'string' ? value : JSON.stringify(value), opts);
 };
 
 export default worker;

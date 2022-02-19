@@ -5,8 +5,6 @@ const BASE_URL =
 
 export interface Meta {
   imgHashtag: string,
-  numImagesSqrt: number,
-  imgSquareSize: number,
   imgWidth: number,
   imgHeight: number
 }
@@ -45,6 +43,21 @@ const post = async (path: string, data: JSONValue): Promise<JSONValue> => {
 const api = {
   get,
   post,
+};
+
+export const getMeta = async (): Promise<Meta> => {
+  const response: unknown = await api.get('/meta');
+  return response as Meta;
+};
+
+export const getImgSquareSize = async (): Promise<number> => {
+  const response: unknown = await api.get('/imgSquareSize');
+  return response as number;
+};
+
+export const getNumImagesSqrt = async (): Promise<number> => {
+  const response: unknown = await api.get('/numImagesSqrt');
+  return response as number;
 };
 
 export default api;
