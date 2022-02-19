@@ -14,11 +14,14 @@ npm run scrape
 ```
 
 ## GitHub Actions
-Merging into the `main` branch will automatically build the web application and sync it to a Backblaze B2 bucket. To accomplish this, the following secrets must be set on the repository:
+Merging into the `main` branch with changes in the `./app` directory will automatically build the web application and sync it to a Backblaze B2 bucket. To accomplish this, the following secrets must be set on the repository:
 - `B2_APPLICATION_KEY_ID`
 - `B2_APPLICATION_KEY`
 
 > **Note:** The Backblaze application key created for this purpose must have read and write access permissions.
+
+Similarly, merging into the `main` branch with changes to the `./api` directory will automatically build the Workers application and publish it to Cloudflare. The following secrets must be set in the repository:
+- `CF_API_TOKEN`
 
 ## Journal
 ### 2021-11-27

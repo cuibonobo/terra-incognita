@@ -1,0 +1,31 @@
+name: Sync Wrangler API
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'api/**'
+    branches:
+      - main
+  pull_request:
+    paths:
+      - 'api/**'
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - run: cd api && npm install
+
+      - uses: actions/checkout@v2
+      - name: Publish
+        uses: cloudflare/wrangler-action@1.3.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
