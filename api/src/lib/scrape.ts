@@ -1,4 +1,4 @@
-/// <reference types="../global" />
+/// <reference types="../types" />
 import path from 'path';
 import Scraper from 'scraper-instagram';
 import fetch from 'node-fetch';
@@ -60,7 +60,7 @@ const uploadIndexToBucket = async (imageDir: string, credentialsDir: string = '.
 
 const scrape = async (imgHashtag: string): Promise<void> => {
   // TODO: Current scraper assumes destDir and bucket have the same contents
-  const destDir = './assets';
+  const destDir = '../assets';
   try {
     await ensureDir(destDir);
   } catch(e) {

@@ -2,9 +2,9 @@ import path from 'path';
 import url from 'url';
 import { Command } from 'commander';
 import 'dotenv/config';
-import scrape from './nodeLib/scrape';
-import { authenticate, setCredentials, getAuthenticatedClient } from './nodeLib/b2';
-import { initKv } from './nodeLib/kv';
+import scrape from './lib/scrape';
+import { authenticate, setCredentials, getAuthenticatedClient } from './lib/b2';
+import { initKv } from './lib/kv';
 import defaultData from './defaultData';
 import { build } from 'esbuild';
 

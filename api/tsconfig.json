@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "lib": ["esnext"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "target": "es5",
+    "types": ["node", "@cloudflare/workers-types"]
+  },
+  "include": ["src"]
+}

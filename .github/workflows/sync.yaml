@@ -1,10 +1,14 @@
-name: Build and sync a React app Backblaze
+name: Sync React app
 on:
   workflow_dispatch:
   push:
+    paths:
+      - 'app/**'
     branches:
       - main
   pull_request:
+    paths:
+      - 'app/**'
     branches:
       - main
 

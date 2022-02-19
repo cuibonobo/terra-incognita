@@ -4,21 +4,18 @@
   "description": "A sort of luminous, geometric, incandescent immensity.",
   "type": "module",
   "scripts": {
-    "build": "npm run clean && cross-env NODE_ENV=production parcel build src/index.html",
-    "build:worker": "npm run cli -- build",
-    "clean": "rimraf ./dist",
-    "clean:cache": "rimraf ./.parcel-cache",
-    "clean:all": "npm run clean && npm run clean:cache",
-    "cli": "node --loader ts-node/esm --experimental-modules --experimental-vm-modules --es-module-specifier-resolution=node --no-warnings ./src/cli.ts",
-    "copy-assets": "ncp ./assets ./dist/assets",
-    "mkdir:assets": "mkdirp ./dist/assets",
-    "publish": "wrangler publish",
-    "scrape": "npm run cli -- scrape landscape",
-    "serve": "http-server -a localhost -p 8000 ./dist",
-    "start": "npm run clean && npm run mkdir:assets && npm run copy-assets && npm run start:js",
-    "start:js": "parcel src/index.html --port 8000",
-    "start:worker": "miniflare --live-reload --debug",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:api": "cd api && npm run build",
+    "build:app": "cd app && npm run build",
+    "build": "npm run build:api && npm run build:app",
+    "clean:api": "cd api && npm run clean",
+    "clean:app": "cd app && npm run clean",
+    "clean": "npm run clean:api && npm run clean:app",
+    "clean:app:all": "cd app && npm run clean:all",
+    "clean:all": "npm run clean:api && npm run clean:app:all",
+    "scrape": "cd api && npm run scrape",
+    "start:api": "cd api && npm run start",
+    "start:app": "cd app && npm run start",
+    "start": "concurrently -k -p \"[{name}]\" -c \"cyan.bold,green.bold\" \"npm:start:api\" \"npm:start:app\""
   },
   "repository": {
     "type": "git",
@@ -36,33 +33,6 @@
   },
   "homepage": "https://github.com/cuibonobo/terra-incognita#readme",
   "devDependencies": {
-    "@cloudflare/workers-types": "^3.3.1",
-    "@cloudflare/wrangler": "^1.19.8",
-    "@types/node": "^16.11.10",
-    "commander": "^9.0.0",
-    "cross-env": "^7.0.3",
-    "dotenv": "^15.0.0",
-    "esbuild": "^0.14.15",
-    "http-server": "^14.0.0",
-    "miniflare": "^2.2.0",
-    "mkdirp": "^1.0.4",
-    "ncp": "^2.0.0",
-    "node-fetch": "^3.2.0",
-    "parcel": "^2.0.1",
-    "rimraf": "^3.0.2",
-    "ts-node": "^10.4.0",
-    "typescript": "^4.5.2"
-  },
-  "dependencies": {
-    "image-process": "^4.1.1",
-    "itty-router": "^2.4.10",
-    "preact": "^10.6.1",
-    "react-router-dom": "^6.0.2",
-    "scraper-instagram": "^1.0.17"
-  },
-  "alias": {
-    "react": "preact/compat",
-    "react-dom/test-utils": "preact/test-utils",
-    "react-dom": "preact/compat"
+    "concurrently": "^7.0.0"
   }
 }

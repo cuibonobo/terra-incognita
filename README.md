@@ -181,4 +181,7 @@ One thing I've noticed is that there are a lot of moving parts and it can be eas
 ### 2022-02-19
 Converted the build and KV initialization scripts to CLI commands so that random scripts weren't littering the codebase. Also separated out the values for the number of images per block and the pixel size so they can be manipulated independently of each other.
 
-[1 hour]
+---
+Split the repo into an `app` and `api` directory so that I can create different CI/CD behaviors for each sub-component.
+
+[1.5 hours]

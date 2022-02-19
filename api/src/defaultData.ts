@@ -1,4 +1,4 @@
-import { KvStore } from './nodeLib/kv';
+import { KvStore } from './lib/kv';
 
 const defaultData: KvStore = {
   "DATA": {
