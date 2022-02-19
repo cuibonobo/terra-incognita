@@ -177,3 +177,8 @@ Added a small router library to get data from the worker API. Removed the hard-c
 One thing I've noticed is that there are a lot of moving parts and it can be easy to miss a step. New data needs to be initialized, changes to the worker need to be published, etc. It might be possible to also automate these steps, but I want to see how much friction they cause first before going that route.
 
 [3 hours]
+
+### 2022-02-19
+Converted the build and KV initialization scripts to CLI commands so that random scripts weren't littering the codebase. Also separated out the values for the number of images per block and the pixel size so they can be manipulated independently of each other.
+
+[1 hour]
