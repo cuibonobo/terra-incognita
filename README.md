@@ -187,4 +187,7 @@ Converted the build and KV initialization scripts to CLI commands so that random
 ---
 Split the repo into an `app` and `api` directory so that I can create different CI/CD behaviors for each sub-component.
 
-[1.5 hours]
+---
+Publish the worker with GitHub Actions whenever there are changes to the `./api` subdirectory.
+
+[2 hours]
