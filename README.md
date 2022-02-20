@@ -207,4 +207,9 @@ Updated scraper code so that it downloads to a temporary directory and uses info
 
 Unfortunately I ran into an issue where Instagram is now requiring authenticated sessions to view hashtag pages. There also seem to be changes to the pages themselves, so the scraper is throwing an error. I might have to fork the library to make my own version... 
 
-[4 hours]
+---
+Accounting for the Instagram page changes really kicked my butt. I had to write all new scraper code because the old `scraper-instagram` was almost completely unusable. The only tidbit I got from it was a regex for finding the data on the HTML page -- everything else was new. An incredible pain in the ass!!
+
+Luckily I didn't have to recreate the entire library because I only needed to scrape the hashtag page, but this was still a setback that I wasn't expecting. Also, I now have to set an `INSTAGRAM_SESSION_ID` in my environment variables because the hashtag page is no longer accessible without logging in. It's very likely that Instagram is tailoring the images based on information in my account, so I will probably have to create a new Instagram account that's only used for scraping.
+
+[6 hours]
