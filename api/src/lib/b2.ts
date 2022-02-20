@@ -146,40 +146,30 @@ export class B2Client {
   }
 
   /**
-   * Uploads the file or files at the given path. (Class A)
-   * @param { string | string[]} filePath
-   * @param { string = ''}  destFolder
-   * @param { string = this.credentials.allowed.bucketId}  bucketId
-   * @returns {Promise<{uploads: UploadFile[], errors: string[]}>}
+   * Uploads the file at the given path or with the given file options. (Class A)
+   * @param { string | UploadFileOpts} filePath
+   * @param { string?}  destFolder
+   * @param { string?}  bucketId
+   * @returns {Promise<UploadFile>}
    */
-  uploadFile = async (filePath: string | string[] | UploadFileOpts | UploadFileOpts[], destFolder: string = '', bucketId: string = this.credentials.allowed.bucketId): Promise<{uploads: UploadFile[], errors: string[]}> => {
-    const filePaths: (string | UploadFileOpts)[] = Array.isArray(filePath) ? filePath : [filePath];
-    if (filePaths.length === 0) {
-      return {
-        uploads: [],
-        errors: []
-      };
-    }
-    const fileOpts: UploadFileOpts[] = filePaths.map((filePath) => {
-      if (typeof filePath === 'string') {
-        return {filePath};
-      }
-      return filePath;
-    });
+  uploadFile = async (filePath: string | UploadFileOpts, destFolder?: string, bucketId?: string): Promise<UploadFile> => {
+    const fileOpts: UploadFileOpts = typeof filePath === 'string' ? {filePath} : filePath;
     const uploadUrl: UploadUrl = await this.getUploadUrl(bucketId);
-    const uploads: UploadFile[] = [];
-    const errors: string[] = [];
-    for (const fileOpt of fileOpts) {
-      const absPath: string = path.resolve(fileOpt.filePath);
-      try {
-        const fileBuffer: Buffer = await readFile(absPath);
-        const upload = await this._uploadFile(uploadUrl, fileOpt, fileBuffer, destFolder);
-        uploads.push(upload);
-      } catch(e) {
-        errors.push(`Couldn't upload ${fileOpt.filePath}: ${e}`);
-      }
+    fileOpts.filePath = path.resolve(fileOpts.filePath);
+    fileOpts.timestamp = fileOpts.timestamp ? fileOpts.timestamp : (await stat(fileOpts.filePath)).mtimeMs;
+    const fileBuffer: Buffer = await readFile(fileOpts.filePath);
+    const headers: HeadersInit = {
+      'Authorization': uploadUrl.authorizationToken,
+      'X-Bz-File-Name': this._getUploadName(fileOpts, destFolder),
+      'Content-Type': 'b2/x-auto',
+      'Content-Length': Buffer.byteLength(fileBuffer).toString(),
+      'X-Bz-Content-Sha1': this._getSha1(fileBuffer),
+      'X-Bz-Info-src_last_modified_millis': fileOpts.timestamp.toString()  // 
+    };
+    if (fileOpts.destName) {
+      headers['X-Bz-Info-original-name'] = path.basename(fileOpts.filePath);
     }
-    return {uploads, errors};
+    return post(uploadUrl.uploadUrl, fileBuffer, headers);
   };
 
   /**
@@ -189,21 +179,6 @@ export class B2Client {
    */
   getUploadUrl = async (bucketId: string = this.credentials.allowed.bucketId): Promise<UploadUrl> => {
     return post(this._getOperationUrl('b2_get_upload_url'), JSON.stringify({bucketId}), this._getHeaders());
-  };
-
-  _uploadFile = async (uploadUrl: UploadUrl, fileOpts: UploadFileOpts, fileBuffer: Buffer, destFolder: string = ''): Promise<UploadFile> => {
-    const headers: HeadersInit = {
-      'Authorization': uploadUrl.authorizationToken,
-      'X-Bz-File-Name': this._getUploadName(fileOpts, destFolder),
-      'Content-Type': 'b2/x-auto',
-      'Content-Length': Buffer.byteLength(fileBuffer).toString(),
-      'X-Bz-Content-Sha1': this._getSha1(fileBuffer),
-      'X-Bz-Info-src_last_modified_millis': fileOpts.timestamp ? fileOpts.timestamp.toString() : (await stat(path.resolve(fileOpts.filePath))).mtimeMs.toString()
-    };
-    if (fileOpts.destName) {
-      headers['X-Bz-Info-original-name'] = path.basename(fileOpts.filePath);
-    }
-    return post(uploadUrl.uploadUrl, fileBuffer, headers);
   };
 
   _getSha1 = (fileBuffer: Buffer): string => {

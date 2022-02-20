@@ -47,10 +47,18 @@ const writeImageNames = async (imageDir: string): Promise<void> => {
   await writeFile(path.join(imageDir, indexName), JSON.stringify(imageNames), 'utf-8');
 };
 
-const uploadImagesToBucket = async (images: HashtagImage[], imageDir: string, credentialsDir: string = './') => {
+const uploadImagesToBucket = async (images: string[] | HashtagImage[], imageDir: string, credentialsDir: string = './'): Promise<string[]> => {
   const client = await getAuthenticatedClient(credentialsDir);
-  const imagePaths = images.map(i => path.join(imageDir, `${i.shortcode}.jpg`));
-  return await client.uploadFile(imagePaths, bucketDir);
+  const errors: string[] = [];
+  for (const image of images) {
+    const imagePath: string = path.join(imageDir, typeof image === 'string' ? image : `${image.shortcode}.jpg`);
+    try {
+      await client.uploadFile(imagePath, bucketDir)
+    } catch(e) {
+      errors.push(`Error uploading ${imagePath}: ${e}`);
+    }
+  }
+  return errors;
 };
 
 const uploadIndexToBucket = async (imageDir: string, credentialsDir: string = './') => {
@@ -90,11 +98,23 @@ const scrape = async (imgHashtag: string): Promise<void> => {
     return;
   }
   try {
-    console.log("Upload to B2 bucket...");
-    await uploadImagesToBucket(images, destDir);
+    console.log("Upload images to B2 bucket...");
+    const errors = await uploadImagesToBucket(images, destDir);
+    if (errors.length > 0) {
+      console.warn(`${errors.length} images couldn't be uploaded:`);
+      for (const error of errors) {
+        console.warn(`\t${error}`);
+      }
+    }
+  } catch(e) {
+    console.error(`Couldn't upload images to bucket: ${e}`);
+    return;
+  }
+  try {
+    console.log("Upload index to B2 bucket...");
     await uploadIndexToBucket(destDir);
   } catch(e) {
-    console.error(`Couldn't upload to bucket: ${e}`);
+    console.error(`Couldn't upload index to bucket: ${e}`);
     return;
   }
   console.log("Done!");
