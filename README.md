@@ -21,6 +21,7 @@ Merging into the `main` branch with changes in the `./app` directory will automa
 > **Note:** The Backblaze application key created for this purpose must have read and write access permissions.
 
 Similarly, merging into the `main` branch with changes to the `./api` directory will automatically build the Workers application and publish it to Cloudflare. The following secrets must be set in the repository:
+- `CF_ACCOUNT_ID`
 - `CF_API_TOKEN`
 
 ## Journal
@@ -188,6 +189,6 @@ Converted the build and KV initialization scripts to CLI commands so that random
 Split the repo into an `app` and `api` directory so that I can create different CI/CD behaviors for each sub-component.
 
 ---
-Publish the worker with GitHub Actions whenever there are changes to the `./api` subdirectory.
+Publish the worker with GitHub Actions whenever there are changes to the `./api` subdirectory. Struggled a lot with this step because [existing actions don't support newer versions of Node](https://github.com/cloudflare/wrangler-action/pull/56).
 
-[2 hours]
+[3 hours]

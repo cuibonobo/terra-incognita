@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build": "npm run cli -- build",
+    "build": "npm run clean && npm run cli -- build",
     "clean": "rimraf ./dist",
     "cli": "node --loader ts-node/esm --experimental-vm-modules --es-module-specifier-resolution=node --no-warnings ./src/cli.ts",
     "publish": "wrangler publish",
     "scrape": "npm run cli -- scrape landscape",
-    "start": "miniflare --live-reload --debug",
+    "start": "npm run clean && miniflare --live-reload --debug",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
