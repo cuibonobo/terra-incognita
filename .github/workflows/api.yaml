@@ -21,9 +21,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
+      
+      - run: npm install --no-audit
 
       - uses: carepenny/wrangler-action@2.0.0
         with:
-          node-version: '16'
           apiToken: ${{ secrets.CF_API_TOKEN }}
           workingDirectory: 'api'
