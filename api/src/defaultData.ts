@@ -1,4 +1,5 @@
-import { KvStore, getWranglerKv } from './lib/kv';
+import crypto from 'crypto';
+import { KvStore, getWranglerKv, getKvValue } from './lib/kv';
 
 const baseData: KvStore = {
   DATA: {
@@ -9,8 +10,29 @@ const baseData: KvStore = {
     },
     numImagesSqrt: 5,
     imgSquareSize: 10,
-    totalImages: 0
+    totalImages: 0,
+    imgArray: async (length: number = 100): Promise<number[]> => {
+      const maxIdx = (await getWranglerKv('DATA', 'totalImages', 0)) as number;
+      return getNumArray(0, maxIdx, length);
+    }
   }
+};
+
+const getNumArray = (minimum: number, maximum: number, length: number): number[] => {
+  const output: number[] = [];
+  if (maximum - minimum < length) {
+    length = maximum - minimum;
+  }
+  while (output.length < length) {
+    while (true) {
+      const candidate = crypto.randomInt(minimum, maximum);
+      if (output.indexOf(candidate) < 0) {
+        output.push(candidate);
+        break;
+      }
+    }
+  }
+  return output;
 };
 
 /**
@@ -21,7 +43,7 @@ const defaultData = async (): Promise<KvStore> => {
   for (const namespace in baseData) {
     output[namespace] = {};
     for (const key in baseData[namespace]) {
-      output[namespace][key] = await getWranglerKv(namespace, key, baseData[namespace][key])
+      output[namespace][key] = await getWranglerKv(namespace, key, await getKvValue(baseData[namespace][key]));
     }
   }
   return output;

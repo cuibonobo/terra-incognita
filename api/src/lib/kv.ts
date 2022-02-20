@@ -6,7 +6,7 @@ const execAsync = promisify(exec);
 
 export interface KvStore {
   [namespace: string]: {
-    [key: string]: JSONValue
+    [key: string]: JSONValue | (() => Promise<JSONValue>)
   }
 }
 
@@ -26,12 +26,16 @@ const execThrow = async (command: string): Promise<string> => {
   return stdout;
 };
 
+export const getKvValue = async (value: JSONValue | (() => Promise<JSONValue>)): Promise<JSONValue> => {
+  return typeof value === 'function' ? await value() : value;
+};
+
 export const getWranglerKv = async (namespace: string, key: string, defaultValue?: JSONValue): Promise<JSONValue> => {
   try {
     return JSON.parse(await execThrow(`wrangler kv:key get --binding=${namespace} "${key}"`));
   } catch(e) {
     if (defaultValue !== undefined) {
-      console.debug(`Returning default value for '${namespace}:${key}. Error: ${e}'`);
+      console.debug(`Returning default value for '${namespace}:${key}'. ${e}'`);
       return defaultValue;
     }
     throw e;
@@ -63,12 +67,12 @@ export const initKv = async (kvData: KvStore, wranglerConfigPath: string): Promi
     for (const key of Object.keys(nsData)) {
       const value = nsData[key];
       try {
-        await kvNamespace.put(key, stringify(value));
+        await kvNamespace.put(key, stringify(await getKvValue(value)));
       } catch (e) {
         errors.push(`Couldn't set '${namespace}:${key}' to MiniFlare: ${e}`);
       }
       try {
-        await setWranglerKv(namespace, key, value);
+        await setWranglerKv(namespace, key, await getKvValue(value));
       } catch (e) {
         errors.push(`Couldn't set '${namespace}:${key}' to Workers KV: ${e}`);
       }
