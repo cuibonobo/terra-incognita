@@ -2,7 +2,7 @@ import path from 'path';
 import url from 'url';
 import { Command } from 'commander';
 import 'dotenv/config';
-import scrape, { syncImageDirToBucket } from './lib/scrape';
+import scrape, { syncImageDir } from './lib/scrape';
 import { authenticate, setCredentials, getAuthenticatedClient } from './lib/b2';
 import { initKv } from './lib/kv';
 import defaultData from './defaultData';
@@ -10,15 +10,16 @@ import { build } from 'esbuild';
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const wranglerConfig = path.join(__dirname, '../wrangler.toml');
 const program = new Command();
 
 program
-  .command('sync')
+  .command('sync <imageDir>')
   .description('Sync image dir to B2')
-  .action(async () => {
+  .action(async (imageDir: string) => {
     try {
       console.log('Syncing images...');
-      const [imageCounter, errors] = await syncImageDirToBucket('../assets');
+      const [imageCounter, errors] = await syncImageDir(imageDir);
       console.log(`Synced ${imageCounter} images`);
       if (errors.length > 0) {
         console.warn(`${errors.length} images couldn't be uploaded:`);
@@ -36,7 +37,7 @@ program
   .description('Scrape Instagram for new images with the given hashtag')
   .action(async (hashtag: string) => {
     try {
-      await scrape(hashtag);
+      await scrape(hashtag, wranglerConfig);
     } catch (e) {
       console.error(e);
     }
@@ -64,7 +65,7 @@ program
   .description('Initialize data to MiniFlare and Workers KV')
   .action(async () => {
     try {
-      const errors = await initKv(await defaultData(), path.join(__dirname, '../wrangler.toml'));
+      const errors = await initKv(await defaultData(), wranglerConfig);
       if (errors.length > 0) {
         for (const error of errors) {
           console.error(error);

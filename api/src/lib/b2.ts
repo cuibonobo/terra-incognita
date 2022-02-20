@@ -58,7 +58,10 @@ interface UploadUrl {
 interface UploadFileOpts {
   filePath: string,
   timestamp?: number,
-  destName?: string
+  destName?: string,
+  data?: {
+    [key: string]: string
+  }
 }
 
 interface UploadFile {
@@ -168,6 +171,11 @@ export class B2Client {
     };
     if (fileOpts.destName) {
       headers['X-Bz-Info-original-name'] = path.basename(fileOpts.filePath);
+    }
+    if (fileOpts.data) {
+      for (const key in fileOpts.data) {
+        headers[`X-Bz-Info-${key}`] = fileOpts.data[key];
+      }
     }
     return post(uploadUrl.uploadUrl, fileBuffer, headers);
   };

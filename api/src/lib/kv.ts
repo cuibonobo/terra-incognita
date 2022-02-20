@@ -38,8 +38,17 @@ export const getWranglerKv = async (namespace: string, key: string, defaultValue
   }
 };
 
-const setWranglerKv = async (namespace: string, key: string, value: JSONValue): Promise<void> => {
+export const setWranglerKv = async (namespace: string, key: string, value: JSONValue): Promise<void> => {
   await execThrow(`wrangler kv:key put --binding=${namespace} "${key}" "${stringify(value, true)}"`);
+};
+
+export const setMiniflareKv = async (namespace: string, key: string, value: JSONValue, wranglerConfigPath: string): Promise<void> => {
+  const mf = new Miniflare({
+    wranglerConfigPath: wranglerConfigPath,
+    modules: true
+  });
+  const kvNamespace = await mf.getKVNamespace(namespace);
+  return kvNamespace.put(key, stringify(value));
 };
 
 export const initKv = async (kvData: KvStore, wranglerConfigPath: string): Promise<string[]> => {

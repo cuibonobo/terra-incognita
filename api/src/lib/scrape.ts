@@ -2,11 +2,11 @@
 import path from 'path';
 import Scraper from 'scraper-instagram';
 import fetch from 'node-fetch';
-import { writeFile, readDir, ensureDir, stat } from './fs';
+import { writeFile, readDir, stat, mkTempDir, rm } from './fs';
 import { getAuthenticatedClient } from './b2';
+import { getWranglerKv, setMiniflareKv, setWranglerKv } from './kv';
 
 const bucketDir = 'images';
-const indexName = 'imageNames.json';
 
 interface HashtagImage {
   shortcode: string,
@@ -14,7 +14,8 @@ interface HashtagImage {
   comments: number,
   likes: number,
   thumbnail: string,
-  timestamp: number
+  timestamp: number,
+  filePath?: string
 }
 
 const getLatestHashtagImages = async (hashtag: string): Promise<HashtagImage[]> => {
@@ -29,16 +30,19 @@ const downloadImage = async (url: string, destPath: string): Promise<void> => {
   await writeFile(destPath, Buffer.from(arrayBuffer));
 };
 
-const downloadImages = async (images: HashtagImage[], destDir: string): Promise<string[]> => {
+const downloadHashtagImages = async (images: HashtagImage[], destDir: string): Promise<[HashtagImage[], string[]]> => {
   const errors: string[] = [];
+  const downloads: HashtagImage[] = [];
   for (const image of images) {
     try {
-      await downloadImage(image.thumbnail, path.join(destDir, `${image.shortcode}.jpg`));
+      const filePath = path.join(destDir, `${image.shortcode}.jpg`);
+      await downloadImage(image.thumbnail, filePath);
+      downloads.push({...image, filePath});
     } catch (e) {
       errors.push(`Couldn't download image ${image.shortcode}: ${e}`);
     }
   }
-  return errors;
+  return [downloads, errors];
 };
 
 const getImageNames = async (imageDir: string, imageExt: string = '.jpg'): Promise<string[]> => {
@@ -46,37 +50,51 @@ const getImageNames = async (imageDir: string, imageExt: string = '.jpg'): Promi
   return files.filter((v) => v.endsWith(imageExt));
 };
 
-const writeImageNames = async (imageDir: string): Promise<void> => {
-  const imageNames = await getImageNames(imageDir);
-  await writeFile(path.join(imageDir, indexName), JSON.stringify(imageNames), 'utf-8');
-};
-
-const uploadImagesToBucket = async (images: string[] | HashtagImage[], imageDir: string, credentialsDir: string = './'): Promise<string[]> => {
-  const client = await getAuthenticatedClient(credentialsDir);
-  const errors: string[] = [];
-  for (const image of images) {
-    const imagePath: string = path.join(imageDir, typeof image === 'string' ? image : `${image.shortcode}.jpg`);
-    try {
-      await client.uploadFile(imagePath, bucketDir)
-    } catch(e) {
-      errors.push(`Error uploading ${imagePath}: ${e}`);
+const printWarnings = (messages: string[], warningSuffix: string = ' errors'): void => {
+  if (messages.length > 0) {
+    console.warn(`${messages.length}${warningSuffix}:`);
+    for (const msg of messages) {
+      console.warn(`\t${msg}`);
     }
   }
-  return errors;
 };
 
-const uploadIndexToBucket = async (imageDir: string, credentialsDir: string = './') => {
+const getIndexedName = (idx: number, imageExt: string = '.jpg', namePadding: number = 8): string => {
+  return String(idx).padStart(namePadding, '0') + imageExt;
+};
+
+const uploadImagesToBucket = async (images: HashtagImage[], startIndex: number, credentialsDir: string = './'): Promise<[number, string[]]> => {
   const client = await getAuthenticatedClient(credentialsDir);
-  return await client.uploadFile(path.join(imageDir, indexName), bucketDir);
+  let imageCounter = startIndex;
+  const errors: string[] = [];
+  for (const image of images) {
+    // We only call this function after `downloadImages` which sets the filePath
+    const filePath: string = image.filePath!;
+    try {
+      await client.uploadFile({
+        filePath,
+        timestamp: image.timestamp * 1000,  // Timestamps from Instagram are in seconds
+        destName: getIndexedName(imageCounter),
+        data: {
+          thumbnail: image.thumbnail,
+          likes: image.likes.toString(),
+          shortcode: image.shortcode
+        }
+      }, bucketDir);
+      imageCounter++;
+    } catch(e) {
+      errors.push(`Error uploading ${filePath}: ${e}`);
+    }
+  }
+  return [imageCounter, errors];
 };
-
 
 /**
  * Syncs images from source directory to a B2 bucket, but changes image names to a number that
  * corresponds with the order in which they were uploaded. The default name padding should be
  * enough to upload 100 images every hour for 30 years.
  */
-export const syncImageDirToBucket = async (imageDir: string, startIndex: number = 0, imageExt: string = '.jpg', credentialsDir: string = './', namePadding: number = 8): Promise<[number, string[]]> => {
+export const syncImageDir = async (imageDir: string, startIndex: number = 0, credentialsDir: string = './', imageExt: string = '.jpg', namePadding: number = 8): Promise<[number, string[]]> => {
   const client = await getAuthenticatedClient(credentialsDir);
   const imageNames = await getImageNames(imageDir, imageExt);
   let imageCounter = startIndex;
@@ -87,7 +105,7 @@ export const syncImageDirToBucket = async (imageDir: string, startIndex: number 
       const fileOpts = {
         filePath,
         timestamp: (await stat(filePath)).mtimeMs,
-        destName: String(imageCounter).padStart(namePadding, '0') + imageExt
+        destName: getIndexedName(imageCounter, imageExt, namePadding)
       };
       await client.uploadFile(fileOpts, bucketDir);
       imageCounter++;
@@ -98,15 +116,9 @@ export const syncImageDirToBucket = async (imageDir: string, startIndex: number 
   return [imageCounter, errors];
 };
 
-const scrape = async (imgHashtag: string): Promise<void> => {
-  // TODO: Current scraper assumes destDir and bucket have the same contents
-  const destDir = '../assets';
-  try {
-    await ensureDir(destDir);
-  } catch(e) {
-    console.error(`Couldn't create assets folder: ${e}`);
-    return;
-  }
+const scrape = async (imgHashtag: string, wranglerConfigPath: string): Promise<void> => {
+  const destDir = await mkTempDir();
+  const currentIdx = await getWranglerKv('DATA', 'totalImages') as number;
   let images: HashtagImage[] = [];
   try {
     console.log(`Getting images for #${imgHashtag}...`);
@@ -115,39 +127,32 @@ const scrape = async (imgHashtag: string): Promise<void> => {
     console.error(`Couldn't get #${imgHashtag} data: ${e}`);
     return;
   }
+  let downloadedImages: HashtagImage[] = [];
   try {
-    const errors = await downloadImages(images, destDir);
-    console.log(`Downloaded ${images.length - errors.length} out of ${images.length} images`)
+    const [downloads, errors] = await downloadHashtagImages(images, destDir);
+    downloadedImages = downloads;
+    printWarnings(errors, " images couldn't be downloaded");
   } catch (e) {
     console.error(`Couldn't download images: ${e}`);
     return;
   }
-  try {
-    console.log("Writing image index...");
-    await writeImageNames(destDir);
-  } catch(e) {
-    console.error(`Couldn't write image names to index: ${e}`);
-    return;
-  }
+  let updatedIndex = 0;
   try {
     console.log("Upload images to B2 bucket...");
-    const errors = await uploadImagesToBucket(images, destDir);
-    if (errors.length > 0) {
-      console.warn(`${errors.length} images couldn't be uploaded:`);
-      for (const error of errors) {
-        console.warn(`\t${error}`);
-      }
-    }
+    const [newIndex, errors] = await uploadImagesToBucket(downloadedImages, currentIdx);
+    printWarnings(errors, " images couldn't be uploaded");
+    updatedIndex = newIndex;
+    console.log(`New image index: ${updatedIndex}`);
   } catch(e) {
     console.error(`Couldn't upload images to bucket: ${e}`);
     return;
   }
+  await setWranglerKv('DATA', 'totalImages', updatedIndex);
+  await setMiniflareKv('DATA', 'totalImages', updatedIndex, wranglerConfigPath);
   try {
-    console.log("Upload index to B2 bucket...");
-    await uploadIndexToBucket(destDir);
+    await rm(destDir);
   } catch(e) {
-    console.error(`Couldn't upload index to bucket: ${e}`);
-    return;
+    console.error(`Couldn't delete temp directory '${destDir}': ${e}`);
   }
   console.log("Done!");
 };

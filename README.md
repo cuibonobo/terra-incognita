@@ -202,4 +202,9 @@ Made some code to sync all the existing images but using a number as the image n
 ---
 Added new functions for getting and setting values from Wrangler KV so that it would be possible to initialize the KV store without clobbering any existing KV data. This is important so that I don't lose the value for the total number of images in the bucket.
 
-[2 hours]
+---
+Updated scraper code so that it downloads to a temporary directory and uses information from Instagram to populate the image metadata.
+
+Unfortunately I ran into an issue where Instagram is now requiring authenticated sessions to view hashtag pages. There also seem to be changes to the pages themselves, so the scraper is throwing an error. I might have to fork the library to make my own version... 
+
+[4 hours]
