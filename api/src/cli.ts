@@ -2,7 +2,7 @@ import path from 'path';
 import url from 'url';
 import { Command } from 'commander';
 import 'dotenv/config';
-import scrape from './lib/scrape';
+import scrape, { syncImageDirToBucket } from './lib/scrape';
 import { authenticate, setCredentials, getAuthenticatedClient } from './lib/b2';
 import { initKv } from './lib/kv';
 import defaultData from './defaultData';
@@ -11,6 +11,25 @@ import { build } from 'esbuild';
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const program = new Command();
+
+program
+  .command('sync')
+  .description('Sync image dir to B2')
+  .action(async () => {
+    try {
+      console.log('Syncing images...');
+      const [imageCounter, errors] = await syncImageDirToBucket('../assets');
+      console.log(`Synced ${imageCounter} images`);
+      if (errors.length > 0) {
+        console.warn(`${errors.length} images couldn't be uploaded:`);
+        for (const error of errors) {
+          console.warn(`\t${error}`);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  });
 
 program
   .command('scrape <hashtag>')
