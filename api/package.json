@@ -5,7 +5,7 @@
   "scripts": {
     "build": "npm run cli -- build",
     "clean": "rimraf ./dist",
-    "cli": "node --loader ts-node/esm --experimental-modules --experimental-vm-modules --es-module-specifier-resolution=node --no-warnings ./src/cli.ts",
+    "cli": "node --loader ts-node/esm --experimental-vm-modules --es-module-specifier-resolution=node --no-warnings ./src/cli.ts",
     "publish": "wrangler publish",
     "scrape": "npm run cli -- scrape landscape",
     "start": "miniflare --live-reload --debug",
