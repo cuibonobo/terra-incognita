@@ -11,7 +11,8 @@
 import path from 'path';
 import crypto from 'crypto';
 import { escape } from 'querystring';
-import fetch, { BodyInit, HeadersInit, Response } from 'node-fetch';
+import { HeadersInit } from 'node-fetch';
+import { post } from './fetch';
 import { readFile, writeFile, stat } from './fs';
 
 const credentialsFile = 'credentials.json';
@@ -81,39 +82,6 @@ interface UploadFile {
   uploadTimestamp: number
 }
 
-const isResponseError = (response: Response) => {
-  return response.status < 200 || response.status >= 400;
-};
-
-const throwOnResponseError = async (response: Response) => {
-  if (isResponseError(response)) {
-    throw new Error(`Error at '${response.url}': ${await response.text()}`);
-  }
-};
-
-const get = async <T>(url: string, headers: HeadersInit = {}): Promise<T> => {
-  headers = {
-    'Accept': 'application/json',
-    ...headers
-  };
-  const response = await fetch(url, {headers});
-  await throwOnResponseError(response);
-  return response.json() as Promise<T>;
-};
-const post = async <OutputT>(url: string, body: BodyInit, headers: HeadersInit = {}): Promise<OutputT> => {
-  headers = {
-    'Content-Type': 'application/json',
-    ...headers
-  };
-  const response = await fetch(url, {
-    method: 'POST',
-    body,
-    headers,
-  });
-  await throwOnResponseError(response);
-  return response.json() as Promise<OutputT>;
-};
-
 export const getCredentials = async (credentialsDir: string = './'): Promise<Credentials> => {
   return JSON.parse((await readFile(path.join(credentialsDir, credentialsFile))).toString());
 };
@@ -174,7 +142,7 @@ export class B2Client {
     }
     if (fileOpts.data) {
       for (const key in fileOpts.data) {
-        headers[`X-Bz-Info-${key}`] = fileOpts.data[key];
+        headers[`X-Bz-Info-${key}`] = encodeURIComponent(fileOpts.data[key]);
       }
     }
     return post(uploadUrl.uploadUrl, fileBuffer, headers);

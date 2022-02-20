@@ -2,11 +2,11 @@ import path from 'path';
 import url from 'url';
 import { Command } from 'commander';
 import 'dotenv/config';
+import { build } from 'esbuild';
 import scrape, { syncImageDir } from './lib/scrape';
 import { authenticate, setCredentials, getAuthenticatedClient } from './lib/b2';
 import { initKv } from './lib/kv';
 import defaultData from './defaultData';
-import { build } from 'esbuild';
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,7 +37,10 @@ program
   .description('Scrape Instagram for new images with the given hashtag')
   .action(async (hashtag: string) => {
     try {
-      await scrape(hashtag, wranglerConfig);
+      if (process.env.INSTAGRAM_SESSION_ID === undefined) {
+        throw new Error('INSTAGRAM_SESSION_ID is not defined!');
+      }
+      await scrape(hashtag, process.env.INSTAGRAM_SESSION_ID, wranglerConfig);
     } catch (e) {
       console.error(e);
     }

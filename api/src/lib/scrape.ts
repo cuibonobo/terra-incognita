@@ -1,28 +1,12 @@
 /// <reference types="../types" />
 import path from 'path';
-import Scraper from 'scraper-instagram';
 import fetch from 'node-fetch';
 import { writeFile, readDir, stat, mkTempDir, rm } from './fs';
+import { HashtagImage, getHashtagImages } from './instagram';
 import { getAuthenticatedClient } from './b2';
 import { getWranglerKv, setMiniflareKv, setWranglerKv } from './kv';
 
 const bucketDir = 'images';
-
-interface HashtagImage {
-  shortcode: string,
-  caption: string[],
-  comments: number,
-  likes: number,
-  thumbnail: string,
-  timestamp: number,
-  filePath?: string
-}
-
-const getLatestHashtagImages = async (hashtag: string): Promise<HashtagImage[]> => {
-  const client = new Scraper();
-  const result = await client.getHashtag(hashtag);
-  return result.lastPosts;
-};
 
 const downloadImage = async (url: string, destPath: string): Promise<void> => {
   const response = await fetch(url);
@@ -116,13 +100,13 @@ export const syncImageDir = async (imageDir: string, startIndex: number = 0, cre
   return [imageCounter, errors];
 };
 
-const scrape = async (imgHashtag: string, wranglerConfigPath: string): Promise<void> => {
+const scrape = async (imgHashtag: string, instagramSessionId: string, wranglerConfigPath: string): Promise<void> => {
   const destDir = await mkTempDir();
   const currentIdx = await getWranglerKv('DATA', 'totalImages') as number;
   let images: HashtagImage[] = [];
   try {
     console.log(`Getting images for #${imgHashtag}...`);
-    images = await getLatestHashtagImages(imgHashtag);
+    images = await getHashtagImages(imgHashtag, instagramSessionId);
   } catch (e) {
     console.error(`Couldn't get #${imgHashtag} data: ${e}`);
     return;

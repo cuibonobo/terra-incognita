@@ -29,7 +29,6 @@
     "typescript": "^4.5.2"
   },
   "dependencies": {
-    "itty-router": "^2.4.10",
-    "scraper-instagram": "^1.0.17"
+    "itty-router": "^2.4.10"
   }
 }
