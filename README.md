@@ -191,4 +191,7 @@ Split the repo into an `app` and `api` directory so that I can create different 
 ---
 Publish the worker with GitHub Actions whenever there are changes to the `./api` subdirectory. Struggled a lot with this step because [existing actions don't support newer versions of Node](https://github.com/cloudflare/wrangler-action/pull/56).
 
-[3 hours]
+---
+Added feature to allow uploaded files to have different names from the original file.
+
+[4 hours]

@@ -12,7 +12,7 @@ import path from 'path';
 import crypto from 'crypto';
 import { escape } from 'querystring';
 import fetch, { BodyInit, HeadersInit, Response } from 'node-fetch';
-import { readFile, writeFile } from './fs';
+import { readFile, writeFile, stat } from './fs';
 
 const credentialsFile = 'credentials.json';
 
@@ -53,6 +53,12 @@ interface UploadUrl {
   bucketId: string,
   uploadUrl: string,
   authorizationToken: string
+}
+
+interface UploadFileOpts {
+  filePath: string,
+  timestamp?: number,
+  destName?: string
 }
 
 interface UploadFile {
@@ -146,19 +152,31 @@ export class B2Client {
    * @param { string = this.credentials.allowed.bucketId}  bucketId
    * @returns {Promise<{uploads: UploadFile[], errors: string[]}>}
    */
-  uploadFile = async (filePath: string | string[], destFolder: string = '', bucketId: string = this.credentials.allowed.bucketId): Promise<{uploads: UploadFile[], errors: string[]}> => {
-    const filePaths: string[] = typeof filePath === 'string' ? [filePath] : filePath;
+  uploadFile = async (filePath: string | string[] | UploadFileOpts | UploadFileOpts[], destFolder: string = '', bucketId: string = this.credentials.allowed.bucketId): Promise<{uploads: UploadFile[], errors: string[]}> => {
+    const filePaths: (string | UploadFileOpts)[] = Array.isArray(filePath) ? filePath : [filePath];
+    if (filePaths.length === 0) {
+      return {
+        uploads: [],
+        errors: []
+      };
+    }
+    const fileOpts: UploadFileOpts[] = filePaths.map((filePath) => {
+      if (typeof filePath === 'string') {
+        return {filePath};
+      }
+      return filePath;
+    });
     const uploadUrl: UploadUrl = await this.getUploadUrl(bucketId);
     const uploads: UploadFile[] = [];
     const errors: string[] = [];
-    for (const file of filePaths) {
-      const absPath: string = path.resolve(file);
+    for (const fileOpt of fileOpts) {
+      const absPath: string = path.resolve(fileOpt.filePath);
       try {
         const fileBuffer: Buffer = await readFile(absPath);
-        const upload = await this._uploadFile(uploadUrl, this._getUploadName(absPath, destFolder), fileBuffer);
+        const upload = await this._uploadFile(uploadUrl, fileOpt, fileBuffer, destFolder);
         uploads.push(upload);
       } catch(e) {
-        errors.push(`Couldn't upload ${file}: ${e}`);
+        errors.push(`Couldn't upload ${fileOpt.filePath}: ${e}`);
       }
     }
     return {uploads, errors};
@@ -173,24 +191,30 @@ export class B2Client {
     return post(this._getOperationUrl('b2_get_upload_url'), JSON.stringify({bucketId}), this._getHeaders());
   };
 
-  _uploadFile = async (uploadUrl: UploadUrl, uploadName: string, fileBuffer: Buffer): Promise<UploadFile> => {
-    return post(uploadUrl.uploadUrl, fileBuffer, {
+  _uploadFile = async (uploadUrl: UploadUrl, fileOpts: UploadFileOpts, fileBuffer: Buffer, destFolder: string = ''): Promise<UploadFile> => {
+    const headers: HeadersInit = {
       'Authorization': uploadUrl.authorizationToken,
-      'X-Bz-File-Name': uploadName,
+      'X-Bz-File-Name': this._getUploadName(fileOpts, destFolder),
       'Content-Type': 'b2/x-auto',
       'Content-Length': Buffer.byteLength(fileBuffer).toString(),
-      'X-Bz-Content-Sha1': this._getSha1(fileBuffer)
-    });
+      'X-Bz-Content-Sha1': this._getSha1(fileBuffer),
+      'X-Bz-Info-src_last_modified_millis': fileOpts.timestamp ? fileOpts.timestamp.toString() : (await stat(path.resolve(fileOpts.filePath))).mtimeMs.toString()
+    };
+    if (fileOpts.destName) {
+      headers['X-Bz-Info-original-name'] = path.basename(fileOpts.filePath);
+    }
+    return post(uploadUrl.uploadUrl, fileBuffer, headers);
   };
 
   _getSha1 = (fileBuffer: Buffer): string => {
     return crypto.createHash('sha1').update(fileBuffer).digest('hex');
   };
 
-  _getUploadName = (filePath: string, destFolder: string = ''): string => {
+  _getUploadName = (fileOpts: UploadFileOpts, destFolder: string = ''): string => {
     // remove start and end slashes
     destFolder = destFolder.split('/').filter(x => x).join('/');
-    return destFolder ? escape(destFolder + '/' + path.basename(filePath)) : path.basename(filePath);
+    const uploadName = fileOpts.destName ? fileOpts.destName : fileOpts.filePath;
+    return destFolder ? escape(destFolder + '/' + path.basename(uploadName)) : path.basename(uploadName);
   };
 
   _getOperationUrl = (operation: string): string => {
