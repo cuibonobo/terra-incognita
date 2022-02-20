@@ -64,7 +64,7 @@ program
   .description('Initialize data to MiniFlare and Workers KV')
   .action(async () => {
     try {
-      const errors = await initKv(defaultData, path.join(__dirname, '../wrangler.toml'));
+      const errors = await initKv(await defaultData(), path.join(__dirname, '../wrangler.toml'));
       if (errors.length > 0) {
         for (const error of errors) {
           console.error(error);

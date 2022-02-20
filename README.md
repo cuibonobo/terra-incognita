@@ -199,4 +199,7 @@ Added feature to allow uploaded files to have different names from the original 
 ### 2022-02-20
 Made some code to sync all the existing images but using a number as the image name instead of the image shortcode from Instagram. This will allow me to display images by picking a random number instead of needing to look up the image names in an index. The original shortcode names are still saved to the upload metadata in case I need that information in the future. I'm also saving the modified date for all the images.
 
-[1 hour]
+---
+Added new functions for getting and setting values from Wrangler KV so that it would be possible to initialize the KV store without clobbering any existing KV data. This is important so that I don't lose the value for the total number of images in the bucket.
+
+[2 hours]
