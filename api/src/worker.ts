@@ -14,6 +14,14 @@ router.get('/imgSquareSize', async (request: Request, env: Bindings) => {
   return jsonifyResponse(await env.DATA.get('imgSquareSize'));
 });
 
+router.get('/totalImages', async (request: Request, env: Bindings) => {
+  return jsonifyResponse(await env.DATA.get('totalImages'));
+});
+
+router.get('/imgArray', async (request: Request, env: Bindings) => {
+  return jsonifyResponse(await env.DATA.get('imgArray'));
+});
+
 // 404 for everything else
 router.all('*', () => new Response('Not Found.', { status: 404 }));
 

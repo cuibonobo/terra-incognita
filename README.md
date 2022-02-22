@@ -213,3 +213,8 @@ Accounting for the Instagram page changes really kicked my butt. I had to write 
 Luckily I didn't have to recreate the entire library because I only needed to scrape the hashtag page, but this was still a setback that I wasn't expecting. Also, I now have to set an `INSTAGRAM_SESSION_ID` in my environment variables because the hashtag page is no longer accessible without logging in. It's very likely that Instagram is tailoring the images based on information in my account, so I will probably have to create a new Instagram account that's only used for scraping.
 
 [6 hours]
+
+### 2022-02-21
+I've switched the app to read from a randomly-generated number array stored in KV, so now the images won't change unless there's a change to the KV data. Exciting!
+
+[1 hour]

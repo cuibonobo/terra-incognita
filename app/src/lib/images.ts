@@ -1,19 +1,10 @@
 
 import { h } from 'preact';
 import { handleMediaFile, MediaFileHandlerData, MediaFileHandlerOptions } from 'image-process';
+import { getImgArray } from './api';
 
-const imagesBaseUrl = "https://terra-images.cuibonobo.com"
-const assetListUrl = `${imagesBaseUrl}/imageNames.json`;
+const imagesBaseUrl = 'https://terra-images.cuibonobo.com';
 
-// Durstenfeld shuffle taken from here: https://stackoverflow.com/a/12646864/2001558
-const shuffleArray = (array: any[]): any[] => {
-  const arr = array.slice();
-  for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-};
 export const getImageResizeOpts = (imgWidth: number, imgHeight: number, numImagesSqrt: number): Partial<MediaFileHandlerOptions> => {
   return {
     mimeType: 'image/jpeg',
@@ -36,10 +27,12 @@ const getResizedImage = async (url: string, options: Partial<MediaFileHandlerOpt
   const file = await getFileFromUrl(url);
   return await handleMediaFile(file, options);
 };
+const getIndexedName = (idx: number, imageExt: string = '.jpg', namePadding: number = 8): string => {
+  return String(idx).padStart(namePadding, '0') + imageExt;
+};
 const getImageUrls = async (): Promise<string[]> => {
-  const response = await fetch(assetListUrl);
-  const imageNames = shuffleArray(await response.json());
-  return imageNames.map((x: string) => (`${imagesBaseUrl}/${x}`));
+  const imgArray = await getImgArray();
+  return imgArray.map((n: number) => `${imagesBaseUrl}/${getIndexedName(n)}`);
 };
 export const getResizedImageUrls = async (numImagesSqrt: number, imgResizeOpts: Partial<MediaFileHandlerOptions>): Promise<string[]> => {
   const imageUrls = (await getImageUrls()).slice(0, Math.pow(numImagesSqrt, 2));

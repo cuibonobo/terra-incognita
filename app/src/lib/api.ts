@@ -60,4 +60,14 @@ export const getNumImagesSqrt = async (): Promise<number> => {
   return response as number;
 };
 
+export const getTotalImages = async (): Promise<number> => {
+  const response: unknown = await api.get('/totalImages');
+  return response as number;
+};
+
+export const getImgArray = async (): Promise<number[]> => {
+  const response: unknown = await api.get('/imgArray');
+  return response as number[];
+};
+
 export default api;
