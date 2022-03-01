@@ -218,3 +218,10 @@ Luckily I didn't have to recreate the entire library because I only needed to sc
 I've switched the app to read from a randomly-generated number array stored in KV, so now the images won't change unless there's a change to the KV data. Exciting!
 
 [1 hour]
+
+### 2022-02-28
+Spent some time commenting on the finalized design and then I integrated Tailwind CSS so that I could start adding styles and organizing the site into different pages. Once the pages were defined I realized I needed to break up the components differently and create a hook so that the image data would be easier to access from different pages.
+
+Next step is to create the slider controls and then wire up the controls to different API endpoints so that they will change the image. It might be better to start jumping in to realtime responses via Durable Objects instead of creating a REST API that might not be used in the final product.
+
+[3 hours]

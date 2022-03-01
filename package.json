@@ -33,6 +33,7 @@
   },
   "homepage": "https://github.com/cuibonobo/terra-incognita#readme",
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.2",
     "concurrently": "^7.0.0"
   }
 }

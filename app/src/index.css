@@ -1,13 +1,22 @@
-* {
-  margin: 0;
-  padding: 0;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#top-bar>nav>.active {
+  @apply font-semibold;
 }
-.main {
-  margin: 0 auto;
+
+@layer base {
+  body {
+    @apply text-lg;
+  }
 }
-.imageGrid {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  line-height: 0;
+
+@layer components {
+  .prose {
+    @apply max-w-6xl;
+  }
+  .container {
+    @apply px-4;
+  }
 }

@@ -1,4 +1,7 @@
-import Admin from './Admin';
+import About from './About';
 import Artwork from './Artwork';
+import Controls from './Controls';
+import Create from './Create';
+import Home from './Home';
 
-export { Admin, Artwork };
+export { About, Artwork, Controls, Create, Home };

@@ -6,7 +6,11 @@ const baseData: KvStore = {
     meta: {
       imgHashtag: "landscape",
       imgWidth: 1920.0,
-      imgHeight: 1080.0
+      imgHeight: 1080.0,
+      minNumImagesSqrt: 2,
+      maxNumImagesSqrt: 10,
+      minImgSquareSize: 2,
+      maxImgSquareSize: 25
     },
     numImagesSqrt: 5,
     imgSquareSize: 10,

@@ -2,7 +2,8 @@ import { h } from 'preact';
 import { useEffect, useState, useRef, useMemo } from 'preact/hooks';
 
 const Canvas = (props: {
-  images: string[], width: number, height: number, splitSize: number, pixelSize: number
+  images: string[], width: number, height: number, splitSize: number, pixelSize: number,
+  class?: string
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [drawCtx, setDrawCtx] = useState<CanvasRenderingContext2D | null>(null);
@@ -59,7 +60,7 @@ const Canvas = (props: {
   }, [canvasRef]);
 
   return (
-    <canvas width={props.width} height={props.height} ref={canvasRef}></canvas>
+    <canvas class={props.class} width={props.width} height={props.height} ref={canvasRef}></canvas>
   );
 };
 
