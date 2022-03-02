@@ -46,27 +46,27 @@ const api = {
 };
 
 export const getMeta = async (): Promise<Meta> => {
-  const response: unknown = await api.get('/meta');
+  const response: unknown = await api.get('/api/meta');
   return response as Meta;
 };
 
 export const getImgSquareSize = async (): Promise<number> => {
-  const response: unknown = await api.get('/imgSquareSize');
+  const response: unknown = await api.get('/api/imgSquareSize');
   return response as number;
 };
 
 export const getNumImagesSqrt = async (): Promise<number> => {
-  const response: unknown = await api.get('/numImagesSqrt');
+  const response: unknown = await api.get('/api/numImagesSqrt');
   return response as number;
 };
 
 export const getTotalImages = async (): Promise<number> => {
-  const response: unknown = await api.get('/totalImages');
+  const response: unknown = await api.get('/api/totalImages');
   return response as number;
 };
 
 export const getImgArray = async (): Promise<number[]> => {
-  const response: unknown = await api.get('/imgArray');
+  const response: unknown = await api.get('/api/imgArray');
   return response as number[];
 };
 

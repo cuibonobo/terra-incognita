@@ -2,23 +2,23 @@ import { Router } from 'itty-router';
 
 const router = Router();
 
-router.get('/meta', async (request: Request, env: Bindings) => {
+router.get('/api/meta', async (request: Request, env: Bindings) => {
   return jsonifyResponse(await env.DATA.get('meta'));
 });
 
-router.get('/numImagesSqrt', async (request: Request, env: Bindings) => {
+router.get('/api/numImagesSqrt', async (request: Request, env: Bindings) => {
   return jsonifyResponse(await env.DATA.get('numImagesSqrt'));
 });
 
-router.get('/imgSquareSize', async (request: Request, env: Bindings) => {
+router.get('/api/imgSquareSize', async (request: Request, env: Bindings) => {
   return jsonifyResponse(await env.DATA.get('imgSquareSize'));
 });
 
-router.get('/totalImages', async (request: Request, env: Bindings) => {
+router.get('/api/totalImages', async (request: Request, env: Bindings) => {
   return jsonifyResponse(await env.DATA.get('totalImages'));
 });
 
-router.get('/imgArray', async (request: Request, env: Bindings) => {
+router.get('/api/imgArray', async (request: Request, env: Bindings) => {
   return jsonifyResponse(await env.DATA.get('imgArray'));
 });
 
