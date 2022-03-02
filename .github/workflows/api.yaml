@@ -22,8 +22,10 @@ jobs:
         with:
           node-version: '16'
       
-      - run: cd api && npm install
-      - run: cd api && npx wrangler publish
+      - run: |
+          npm install
+          npm wrangler publish
         env:
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        working-directory: api

@@ -22,8 +22,10 @@ jobs:
         with:
           node-version: '16'
 
-      - run: cd app && npm install
-      - run: cd app && npm run build
+      - run: |
+          npm install
+          npm run build
+        working-directory: app
 
       - uses: sylwit/install-b2-cli-action@v1.0.0
         env:
@@ -31,4 +33,5 @@ jobs:
           B2_APPLICATION_KEY: ${{ secrets.B2_APPLICATION_KEY }}
 
       - name: deploy
-        run: b2 sync --delete --replaceNewer ./app/dist b2://terra-public/site
+        run: b2 sync --delete --replaceNewer ./dist b2://terra-public/site
+        working-directory: app
