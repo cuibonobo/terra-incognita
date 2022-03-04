@@ -1,13 +1,11 @@
 import { Router } from 'itty-router';
-import { apiRouter } from './routes';
+import { apiRouter, siteRouter } from './routes';
 
 const rootRouter = Router();
 
 // Set relative routes
 rootRouter.all('/api/*', apiRouter.handle);
-
-// 404 for everything else
-rootRouter.all('*', () => new Response('Not Found.', { status: 404 }));
+rootRouter.all('*', siteRouter.handle);
 
 const worker: ExportedHandler<Bindings> = {
   fetch: async (request: Request, env: Bindings) => {

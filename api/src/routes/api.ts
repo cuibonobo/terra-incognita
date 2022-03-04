@@ -22,6 +22,9 @@ apiRouter.get('/imgArray', async (request: Request, env: Bindings) => {
   return jsonifyResponse(await env.DATA.get('imgArray'));
 });
 
+// 404 for everything else
+apiRouter.all('*', () => jsonifyResponse({message: 'Not found'}, {status: 404}));
+
 const jsonifyResponse = (value: any, opts: ResponseInit = {}): Response => {
   if (!opts.headers) {
     opts.headers = {};
