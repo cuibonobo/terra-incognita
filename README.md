@@ -225,3 +225,10 @@ Spent some time commenting on the finalized design and then I integrated Tailwin
 Next step is to create the slider controls and then wire up the controls to different API endpoints so that they will change the image. It might be better to start jumping in to realtime responses via Durable Objects instead of creating a REST API that might not be used in the final product.
 
 [3 hours]
+
+### 2022-03-03
+I'm running into an issue where direct URLs like `/create` return a 404 on the production site, but work in my development environment. The culprit is that my Cloudflare Transform Rules redirect requests to `/` to the index page, but all other endpoints attempt to find their counterparts in the B2 storage.
+
+I saw that Transform Rules allow for regex so I decided to try one that would match against endpoints but wouldn't match against specific files (`^/(?:[^.]+)$`), but I found out later that regex rules only work for Business and Enterprise plans. My only path forward now is to modify my worker code so that it can serve both the API and my client code.
+
+[1 hour]
