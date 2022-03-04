@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { About, Artwork, Controls, Create, Home } from './pages';
+import { About, Artwork, Controls, Create, Error, Home } from './pages';
 
 const App = () => {
   return (
@@ -11,6 +11,7 @@ const App = () => {
         <Route path="/about" element={<About />} />
         <Route path="/controls" element={<Controls />} />
         <Route path="/artwork" element={<Artwork />} />
+        <Route path="*" element={<Error />} />
       </Routes>
     </Router>
   );
