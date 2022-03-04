@@ -1,50 +1,22 @@
 import { Router } from 'itty-router';
+import { apiRouter } from './routes';
 
-const router = Router();
+const rootRouter = Router();
 
-router.get('/api/meta', async (request: Request, env: Bindings) => {
-  return jsonifyResponse(await env.DATA.get('meta'));
-});
-
-router.get('/api/numImagesSqrt', async (request: Request, env: Bindings) => {
-  return jsonifyResponse(await env.DATA.get('numImagesSqrt'));
-});
-
-router.get('/api/imgSquareSize', async (request: Request, env: Bindings) => {
-  return jsonifyResponse(await env.DATA.get('imgSquareSize'));
-});
-
-router.get('/api/totalImages', async (request: Request, env: Bindings) => {
-  return jsonifyResponse(await env.DATA.get('totalImages'));
-});
-
-router.get('/api/imgArray', async (request: Request, env: Bindings) => {
-  return jsonifyResponse(await env.DATA.get('imgArray'));
-});
+// Set relative routes
+rootRouter.all('/api/*', apiRouter.handle);
 
 // 404 for everything else
-router.all('*', () => new Response('Not Found.', { status: 404 }));
+rootRouter.all('*', () => new Response('Not Found.', { status: 404 }));
 
 const worker: ExportedHandler<Bindings> = {
   fetch: async (request: Request, env: Bindings) => {
     try {
-      return router.handle(request, env);
+      return rootRouter.handle(request, env);
     } catch (e) {
       return new Response(`${e}`);
     }
   }
-};
-
-const jsonifyResponse = (value: any, opts: ResponseInit = {}): Response => {
-  if (!opts.headers) {
-    opts.headers = {};
-  }
-  opts.headers = {
-    ...opts.headers,
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-  };
-  return new Response(typeof(value) === 'string' ? value : JSON.stringify(value), opts);
 };
 
 export default worker;
