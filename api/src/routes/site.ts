@@ -4,7 +4,7 @@ import { Router } from 'itty-router';
 
 const BASE_URL =
   process.env.NODE_ENV == 'production'
-    ? 'https://f000.backblazeb2.com/file/terra-public/site'
+    ? 'https://terra-site.cuibonobo.com'
     : 'http://localhost:8000';
 // const CACHE_NAME = 'terra';
 
