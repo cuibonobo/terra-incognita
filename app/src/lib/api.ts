@@ -1,6 +1,6 @@
 const BASE_URL =
   process.env.NODE_ENV == 'production'
-    ? 'https://terra-incognita.haverstack.workers.dev'
+    ? 'https://terra.cuibonobo.com'
     : 'http://localhost:8787';
 
 export interface Meta {
@@ -10,7 +10,7 @@ export interface Meta {
 }
 
 const getUrl = (path: string): string => {
-  return new URL(path, BASE_URL).href;
+  return new URL(`/api${path}`, BASE_URL).href;
 };
 
 const isResponseError = (response: Response) => {
@@ -46,27 +46,27 @@ const api = {
 };
 
 export const getMeta = async (): Promise<Meta> => {
-  const response: unknown = await api.get('/api/meta');
+  const response: unknown = await api.get('/meta');
   return response as Meta;
 };
 
 export const getImgSquareSize = async (): Promise<number> => {
-  const response: unknown = await api.get('/api/imgSquareSize');
+  const response: unknown = await api.get('/imgSquareSize');
   return response as number;
 };
 
 export const getNumImagesSqrt = async (): Promise<number> => {
-  const response: unknown = await api.get('/api/numImagesSqrt');
+  const response: unknown = await api.get('/numImagesSqrt');
   return response as number;
 };
 
 export const getTotalImages = async (): Promise<number> => {
-  const response: unknown = await api.get('/api/totalImages');
+  const response: unknown = await api.get('/totalImages');
   return response as number;
 };
 
 export const getImgArray = async (): Promise<number[]> => {
-  const response: unknown = await api.get('/api/imgArray');
+  const response: unknown = await api.get('/imgArray');
   return response as number[];
 };
 
