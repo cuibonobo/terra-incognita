@@ -1,7 +1,7 @@
-
 import { useEffect, useState } from 'preact/hooks';
-import { getImgSquareSize, getMeta, getNumImagesSqrt, Meta } from '../lib/api';
+import { getImgSquareSize, getMeta, getNumImagesSqrt } from '../lib/api';
 import { getImageResizeOpts, getResizedImageUrls } from '../lib/images';
+import { Meta } from '../../../shared';
 
 const useImageData = () => {
   const [meta, setMeta] = useState<Meta | null>(null);

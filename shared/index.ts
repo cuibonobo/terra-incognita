@@ -1,5 +1,3 @@
-import crypto from 'crypto';
-
 export type JSONValue =
     | string
     | number
@@ -36,9 +34,17 @@ export const getNumArray = (minimum: number, maximum: number, length: number): n
 
 export const getRandomUniqueValue = (minimum: number, maximum: number, values: number[]) => {
   while (true) {
-    const candidate = crypto.randomInt(minimum, maximum);
+    const candidate = minimum + Math.floor(Math.random() * maximum);
     if (values.indexOf(candidate) < 0) {
       return candidate;
     }
   }
+};
+
+export const stringify = <T>(value: T, escapeQuotes: boolean = false) => {
+  let output = typeof(value) === "string" ? value : JSON.stringify(value);
+  if (escapeQuotes) {
+    output = JSON.stringify(output);
+  }
+  return output;
 };

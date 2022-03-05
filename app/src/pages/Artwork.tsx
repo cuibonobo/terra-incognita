@@ -1,31 +1,13 @@
 import { h } from 'preact';
-import { useImageData } from '../hooks';
 import { FullscreenPage } from '../layout';
-import { Canvas, Loading } from '../components';
+import { Artwork } from '../components';
 
-const Artwork = () => {
-  const {resizedImages, meta, numImagesSqrt, imgSquareSize} = useImageData();
-
-  if (meta === null || numImagesSqrt === null || resizedImages === null || imgSquareSize === null) {
-    return (
-      <FullscreenPage>
-        <Loading />
-      </FullscreenPage>
-    );
-  }
-
+const ArtworkPage = () => {
   return (
     <FullscreenPage>
-      <Canvas
-        images={resizedImages}
-        width={meta.imgWidth}
-        height={meta.imgHeight}
-        splitSize={imgSquareSize}
-        pixelSize={numImagesSqrt}
-        class='mx-auto'
-      />
+      <Artwork />
     </FullscreenPage>
   );
 };
 
-export default Artwork;
+export default ArtworkPage;

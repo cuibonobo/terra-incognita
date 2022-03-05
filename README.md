@@ -247,4 +247,9 @@ Finally, I refactored my app code to take advantage of the `<Outlet />` componen
 ### 2022-03-05
 Created a library for code shared between the frontend and the backend so that there wouldn't be a bunch of repeated code everywhere. With that I shared some common types and math functions and used those to create new API endpoints for updating KV data.
 
-[2 hours]
+---
+Went on a wild goose chase thinking that the Miniflare data wasn't being updated properly when I put in requests to the API. Turns out the Miniflare data could update just fine but I was sending garbage to the API, so nothing was behaving as expected. Ended up reorganizing some code while I figured out the bug.
+
+The artwork isn't updating in tandem yet, but I should figure that out soon.
+
+[4 hours]

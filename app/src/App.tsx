@@ -2,7 +2,7 @@ import { h } from 'preact';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ContainerRouter } from './layout';
 import { About, Create, Error, Home } from './routes';
-import { Artwork, Controls } from './pages';
+import { ArtworkPage, ControlsPage } from './pages';
 
 const App = () => {
   return (
@@ -14,8 +14,8 @@ const App = () => {
           <Route path="about" element={<About />} />
           <Route path="*" element={<Error />} />
         </Route>
-        <Route path="/artwork" element={<Artwork />} />
-        <Route path="/controls" element={<Controls />} />
+        <Route path="/artwork" element={<ArtworkPage />} />
+        <Route path="/controls" element={<ControlsPage />} />
       </Routes>
     </Router>
   );

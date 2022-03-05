@@ -1,24 +1,13 @@
 import { h } from 'preact';
 import { FullscreenPage } from '../layout';
-import { ImageReplacer, Loading } from '../components';
-import { useImageData } from '../hooks';
+import { Controls } from '../components';
 
-const Controls = () => {
-  const {resizedImages} = useImageData();
-
-  if (resizedImages === null) {
-    return (
-      <FullscreenPage>
-        <Loading />
-      </FullscreenPage>
-    );
-  }
-
+const ControlsPage = () => {
   return (
     <FullscreenPage>
-      <ImageReplacer resizedImageUrls={resizedImages} />
+      <Controls />
     </FullscreenPage>
   );
 };
 
-export default Controls;
+export default ControlsPage;

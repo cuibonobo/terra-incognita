@@ -23,16 +23,19 @@ const getFileFromUrl = async (url: string): Promise<File> => {
   const blob = await response.blob();
   return getFileFromBlob(blob, imgName);
 };
-const getResizedImage = async (url: string, options: Partial<MediaFileHandlerOptions>): Promise<MediaFileHandlerData> => {
+export const getResizedImage = async (url: string, options: Partial<MediaFileHandlerOptions>): Promise<MediaFileHandlerData> => {
   const file = await getFileFromUrl(url);
   return await handleMediaFile(file, options);
 };
 const getIndexedName = (idx: number, imageExt: string = '.jpg', namePadding: number = 8): string => {
   return String(idx).padStart(namePadding, '0') + imageExt;
 };
+export const getImageUrl = (imgNum: number): string => {
+  return `${imagesBaseUrl}/${getIndexedName(imgNum)}`;
+};
 const getImageUrls = async (): Promise<string[]> => {
   const imgArray = await getImgArray();
-  return imgArray.map((n: number) => `${imagesBaseUrl}/${getIndexedName(n)}`);
+  return imgArray.map(getImageUrl);
 };
 export const getResizedImageUrls = async (numImagesSqrt: number, imgResizeOpts: Partial<MediaFileHandlerOptions>): Promise<string[]> => {
   const imageUrls = (await getImageUrls()).slice(0, Math.pow(numImagesSqrt, 2));

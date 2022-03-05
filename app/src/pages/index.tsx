@@ -1,4 +1,4 @@
-import Artwork from './Artwork';
-import Controls from './Controls';
+import ArtworkPage from './Artwork';
+import ControlsPage from './Controls';
 
-export { Artwork, Controls };
+export { ArtworkPage, ControlsPage };

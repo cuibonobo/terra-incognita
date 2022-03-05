@@ -1,4 +1,4 @@
-import { JSONValue, Meta } from '../../../shared';
+import { Meta, stringify } from '../../../shared';
 
 const BASE_URL =
   process.env.NODE_ENV == 'production'
@@ -19,51 +19,66 @@ const throwOnResponseError = async (response: Response) => {
   }
 };
 
-const get = async (path: string): Promise<JSONValue> => {
+const get = async <T>(path: string): Promise<T> => {
   const response = await fetch(getUrl(path));
   await throwOnResponseError(response);
   return response.json();
 };
-const post = async (path: string, data: JSONValue): Promise<JSONValue> => {
+const httpDataMethod = async <InputT, OutputT>(method: string, path: string, data: InputT): Promise<OutputT> => {
   const response = await fetch(getUrl(path), {
-    method: 'POST',
-    body: JSON.stringify(data),
+    method,
+    body: stringify(data),
     headers: {
       'Content-Type': 'application/json',
     },
   });
   await throwOnResponseError(response);
-  return response.json();
+  const result = response.json();
+  return result;
+};
+const post = async <InputT, OutputT>(path: string, data: InputT): Promise<OutputT> => {
+  return httpDataMethod('POST', path, data);
+};
+const put = async <InputT, OutputT>(path: string, data: InputT): Promise<OutputT> => {
+  return httpDataMethod('PUT', path, data);
 };
 
 const api = {
   get,
   post,
+  put
 };
 
 export const getMeta = async (): Promise<Meta> => {
-  const response: unknown = await api.get('/meta');
-  return response as Meta;
+  return await api.get<Meta>('/meta');
 };
 
 export const getImgSquareSize = async (): Promise<number> => {
-  const response: unknown = await api.get('/imgSquareSize');
-  return response as number;
+  return api.get<number>('/imgSquareSize');
+};
+
+export const putImgSquareSize = async (imgSquareSize: number): Promise<number> => {
+  return api.put<number, number>('/imgSquareSize', imgSquareSize);
 };
 
 export const getNumImagesSqrt = async (): Promise<number> => {
-  const response: unknown = await api.get('/numImagesSqrt');
-  return response as number;
+  return api.get<number>('/numImagesSqrt');
+};
+
+export const putNumImagesSqrt = async (numImagesSqrt: number): Promise<number> => {
+  return api.put<number, number>('/numImagesSqrt', numImagesSqrt);
 };
 
 export const getTotalImages = async (): Promise<number> => {
-  const response: unknown = await api.get('/totalImages');
-  return response as number;
+  return api.get<number>('/totalImages');
 };
 
 export const getImgArray = async (): Promise<number[]> => {
-  const response: unknown = await api.get('/imgArray');
-  return response as number[];
+  return api.get<number[]>('/imgArray');
+};
+
+export const postImgArray = async (imgIndex: number): Promise<number> => {
+  return api.post<number, number>('/imgArray', imgIndex);
 };
 
 export default api;
