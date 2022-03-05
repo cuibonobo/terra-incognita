@@ -4,7 +4,7 @@ import { Router } from 'itty-router';
 // const CACHE_NAME = 'terra';
 
 const getBaseUrl = (env: Bindings): string => {
-  return env.ENVIRONMENT === 'production' ? 'https://terra-site.cuibonobo.com' : 'http://localhost:8000';
+  return env.ENVIRONMENT === 'production' ? 'https://f000.backblazeb2.com/file/terra-public/site' : 'http://localhost:8000';
 };
 
 const siteRouter = Router({ base: '/' });
