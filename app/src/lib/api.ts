@@ -1,13 +1,9 @@
+import { JSONValue, Meta } from '../../../shared';
+
 const BASE_URL =
   process.env.NODE_ENV == 'production'
     ? 'https://terra.cuibonobo.com'
     : 'http://localhost:8787';
-
-export interface Meta {
-  imgHashtag: string,
-  imgWidth: number,
-  imgHeight: number
-}
 
 const getUrl = (path: string): string => {
   return new URL(`/api${path}`, BASE_URL).href;

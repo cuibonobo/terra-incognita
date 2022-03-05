@@ -79,7 +79,7 @@ During our meeting Ron suggested that there be UI for eliminating images that th
 
 The biggest immediate challenge is that the render times need to come way down. It might be possible by drawing directly on a `canvas` element instead of generating thousands of DOM elements.
 
-[1 hour + 1 hour meeting]
+[2 hours]
 
 ### 2021-12-08
 Branching the current work to attempt a first pass at `canvas` rendering. I think I put off working on it for a while because I'm not familiar with `canvas` drawing at all.
@@ -234,7 +234,7 @@ I saw that Transform Rules allow for regex so I decided to try one that would ma
 [1 hour]
 
 ### 2022-03-04
-Redesigned the Cloudflare Worker code to be able to serve a React SPA. There are some examples on the web of how to serve a static site with Cloudflare Workers, but an SPA is unique in that most URLs return the index page for the site and the router on that page then updates the view to match the URL. It might be a good idea to write a blog post about this at some point so that others won't get stuck like I did.
+Redesigned the Cloudflare Worker code to be able to serve a React Single Page App (SPA). There are some examples on the web of how to serve a static site with Cloudflare Workers, but an SPA is unique in that most URLs return the index page for the site and the router on that page then updates the view to match the URL. It might be a good idea to write a blog post about this at some point so that others won't get stuck like I did.
 
 Something else that would be good to write about is a clear overview of how to serve a Cloudflare Workers site from a custom domain. The process involves creating a dummy `A`-record in your DNS settings so that the worker route can then take over the request, but the docs don't feel very clear about this.
 
@@ -243,3 +243,8 @@ Serving the HTML from my worker code meant that I needed to serve from different
 Finally, I refactored my app code to take advantage of the `<Outlet />` component from React Router. My hope is that this change will allow my requests for page content to be slightly smaller and that I can reuse some state across most of my pages.
 
 [4 hours]
+
+### 2022-03-05
+Created a library for code shared between the frontend and the backend so that there wouldn't be a bunch of repeated code everywhere. With that I shared some common types and math functions and used those to create new API endpoints for updating KV data.
+
+[2 hours]

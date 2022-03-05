@@ -1,6 +1,7 @@
 import { promisify } from 'util';
 import { exec } from 'child_process';
 import { Miniflare } from 'miniflare';
+import { JSONValue } from '../../../shared';
 
 const execAsync = promisify(exec);
 
