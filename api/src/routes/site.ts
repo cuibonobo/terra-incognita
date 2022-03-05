@@ -1,7 +1,6 @@
 import { Router } from 'itty-router';
 
-// TODO: Leaving caching off until the code is more mature
-// const CACHE_NAME = 'terra';
+const CACHE_NAME = 'terra';
 
 const getBaseUrl = (env: Bindings): string => {
   return env.ENVIRONMENT === 'production' ? 'https://f000.backblazeb2.com/file/terra-public/site' : 'http://localhost:8000';
@@ -11,11 +10,11 @@ const siteRouter = Router({ base: '/' });
 
 siteRouter.get('*', async (request: Request, env: Bindings) => {
   // Return a cached response if we have one
-  // const cache = await caches.open(CACHE_NAME);
-  // const cachedResponse = await cache.match(request);
-  // if (cachedResponse) {
-  //   return cachedResponse;
-  // }
+  const cache = await caches.open(CACHE_NAME);
+  const cachedResponse = await cache.match(request);
+  if (cachedResponse) {
+    return cachedResponse;
+  }
   // If the path is not a filename, redirect if the path ends in a slash, and
   // use 'index.html' for all other paths
   const parsedUrl = new URL(request.url);
@@ -37,9 +36,9 @@ siteRouter.get('*', async (request: Request, env: Bindings) => {
     }
   });
   // Cache the response if it wasn't an error
-  // if (response.status < 400) {
-  //   await cache.put(request, response);
-  // }
+  if (response.status < 400) {
+    await cache.put(request, response);
+  }
   return response;
 });
 
