@@ -13,6 +13,10 @@ kv_namespaces = [
   { binding = "DATA", id = "b0dd6f3a041e4f48939e47e900f42a9c" }
 ]
 
+[env.production]
+zone_id = "02ca717d690fc02e1f07bcc9b0806928"
+route = "terra.cuibonobo.com/*"
+
 [build]
 command = "npm run build"
 
