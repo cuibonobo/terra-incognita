@@ -1,31 +1,28 @@
 import { h } from 'preact';
 import { useImageData } from '../hooks';
-import { FullscreenPage } from '../layout';
-import { Canvas, Loading } from '../components';
+import { Canvas, ImageReplacer, Loading } from '../components';
 
-const Artwork = () => {
+const Create = () => {
   const {resizedImages, meta, numImagesSqrt, imgSquareSize} = useImageData();
 
   if (meta === null || numImagesSqrt === null || resizedImages === null || imgSquareSize === null) {
     return (
-      <FullscreenPage>
-        <Loading />
-      </FullscreenPage>
+      <Loading />
     );
   }
-
   return (
-    <FullscreenPage>
+    <div class='mx-auto flex flex-col'>
       <Canvas
+        class='w-full'
         images={resizedImages}
         width={meta.imgWidth}
         height={meta.imgHeight}
         splitSize={imgSquareSize}
         pixelSize={numImagesSqrt}
-        class='mx-auto'
       />
-    </FullscreenPage>
+      <ImageReplacer resizedImageUrls={resizedImages} />
+    </div>
   );
 };
 
-export default Artwork;
+export default Create;

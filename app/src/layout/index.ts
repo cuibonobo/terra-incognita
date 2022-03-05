@@ -1,3 +1,4 @@
-import Base from './Base';
+import ContainerRouter from "./ContainerRouter";
+import FullscreenPage from "./FullscreenPage";
 
-export { Base };
+export { ContainerRouter, FullscreenPage };

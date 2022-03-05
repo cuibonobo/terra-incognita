@@ -1,6 +1,6 @@
 import { h } from 'preact';
-import { Base } from '../layout';
-import { ImageReplacer } from '../components';
+import { FullscreenPage } from '../layout';
+import { ImageReplacer, Loading } from '../components';
 import { useImageData } from '../hooks';
 
 const Controls = () => {
@@ -8,18 +8,16 @@ const Controls = () => {
 
   if (resizedImages === null) {
     return (
-      <Base>
-        <div class='mx-auto'>
-          Loading...
-        </div>
-      </Base>
+      <FullscreenPage>
+        <Loading />
+      </FullscreenPage>
     );
   }
 
   return (
-    <Base>
+    <FullscreenPage>
       <ImageReplacer resizedImageUrls={resizedImages} />
-    </Base>
+    </FullscreenPage>
   );
 };
 

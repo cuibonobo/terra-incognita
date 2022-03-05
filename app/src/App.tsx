@@ -1,17 +1,21 @@
 import { h } from 'preact';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { About, Artwork, Controls, Create, Error, Home } from './pages';
+import { ContainerRouter } from './layout';
+import { About, Create, Error, Home } from './routes';
+import { Artwork, Controls } from './pages';
 
 const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/create" element={<Create />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/controls" element={<Controls />} />
+        <Route path="/" element={<ContainerRouter />}>
+          <Route index element={<Home />} />
+          <Route path="create" element={<Create />} />
+          <Route path="about" element={<About />} />
+          <Route path="*" element={<Error />} />
+        </Route>
         <Route path="/artwork" element={<Artwork />} />
-        <Route path="*" element={<Error />} />
+        <Route path="/controls" element={<Controls />} />
       </Routes>
     </Router>
   );
