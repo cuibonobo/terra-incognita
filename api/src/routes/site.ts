@@ -37,7 +37,7 @@ siteRouter.get('*', async (request: Request, env: Bindings) => {
   });
   // Cache the response if it wasn't an error
   if (response.status < 400) {
-    await cache.put(request, response);
+    await cache.put(request, response.clone());
   }
   return response;
 });
