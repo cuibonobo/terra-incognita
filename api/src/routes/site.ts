@@ -1,12 +1,11 @@
 import { Router } from 'itty-router';
 
 // TODO: Leaving caching off until the code is more mature
-
-const BASE_URL =
-  process.env.NODE_ENV == 'production'
-    ? 'https://terra-site.cuibonobo.com'
-    : 'http://localhost:8000';
 // const CACHE_NAME = 'terra';
+
+const getBaseUrl = (env: Bindings): string => {
+  return env.ENVIRONMENT === 'production' ? 'https://terra-site.cuibonobo.com' : 'http://localhost:8000';
+};
 
 const siteRouter = Router({ base: '/' });
 
@@ -28,7 +27,7 @@ siteRouter.get('*', async (request: Request, env: Bindings) => {
     path = '/index.html';
   }
   // Fetch the file from B2 storage
-  const b2Response = await fetch(`${BASE_URL}${path}`);
+  const b2Response = await fetch(`${getBaseUrl(env)}${path}`);
   // Create the response object
   const response = new Response(b2Response.body, {
     ...b2Response,

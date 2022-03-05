@@ -8,7 +8,7 @@
     "cli": "node --loader ts-node/esm --experimental-vm-modules --es-module-specifier-resolution=node --no-warnings ./src/cli.ts",
     "publish": "wrangler publish",
     "scrape": "npm run cli -- scrape landscape",
-    "start": "npm run clean && miniflare --live-reload --debug",
+    "start": "npm run clean && miniflare --live-reload --debug --binding ENVIRONMENT=development",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
