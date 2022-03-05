@@ -14,6 +14,7 @@ import { escape } from 'querystring';
 import { HeadersInit } from 'node-fetch';
 import { post } from './fetch';
 import { readFile, writeFile, stat } from './fs';
+import { JSONValue } from '../../../shared';
 
 const credentialsFile = 'credentials.json';
 

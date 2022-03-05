@@ -1,7 +1,7 @@
 import { promisify } from 'util';
 import { exec } from 'child_process';
-import { Miniflare } from 'miniflare';
-import { JSONValue } from '../../../shared';
+import { JSONValue, stringify } from '../../../shared';
+import { setMiniflareKv } from './miniflare';
 
 const execAsync = promisify(exec);
 
@@ -10,14 +10,6 @@ export interface KvStore {
     [key: string]: JSONValue | (() => Promise<JSONValue>)
   }
 }
-
-const stringify = (value: JSONValue, escapeQuotes: boolean = false) => {
-  let output = typeof(value) === "string" ? value : JSON.stringify(value);
-  if (escapeQuotes) {
-    output = JSON.stringify(output);
-  }
-  return output;
-};
 
 const execThrow = async (command: string): Promise<string> => {
   const {stdout, stderr} = await execAsync(command);
@@ -47,28 +39,14 @@ export const setWranglerKv = async (namespace: string, key: string, value: JSONV
   await execThrow(`wrangler kv:key put --binding=${namespace} "${key}" "${stringify(value, true)}"`);
 };
 
-export const setMiniflareKv = async (namespace: string, key: string, value: JSONValue, wranglerConfigPath: string): Promise<void> => {
-  const mf = new Miniflare({
-    wranglerConfigPath: wranglerConfigPath,
-    modules: true
-  });
-  const kvNamespace = await mf.getKVNamespace(namespace);
-  return kvNamespace.put(key, stringify(value));
-};
-
 export const initKv = async (kvData: KvStore, wranglerConfigPath: string): Promise<string[]> => {
-  const mf = new Miniflare({
-    wranglerConfigPath: wranglerConfigPath,
-    modules: true
-  });
   const errors: string[] = [];
   for (const namespace of Object.keys(kvData)) {
-    const kvNamespace = await mf.getKVNamespace(namespace);
     const nsData = kvData[namespace];
     for (const key of Object.keys(nsData)) {
       const value = nsData[key];
       try {
-        await kvNamespace.put(key, stringify(await getKvValue(value)));
+        await setMiniflareKv(namespace, key, value, wranglerConfigPath);
       } catch (e) {
         errors.push(`Couldn't set '${namespace}:${key}' to MiniFlare: ${e}`);
       }

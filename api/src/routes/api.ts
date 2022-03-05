@@ -1,14 +1,14 @@
 import { Router } from 'itty-router';
-import { Meta, getRandomUniqueValue } from '../../../shared';
+import { Meta, getRandomUniqueValue, stringify } from '../../../shared';
 
 const apiRouter = Router({ base: '/api' });
 
 apiRouter.get('/meta', async (request: Request, env: Bindings) => {
-  return jsonifyResponse(await env.DATA.get('meta'));
+  return jsonifyResponse(await getKvData('meta', env));
 });
 
 apiRouter.get('/numImagesSqrt', async (request: Request, env: Bindings) => {
-  return jsonifyResponse(await env.DATA.get('numImagesSqrt'));
+  return jsonifyResponse(await getKvData('numImagesSqrt', env));
 });
 
 apiRouter.put('/numImagesSqrt', async (request: Request, env: Bindings) => {
@@ -24,8 +24,12 @@ apiRouter.put('/numImagesSqrt', async (request: Request, env: Bindings) => {
   return jsonifyResponse(numImagesSqrt);
 });
 
+apiRouter.options('/numImagesSqrt', (request: Request, env: Bindings) => {
+  return optionsResponse('OPTIONS, GET, PUT');
+});
+
 apiRouter.get('/imgSquareSize', async (request: Request, env: Bindings) => {
-  return jsonifyResponse(await env.DATA.get('imgSquareSize'));
+  return jsonifyResponse(await getKvData('imgSquareSize', env));
 });
 
 apiRouter.put('/imgSquareSize', async (request: Request, env: Bindings) => {
@@ -38,12 +42,16 @@ apiRouter.put('/imgSquareSize', async (request: Request, env: Bindings) => {
   return jsonifyResponse(imgSquareSize);
 });
 
+apiRouter.options('/imgSquareSize', (request: Request, env: Bindings) => {
+  return optionsResponse('OPTIONS, GET, PUT');
+});
+
 apiRouter.get('/totalImages', async (request: Request, env: Bindings) => {
-  return jsonifyResponse(await env.DATA.get('totalImages'));
+  return jsonifyResponse(await getKvData('totalImages', env));
 });
 
 apiRouter.get('/imgArray', async (request: Request, env: Bindings) => {
-  return jsonifyResponse(await env.DATA.get('imgArray'));
+  return jsonifyResponse(await getKvData('imgArray', env));
 });
 
 apiRouter.post('/imgArray', async (request: Request, env: Bindings) => {
@@ -55,9 +63,14 @@ apiRouter.post('/imgArray', async (request: Request, env: Bindings) => {
   }
   const totalImages: number = await getKvData<number>('totalImages', env);
   const imgArray: number[] = await getKvData<number[]>('imgArray', env);
-  imgArray[arrayIdx] = getRandomUniqueValue(0, totalImages, imgArray);
+  const newImage = getRandomUniqueValue(0, totalImages, imgArray);
+  imgArray[arrayIdx] = newImage;
   await putKvData('imgArray', imgArray, env);
-  return jsonifyResponse(imgArray);
+  return jsonifyResponse(newImage);
+});
+
+apiRouter.options('/imgArray', (request: Request, env: Bindings) => {
+  return optionsResponse('OPTIONS, GET, POST');
 });
 
 // 404 for everything else
@@ -72,7 +85,7 @@ const getKvData = async <T>(key: string, env: Bindings): Promise<T> => {
 };
 
 const putKvData = async <T>(key: string, value: T, env: Bindings): Promise<void> => {
-  return await env.DATA.put(key, JSON.stringify(value));
+  return await env.DATA.put(key, stringify(value));
 };
 
 const jsonifyResponse = (value: any, opts: ResponseInit = {}): Response => {
@@ -84,11 +97,20 @@ const jsonifyResponse = (value: any, opts: ResponseInit = {}): Response => {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
   };
-  return new Response(typeof(value) === 'string' ? value : JSON.stringify(value), opts);
+  return new Response(stringify(value), opts);
 };
 
 const validationError = (message: string): Response => {
   return jsonifyResponse({message}, {status: 422});
+};
+
+const optionsResponse = (options: string = '*'): Response => {
+  return new Response(undefined, {status: 204, headers: {
+    'Allow': options,
+    'Content-Type': 'text/plain',
+    'Access-Control-Allow-Headers': '*',
+    'Access-Control-Allow-Origin': '*'
+  }});
 };
 
 export default apiRouter;

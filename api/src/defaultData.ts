@@ -1,5 +1,5 @@
 import { KvStore, getWranglerKv, getKvValue } from './lib/kv';
-import { getNumArray } from '../../shared'
+import { getNumArray } from '../../shared';
 
 const maxNumImagesSqrt = 10;
 

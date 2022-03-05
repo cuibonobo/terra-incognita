@@ -4,7 +4,8 @@ import fetch from 'node-fetch';
 import { writeFile, readDir, stat, mkTempDir, rm } from './fs';
 import { HashtagImage, getHashtagImages } from './instagram';
 import { getAuthenticatedClient } from './b2';
-import { getWranglerKv, setMiniflareKv, setWranglerKv } from './kv';
+import { getWranglerKv, setWranglerKv } from './kv';
+import { setMiniflareKv } from './miniflare';
 
 const bucketDir = 'images';
 
@@ -100,7 +101,7 @@ export const syncImageDir = async (imageDir: string, startIndex: number = 0, cre
   return [imageCounter, errors];
 };
 
-const scrape = async (imgHashtag: string, instagramSessionId: string, wranglerConfigPath: string): Promise<void> => {
+const scrape = async (imgHashtag: string, instagramSessionId: string, wranglerConfigPath?: string): Promise<void> => {
   const destDir = await mkTempDir();
   const currentIdx = await getWranglerKv('DATA', 'totalImages') as number;
   let images: HashtagImage[] = [];
