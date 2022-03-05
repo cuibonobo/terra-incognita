@@ -6,6 +6,7 @@ const Canvas = (props: {
   class?: string
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [imageUrls, setImageUrls] = useState<string[]>(props.images)
   const [drawCtx, setDrawCtx] = useState<CanvasRenderingContext2D | null>(null);
 
   const getImage = (url: string): Promise<HTMLImageElement> => {
@@ -29,7 +30,6 @@ const Canvas = (props: {
     const h = props.height / props.pixelSize;
     const s = props.splitSize;
     const p = props.pixelSize;
-    const images = props.images;
     if (s > w || s > h) {
       throw new Error("Square size exceeds dimensions of the image!");
     }
@@ -37,8 +37,8 @@ const Canvas = (props: {
     const xMax = Math.floor(w / s);
     const pixelWidth = s * p;
     
-    for (let imgIdx = 0; imgIdx < images.length; imgIdx++) {
-      const image = await getImage(images[imgIdx]);
+    for (let imgIdx = 0; imgIdx < imageUrls.length; imgIdx++) {
+      const image = await getImage(imageUrls[imgIdx]);
       const [imgX, imgY] = [imgIdx % p, Math.floor(imgIdx / p)];
       for (let x = 0; x < xMax; x++) {
         for (let y = 0; y < yMax; y++) {
@@ -47,7 +47,7 @@ const Canvas = (props: {
         }
       }
     }
-  }, [drawCtx]);
+  }, [drawCtx, imageUrls]);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -58,6 +58,13 @@ const Canvas = (props: {
       }
     }
   }, [canvasRef]);
+
+  useEffect(() => {
+    if (!drawCtx) {
+      return;
+    }
+    setImageUrls(props.images);
+  }, [props.images]);
 
   return (
     <canvas class={props.class} width={props.width} height={props.height} ref={canvasRef}></canvas>
