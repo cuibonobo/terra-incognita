@@ -232,3 +232,14 @@ I'm running into an issue where direct URLs like `/create` return a 404 on the p
 I saw that Transform Rules allow for regex so I decided to try one that would match against endpoints but wouldn't match against specific files (`^/(?:[^.]+)$`), but I found out later that regex rules only work for Business and Enterprise plans. My only path forward now is to modify my worker code so that it can serve both the API and my client code.
 
 [1 hour]
+
+### 2022-03-04
+Redesigned the Cloudflare Worker code to be able to serve a React SPA. There are some examples on the web of how to serve a static site with Cloudflare Workers, but an SPA is unique in that most URLs return the index page for the site and the router on that page then updates the view to match the URL. It might be a good idea to write a blog post about this at some point so that others won't get stuck like I did.
+
+Something else that would be good to write about is a clear overview of how to serve a Cloudflare Workers site from a custom domain. The process involves creating a dummy `A`-record in your DNS settings so that the worker route can then take over the request, but the docs don't feel very clear about this.
+
+Serving the HTML from my worker code meant that I needed to serve from different URLs when running on my development machine versus running in production. This led me to discover that `process.env.NODE_ENV` doesn't work in worker code. Figuring out how to separate my environment into development and production also took a long time.
+
+Finally, I refactored my app code to take advantage of the `<Outlet />` component from React Router. My hope is that this change will allow my requests for page content to be slightly smaller and that I can reuse some state across most of my pages.
+
+[4 hours]
