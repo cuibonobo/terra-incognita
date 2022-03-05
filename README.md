@@ -250,6 +250,7 @@ Created a library for code shared between the frontend and the backend so that t
 ---
 Went on a wild goose chase thinking that the Miniflare data wasn't being updated properly when I put in requests to the API. Turns out the Miniflare data could update just fine but I was sending garbage to the API, so nothing was behaving as expected. Ended up reorganizing some code while I figured out the bug.
 
-The artwork isn't updating in tandem yet, but I should figure that out soon.
+---
+Added the sliders! Now the image will update based on user input. The next step is making this work across all users. I also need to find out how to disable the controls for a few seconds after every change. Right now scrubbing the controls causes a huge number of changes.
 
-[4 hours]
+[6 hours]

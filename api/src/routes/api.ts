@@ -106,8 +106,9 @@ const validationError = (message: string): Response => {
 
 const optionsResponse = (options: string = '*'): Response => {
   return new Response(undefined, {status: 204, headers: {
-    'Allow': options,
     'Content-Type': 'text/plain',
+    'Allow': options,
+    'Access-Control-Allow-Methods': options,
     'Access-Control-Allow-Headers': '*',
     'Access-Control-Allow-Origin': '*'
   }});

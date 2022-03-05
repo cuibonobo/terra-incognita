@@ -5,6 +5,9 @@ const Image = (props: {idx: number, src: string, touchHandler: (imgIndex: number
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const touchHandler = async () => {
+    if (isLoading) {
+      return;
+    }
     setIsLoading(true);
     await props.touchHandler(props.idx);
     setIsLoading(false);
@@ -12,7 +15,7 @@ const Image = (props: {idx: number, src: string, touchHandler: (imgIndex: number
 
   return (
     <div class="mx-auto" >
-      <img class={isLoading ? 'opacity-50' : ''} src={props.src} data-key={props.idx} onClick={() => touchHandler()} />
+      <img class={isLoading ? 'opacity-50' : ''} src={props.src} data-key={props.idx} onClick={touchHandler} />
     </div>
   );
 };

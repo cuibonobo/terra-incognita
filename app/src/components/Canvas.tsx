@@ -6,7 +6,9 @@ const Canvas = (props: {
   class?: string
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [imageUrls, setImageUrls] = useState<string[]>(props.images)
+  const [images, setImageUrls] = useState<string[]>(props.images);
+  const [splitSize, setSplitSize] = useState<number>(props.splitSize);
+  const [pixelSize, setPixelSize] = useState<number>(props.pixelSize);
   const [drawCtx, setDrawCtx] = useState<CanvasRenderingContext2D | null>(null);
 
   const getImage = (url: string): Promise<HTMLImageElement> => {
@@ -26,10 +28,10 @@ const Canvas = (props: {
     if (!drawCtx) {
       return;
     }
-    const w = props.width / props.pixelSize;
-    const h = props.height / props.pixelSize;
-    const s = props.splitSize;
-    const p = props.pixelSize;
+    const w = props.width / pixelSize;
+    const h = props.height / pixelSize;
+    const s = splitSize;
+    const p = pixelSize;
     if (s > w || s > h) {
       throw new Error("Square size exceeds dimensions of the image!");
     }
@@ -37,8 +39,8 @@ const Canvas = (props: {
     const xMax = Math.floor(w / s);
     const pixelWidth = s * p;
     
-    for (let imgIdx = 0; imgIdx < imageUrls.length; imgIdx++) {
-      const image = await getImage(imageUrls[imgIdx]);
+    for (let imgIdx = 0; imgIdx < images.length; imgIdx++) {
+      const image = await getImage(images[imgIdx]);
       const [imgX, imgY] = [imgIdx % p, Math.floor(imgIdx / p)];
       for (let x = 0; x < xMax; x++) {
         for (let y = 0; y < yMax; y++) {
@@ -47,7 +49,7 @@ const Canvas = (props: {
         }
       }
     }
-  }, [drawCtx, imageUrls]);
+  }, [drawCtx, images, splitSize, pixelSize]);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -65,6 +67,20 @@ const Canvas = (props: {
     }
     setImageUrls(props.images);
   }, [props.images]);
+
+  useEffect(() => {
+    if (!drawCtx) {
+      return;
+    }
+    setSplitSize(props.splitSize);
+  }, [props.splitSize]);
+
+  useEffect(() => {
+    if (!drawCtx) {
+      return;
+    }
+    setPixelSize(props.pixelSize);
+  }, [props.pixelSize]);
 
   return (
     <canvas class={props.class} width={props.width} height={props.height} ref={canvasRef}></canvas>

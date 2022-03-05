@@ -1,8 +1,8 @@
 import { h } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
-import { getImgSquareSize, getMeta, getNumImagesSqrt, postImgArray } from '../lib/api';
+import { getImgSquareSize, getMeta, getNumImagesSqrt, postImgArray, putImgSquareSize, putNumImagesSqrt } from '../lib/api';
 import { getImageResizeOpts, getResizedImageUrls, getImageUrl, getResizedImage } from '../lib/images';
-import { Canvas, ImageReplacer, Loading } from '../components';
+import { Canvas, ImageReplacer, Loading, Slider } from '../components';
 import { Meta } from '../../../shared';
 
 const Create = () => {
@@ -48,6 +48,21 @@ const Create = () => {
     setResizedImages(newResizedImages);
   };
 
+  const numImagesHandler = async (value: number) => {
+    if (value === numImagesSqrt) {
+      return;
+    }
+    const newNumImages = await putNumImagesSqrt(value);
+    setNumImagesSqrt(newNumImages);
+  };
+
+  const imgSquareSizeHandler = async (value: number) => {
+    if (value === imgSquareSize) {
+      return;
+    }
+    setImgSquareSize(await putImgSquareSize(value));
+  };
+
   return (
     <div class='mx-auto flex flex-col'>
       <Canvas
@@ -58,12 +73,14 @@ const Create = () => {
         splitSize={imgSquareSize}
         pixelSize={numImagesSqrt}
       />
-      <div>
+      <div class="mx-auto flex flex-col">
         <div>
-          Number of images
+          <div>Number of images</div>
+          <Slider min={meta.minNumImagesSqrt} max={meta.maxNumImagesSqrt} value={numImagesSqrt} setValue={numImagesHandler} />
         </div>
         <div>
-          Image square size
+          <div>Image square size</div>
+          <Slider min={meta.minImgSquareSize} max={meta.maxImgSquareSize} value={imgSquareSize} setValue={imgSquareSizeHandler} />
         </div>
         <ImageReplacer resizedImageUrls={resizedImages} touchHandler={touchHandler} />
       </div>
