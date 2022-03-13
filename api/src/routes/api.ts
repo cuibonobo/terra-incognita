@@ -85,7 +85,7 @@ const getKvData = async <T>(key: string, env: Bindings): Promise<T> => {
 };
 
 const putKvData = async <T>(key: string, value: T, env: Bindings): Promise<void> => {
-  return await env.DATA.put(key, stringify(value));
+  return env.DATA.put(key, stringify(value));
 };
 
 const jsonifyResponse = (value: any, opts: ResponseInit = {}): Response => {

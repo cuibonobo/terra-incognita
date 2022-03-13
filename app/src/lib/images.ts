@@ -25,7 +25,7 @@ const getFileFromUrl = async (url: string): Promise<File> => {
 };
 export const getResizedImage = async (url: string, options: Partial<MediaFileHandlerOptions>): Promise<MediaFileHandlerData> => {
   const file = await getFileFromUrl(url);
-  return await handleMediaFile(file, options);
+  return handleMediaFile(file, options);
 };
 const getIndexedName = (idx: number, imageExt: string = '.jpg', namePadding: number = 8): string => {
   return String(idx).padStart(namePadding, '0') + imageExt;

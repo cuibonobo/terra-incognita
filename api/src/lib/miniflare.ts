@@ -8,7 +8,7 @@ export const getMiniflareKvNamespace = async (namespace: string, wranglerConfigP
     wranglerConfigPath: wranglerConfigPath,
     modules: true
   });
-  return await mf.getKVNamespace(namespace);
+  return mf.getKVNamespace(namespace);
 }
 
 export const setMiniflareKv = async <T>(namespace: string, key: string, value: T, wranglerConfigPath: string = wranglerConfig): Promise<void> => {
@@ -18,5 +18,5 @@ export const setMiniflareKv = async <T>(namespace: string, key: string, value: T
 
 export const getMiniflareKv = async (namespace: string, key: string, wranglerConfigPath: string = wranglerConfig): Promise<string | null> => {
   const kvNamespace = await getMiniflareKvNamespace(namespace, wranglerConfigPath);
-  return await kvNamespace.get(key);
+  return kvNamespace.get(key);
 };
