@@ -256,6 +256,9 @@ Added the sliders! Now the image will update based on user input. The next step 
 [6 hours]
 
 ### 2022-03-13
-Added tick marks to the existing `Slider` components. Unfortunately I had to resort to some trickery because the 'correct' way of doing it with a `datalist` component is not supported in Firefox and has inconsistent UI in other browsers. 
+Added tick marks to the existing `Slider` components. Unfortunately I had to resort to some trickery because the 'correct' way of doing it with a `datalist` component is not supported in Firefox and has inconsistent UI in other browsers.
 
-[1 hour]
+---
+Changed how the APIs are accessed so that `localhost` isn't hard-coded in the codebase. This allows me to test the site from my phone on a local network.
+
+[2 hours]

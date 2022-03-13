@@ -1,7 +1,7 @@
 
 import { h } from 'preact';
 import { handleMediaFile, MediaFileHandlerData, MediaFileHandlerOptions } from 'image-process';
-import { getImgArray } from './api';
+import apiFactory from './api';
 
 const imagesBaseUrl = 'https://terra-images.cuibonobo.com';
 
@@ -34,7 +34,8 @@ export const getImageUrl = (imgNum: number): string => {
   return `${imagesBaseUrl}/${getIndexedName(imgNum)}`;
 };
 const getImageUrls = async (): Promise<string[]> => {
-  const imgArray = await getImgArray();
+  const api = apiFactory();
+  const imgArray = await api.getImgArray();
   return imgArray.map(getImageUrl);
 };
 export const getResizedImageUrls = async (numImagesSqrt: number, imgResizeOpts: Partial<MediaFileHandlerOptions>): Promise<string[]> => {

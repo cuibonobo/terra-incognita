@@ -1,6 +1,6 @@
 import { h, Fragment } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
-import { getImgSquareSize, getMeta, getNumImagesSqrt, postImgArray, putImgSquareSize, putNumImagesSqrt } from '../lib/api';
+import apiFactory from '../lib/api';
 import { getImageResizeOpts, getResizedImageUrls, getImageUrl, getResizedImage } from '../lib/images';
 import { Canvas, ImageReplacer, Loading, Slider } from '../components';
 import { Meta } from '../../../shared';
@@ -10,11 +10,12 @@ const Create = () => {
   const [numImagesSqrt, setNumImagesSqrt] = useState<number | null>(null);
   const [imgSquareSize, setImgSquareSize] = useState<number | null>(null);
   const [resizedImages, setResizedImages] = useState<string[] | null>(null);
+  const api = apiFactory();
 
   const loadData = async () => {
-    setMeta(await getMeta());
-    setNumImagesSqrt(await getNumImagesSqrt());
-    setImgSquareSize(await getImgSquareSize());
+    setMeta(await api.getMeta());
+    setNumImagesSqrt(await api.getNumImagesSqrt());
+    setImgSquareSize(await api.getImgSquareSize());
   };
 
   const loadImages = async () => {
@@ -40,7 +41,7 @@ const Create = () => {
   }
 
   const touchHandler = async (imgIndex: number) => {
-    const newImageNum = await postImgArray(imgIndex);
+    const newImageNum = await api.postImgArray(imgIndex);
     const newImageUrl = getImageUrl(newImageNum);
     const newResizedImage = await getResizedImage(newImageUrl, getImageResizeOpts(meta.imgWidth, meta.imgHeight, numImagesSqrt));
     const newResizedImages = [...resizedImages];
@@ -52,7 +53,7 @@ const Create = () => {
     if (value === numImagesSqrt) {
       return;
     }
-    const newNumImages = await putNumImagesSqrt(value);
+    const newNumImages = await api.putNumImagesSqrt(value);
     setNumImagesSqrt(newNumImages);
   };
 
@@ -60,7 +61,7 @@ const Create = () => {
     if (value === imgSquareSize) {
       return;
     }
-    setImgSquareSize(await putImgSquareSize(value));
+    setImgSquareSize(await api.putImgSquareSize(value));
   };
 
   return (
