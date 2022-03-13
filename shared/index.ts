@@ -41,6 +41,19 @@ export const getRandomUniqueValue = (minimum: number, maximum: number, values: n
   }
 };
 
+export const getRandomString = (length: number, prefix: string = '', characters?: string) => {
+  if (length < 0) {
+    throw new RangeError('Not defined for negative numbers!');
+  }
+  length = Math.floor(length);
+  characters = characters ? characters : '0123456789abcdefghjkmnpqrstvwxyz';
+  let output = '';
+  for (let i = 0; i < length; i++) {
+    output += characters[Math.floor(Math.random() * characters.length)]
+  }
+  return prefix + output;
+};
+
 export const stringify = <T>(value: T, escapeQuotes: boolean = false) => {
   let output = typeof(value) === "string" ? value : JSON.stringify(value);
   if (escapeQuotes) {

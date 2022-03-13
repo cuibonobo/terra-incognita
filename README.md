@@ -254,3 +254,8 @@ Went on a wild goose chase thinking that the Miniflare data wasn't being updated
 Added the sliders! Now the image will update based on user input. The next step is making this work across all users. I also need to find out how to disable the controls for a few seconds after every change. Right now scrubbing the controls causes a huge number of changes.
 
 [6 hours]
+
+### 2022-03-13
+Added tick marks to the existing `Slider` components. Unfortunately I had to resort to some trickery because the 'correct' way of doing it with a `datalist` component is not supported in Firefox and has inconsistent UI in other browsers. 
+
+[1 hour]

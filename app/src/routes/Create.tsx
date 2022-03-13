@@ -1,4 +1,4 @@
-import { h } from 'preact';
+import { h, Fragment } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { getImgSquareSize, getMeta, getNumImagesSqrt, postImgArray, putImgSquareSize, putNumImagesSqrt } from '../lib/api';
 import { getImageResizeOpts, getResizedImageUrls, getImageUrl, getResizedImage } from '../lib/images';
@@ -75,12 +75,22 @@ const Create = () => {
       />
       <div class="mx-auto flex flex-col">
         <div>
-          <div>Number of images: {numImagesSqrt}</div>
-          <Slider min={meta.minNumImagesSqrt} max={meta.maxNumImagesSqrt} value={numImagesSqrt} setValue={numImagesHandler} />
+          <Slider
+            min={meta.minNumImagesSqrt}
+            max={meta.maxNumImagesSqrt}
+            value={numImagesSqrt}
+            setValue={numImagesHandler}
+            label={<Fragment>Number of images: {numImagesSqrt}</Fragment>}
+          />
         </div>
         <div>
-          <div>Image square size: {imgSquareSize}</div>
-          <Slider min={meta.minImgSquareSize} max={meta.maxImgSquareSize} value={imgSquareSize} setValue={imgSquareSizeHandler} />
+          <Slider
+            min={meta.minImgSquareSize}
+            max={meta.maxImgSquareSize}
+            value={imgSquareSize}
+            setValue={imgSquareSizeHandler}
+            label={<Fragment>Image square size: {imgSquareSize}</Fragment>}
+          />
         </div>
         <ImageReplacer resizedImageUrls={resizedImages} touchHandler={touchHandler} />
       </div>
