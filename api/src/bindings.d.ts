@@ -1,4 +1,6 @@
 interface Bindings {
   ENVIRONMENT: string,
-  DATA: KVNamespace
+  DATA: KVNamespace,
+  messenger: DurableObjectNamespace,
+  limiters: DurableObjectNamespace
 }

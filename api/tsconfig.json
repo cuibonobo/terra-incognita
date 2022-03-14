@@ -5,8 +5,8 @@
     "module": "esnext",
     "moduleResolution": "node",
     "strict": true,
-    "target": "es5",
-    "types": ["node", "@cloudflare/workers-types"]
+    "target": "es2020",
+    "types": ["@cloudflare/workers-types"]
   },
   "include": ["src"]
 }

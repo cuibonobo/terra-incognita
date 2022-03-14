@@ -16,6 +16,12 @@ kv_namespaces = [
 [vars]
 ENVIRONMENT = "production"
 
+[durable_objects]
+bindings = [
+  { name = "messenger", class_name = "Messenger" },
+  { name = "limiters", class_name = "RateLimiter" }
+]
+
 [env.production]
 zone_id = "02ca717d690fc02e1f07bcc9b0806928"
 route = "terra.cuibonobo.com/*"

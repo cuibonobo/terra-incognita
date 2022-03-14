@@ -1,5 +1,6 @@
 import { Router } from 'itty-router';
-import { Meta, getRandomUniqueValue, stringify } from '../../../shared';
+import { jsonifyResponse, optionsResponse, validationError, getKvData, putKvData } from '../lib/workers';
+import { Meta, getRandomUniqueValue } from '../../../shared';
 
 const apiRouter = Router({ base: '/api' });
 
@@ -75,43 +76,5 @@ apiRouter.options('/imgArray', (request: Request, env: Bindings) => {
 
 // 404 for everything else
 apiRouter.all('*', () => jsonifyResponse({message: 'Not found'}, {status: 404}));
-
-const getKvData = async <T>(key: string, env: Bindings): Promise<T> => {
-  const result = await env.DATA.get(key);
-  if (result === null) {
-    throw new Error(`Key '${key}' does not exist in database!`);
-  }
-  return JSON.parse(result) as T;
-};
-
-const putKvData = async <T>(key: string, value: T, env: Bindings): Promise<void> => {
-  return env.DATA.put(key, stringify(value));
-};
-
-const jsonifyResponse = (value: any, opts: ResponseInit = {}): Response => {
-  if (!opts.headers) {
-    opts.headers = {};
-  }
-  opts.headers = {
-    ...opts.headers,
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-  };
-  return new Response(stringify(value), opts);
-};
-
-const validationError = (message: string): Response => {
-  return jsonifyResponse({message}, {status: 422});
-};
-
-const optionsResponse = (options: string = '*'): Response => {
-  return new Response(undefined, {status: 204, headers: {
-    'Content-Type': 'text/plain',
-    'Allow': options,
-    'Access-Control-Allow-Methods': options,
-    'Access-Control-Allow-Headers': '*',
-    'Access-Control-Allow-Origin': '*'
-  }});
-};
 
 export default apiRouter;

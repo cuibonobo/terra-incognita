@@ -265,3 +265,10 @@ Changed how the APIs are accessed so that `localhost` isn't hard-coded in the co
 Updated the state management to be Redux-like. That is, state is managed in a central location and state changes are dispatched with reducers. This will allow me to do complex state changes with many users while keeping the complexity of the app to a manageable level. I also updated all components to use this new state system.
 
 [5 hours]
+
+### 2022-03-14
+Implemented a `Messenger` and `RateLimitier` durable objects by using the [workers chat demo](https://github.com/cloudflare/workers-chat-demo) as a guide. I ran into an issue where the Cloudflare Workers `WebSocket` object conflicts with the one defined in the DOM. As a result, I can't use the `accept()` method on the WebSocket on the server side without casting the WebSocket to `any` first. The strange thing is that I'm not including DOM types in the API project, so I don't understand why there's a conflict.
+
+Progress feels extremely slow while I try to understand all the concepts. The main difference between this implementation and the chat demo is that there is only a single 'room' that all sessions are interacting in. I wonder if I should implement some sort of limit in case there are too many concurrent users? I'm also worried about the message format that will be sent back and forth. Sending the full state feels like the safest way to keep everyone updated, but it might be too much data.
+
+[4 hours]
