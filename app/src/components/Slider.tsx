@@ -29,7 +29,7 @@ const Slider = (props: {min: number, max: number, value: number, setValue: (valu
   return (
     <div>
       {props.label ? <label for={sliderId}>{props.label}</label> : ''}
-      <div class='flex justify-between select-none text-[0.5rem] -mb-4'>
+      <div class='flex justify-between select-none text-[0.5rem] px-2 -mb-4'>
         {Array.from({length: props.max - props.min + 1}).map((_, i) => <span key={i} value={props.min + i * step}>|</span>)}
       </div>
       <input
