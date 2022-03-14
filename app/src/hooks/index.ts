@@ -1,3 +1,3 @@
-import useImageData from "./useImageData";
+import useStore from "./useStore";
 
-export { useImageData };
+export { useStore };

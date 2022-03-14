@@ -1,5 +1,6 @@
 import { h, Fragment } from 'preact';
 import { NavLink, Outlet } from 'react-router-dom';
+import { DataInitializer } from '../components';
 
 const ContainerRouter = () => {
   return (
@@ -15,7 +16,7 @@ const ContainerRouter = () => {
         </nav>
       </header>
       <main id="main" class="container bg-white mx-auto">
-        <Outlet />
+        <DataInitializer><Outlet /></DataInitializer>
       </main>
       <footer id="footer" class="container text-center mx-auto text-sm text-gray-500"></footer>
     </Fragment>

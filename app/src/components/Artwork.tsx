@@ -1,23 +1,21 @@
-import { h } from 'preact';
-import { useImageData } from '../hooks';
-import { Canvas, Loading } from '../components';
+import { h, Fragment } from 'preact';
+import { useStore } from '../hooks';
+import { Canvas } from '../components';
 
 const Artwork = (props: {canvasClass?: string}) => {
-  const {resizedImages, meta, numImagesSqrt, imgSquareSize} = useImageData();
+  const {state} = useStore();
 
-  if (meta === null || numImagesSqrt === null || resizedImages === null || imgSquareSize === null) {
-    return (
-      <Loading />
-    );
+  if (state.meta === null || state.numImagesSqrt === null || state.resizedImages === null || state.imgSquareSize === null) {
+    return <Fragment />;
   }
 
   return (
     <Canvas
-      images={resizedImages}
-      width={meta.imgWidth}
-      height={meta.imgHeight}
-      splitSize={imgSquareSize}
-      pixelSize={numImagesSqrt}
+      images={state.resizedImages}
+      width={state.meta.imgWidth}
+      height={state.meta.imgHeight}
+      splitSize={state.imgSquareSize}
+      pixelSize={state.numImagesSqrt}
       class={`mx-auto ${props.canvasClass ? props.canvasClass : ''}`}
     />
   );

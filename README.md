@@ -261,4 +261,7 @@ Added tick marks to the existing `Slider` components. Unfortunately I had to res
 ---
 Changed how the APIs are accessed so that `localhost` isn't hard-coded in the codebase. This allows me to test the site from my phone on a local network.
 
-[2 hours]
+---
+Updated the state management to be Redux-like. That is, state is managed in a central location and state changes are dispatched with reducers. This will allow me to do complex state changes with many users while keeping the complexity of the app to a manageable level. I also updated all components to use this new state system.
+
+[5 hours]
