@@ -4,6 +4,7 @@ import { ActionTypes } from "../actions";
 import { useStore } from "../hooks";
 import apiFactory from "../lib/api";
 import { getImageResizeOpts, getResizedImageUrls } from "../lib/images";
+import messagesFactory from "../lib/messages";
 import Loading from "./Loading";
 
 const DataInitializer = (props: {children: ComponentChildren}) => {
@@ -37,7 +38,24 @@ const DataInitializer = (props: {children: ComponentChildren}) => {
       type: ActionTypes.UpdateLoadingStatus,
       isLoading: false
     });
+    dispatch({
+      type: ActionTypes.UpdateMessenger,
+      messenger: messagesFactory(messageHandler, errorHandler)
+    });
     console.log("Data initializer finished loading");
+  };
+
+  const messageHandler = (data: any): void => {
+    if (data.type === undefined) {
+      console.error("Unrecognized message format", data);
+      return;
+    }
+    console.debug("Received message", data);
+    dispatch(data);
+  };
+  const errorHandler = (error: Error): void => {
+    console.error("Messenger Error", error);
+    window.location.reload();
   };
 
   useEffect(() => {

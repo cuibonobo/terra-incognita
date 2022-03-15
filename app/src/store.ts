@@ -7,7 +7,8 @@ export interface AppState {
   meta: Meta | null,
   numImagesSqrt: number | null,
   imgSquareSize: number | null,
-  resizedImages: string[] | null
+  resizedImages: string[] | null,
+  messenger: {send: (data: any) => void} | null
 }
 
 export const initialState: AppState = {
@@ -15,7 +16,8 @@ export const initialState: AppState = {
   meta: null,
   numImagesSqrt: null,
   imgSquareSize: null,
-  resizedImages: null
+  resizedImages: null,
+  messenger: null
 }
 
 interface ContextProps {

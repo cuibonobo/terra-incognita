@@ -271,4 +271,9 @@ Implemented a `Messenger` and `RateLimitier` durable objects by using the [worke
 
 Progress feels extremely slow while I try to understand all the concepts. The main difference between this implementation and the chat demo is that there is only a single 'room' that all sessions are interacting in. I wonder if I should implement some sort of limit in case there are too many concurrent users? I'm also worried about the message format that will be sent back and forth. Sending the full state feels like the safest way to keep everyone updated, but it might be too much data.
 
-[4 hours]
+---
+Updated the app code to send each `Action` that changes the state as a message before each dispatch and that... worked?! The messenger on the server will send all messages to everyone regardless of where they came from and I'm filtering the messages on the client side so that messages from the same session aren't acted upon.
+
+Unfortunately there's an unexpected side-effect where the loading screen is triggered whenever a message is received. Getting to the bottom of that and filtering messages from the same sender on the server side are probably what I will tackle next.
+
+[6 hours]

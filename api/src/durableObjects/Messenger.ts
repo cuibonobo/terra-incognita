@@ -1,4 +1,4 @@
-import { getRandomString, Meta, stringify } from "../../../shared";
+import { getRandomString, stringify } from "../../../shared";
 import { handleErrors, closeWebsocket, sendWebsocketError, sendWebsocketReady, sendWebsocketMessage } from "../lib/workers";
 import { RateLimiterClient } from "./RateLimiter";
 
@@ -83,13 +83,14 @@ export default class Messenger {
         if (!session.id) {
           // Having an ID is a signal that the session is ready to receive messages
           session.id = getRandomString(SESSION_ID_LENGTH);
-          sendWebsocketReady(websocket);
+          sendWebsocketReady(websocket, session.id);
           return;
         }
 
-        const message: Message = JSON.parse(msg.data);
+        const message = JSON.parse(msg.data);
 
         // TODO: Sanitize message
+        message.sessionId = session.id;
 
         this.broadcast(stringify(message));
 
@@ -126,13 +127,4 @@ interface Session {
   timestamp: number,
   websocket: WebSocket,
   quit: boolean
-}
-
-interface Message {
-  senderId: string,
-  meta: Meta,
-  numImagesSqrt: number,
-  imgSquareSize: number,
-  imgArray: number[],
-  timestamp?: number
 }

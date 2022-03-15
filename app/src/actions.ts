@@ -5,7 +5,8 @@ export enum ActionTypes {
   UpdateMeta,
   UpdateNumImagesSqrt,
   UpdateImgSquareSize,
-  UpdateResizedImages
+  UpdateResizedImages,
+  UpdateMessenger
 }
 
 interface UpdateLoadingStatus {
@@ -28,5 +29,9 @@ interface UpdateResizedImages {
   type: ActionTypes.UpdateResizedImages,
   resizedImages: string[]
 }
+interface UpdateMessenger {
+  type: ActionTypes.UpdateMessenger,
+  messenger: {send: (data: any) => void}
+}
 
-export type Action = UpdateLoadingStatus | UpdateMeta | UpdateNumImagesSqrt | UpdateImgSquareSize | UpdateResizedImages;
+export type Action = UpdateLoadingStatus | UpdateMeta | UpdateNumImagesSqrt | UpdateImgSquareSize | UpdateResizedImages | UpdateMessenger;

@@ -1,6 +1,7 @@
 import { Router } from 'itty-router';
 import { handleErrors } from './lib/workers';
 import { apiRouter, messagesRouter, siteRouter } from './routes';
+import { Messenger, RateLimiter } from './durableObjects';
 
 const rootRouter = Router();
 
@@ -18,3 +19,5 @@ const worker: ExportedHandler<Bindings> = {
 };
 
 export default worker;
+
+export { Messenger, RateLimiter };

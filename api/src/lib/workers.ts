@@ -46,8 +46,8 @@ export const sendWebsocketMessage = (websocket: WebSocket, message: any) => {
   websocket.send(stringify(message));
 };
 
-export const sendWebsocketReady = (websocket: WebSocket) => {
-  sendWebsocketMessage(websocket, {ready: true});
+export const sendWebsocketReady = (websocket: WebSocket, sessionId: string) => {
+  sendWebsocketMessage(websocket, {ready: true, sessionId});
 };
 
 export const sendWebsocketError = (websocket: WebSocket, message?: string) => {
