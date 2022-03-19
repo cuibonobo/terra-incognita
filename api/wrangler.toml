@@ -22,6 +22,10 @@ bindings = [
   { name = "limiters", class_name = "RateLimiter" }
 ]
 
+[[migrations]]
+tag = "v1"
+new_classes = ["Messenger", "RateLimiter"]
+
 [env.production]
 zone_id = "02ca717d690fc02e1f07bcc9b0806928"
 route = "terra.cuibonobo.com/*"
