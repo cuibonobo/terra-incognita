@@ -56,8 +56,8 @@ const DataInitializer = (props: {children: ComponentChildren}) => {
   };
   const errorHandler = (error: Error): void => {
     console.error("Messenger Error", error);
-    // TODO: Uncomment below once we have a handle on bugs
-    // window.location.reload();
+    // TODO: Block the UI for rate-limiter errors and reset to the last
+    // state. Reload the page for other errors.
   };
 
   useEffect(() => {

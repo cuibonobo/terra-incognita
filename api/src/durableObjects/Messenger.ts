@@ -88,6 +88,7 @@ export default class Messenger {
         if (!limiter.canPost()) {
           console.info("Rate-limiting this session", ip, session.id);
           sendWebsocketError(websocket, 'Your IP is being rate-limited. Please try again later.');
+          return;
         }
 
         if (!session.id) {

@@ -20,6 +20,7 @@ const messagesFactory = (messageHandler: (data: JSONObject) => void, errorHandle
     lastSeenTimestamp = 0;
     rejoined = false;
     ws = new WebSocket(messagesUrl);
+    // TODO: Reload the page if the WebSocket hasn't opened before a timeout
   };
 
   const rejoin = async () => {
@@ -33,7 +34,6 @@ const messagesFactory = (messageHandler: (data: JSONObject) => void, errorHandle
     if (timeSinceLastJoin < REJOIN_TIMEOUT * 1000) {
       await new Promise((resolve) => setTimeout(resolve, (REJOIN_TIMEOUT * 1000) - timeSinceLastJoin));
     }
-    console.debug("Rejoining...");
     init();
   };
 

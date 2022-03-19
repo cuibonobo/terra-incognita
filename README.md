@@ -284,4 +284,7 @@ I had to put checks on the client and server side, add timestamp checking, and r
 
 One strange thing is that messages still go through even if the response is a rate-limit error. That's part of the reason the pages would ping-pong. I need to add error handlers on the client side so that the interface is disabled while the IP is rate-limited, but the server also shouldn't send the message if the client is in rate-limit jail.
 
-[3 hours]
+---
+The rate-limiting bug was a missing `return` on the server! I did notice another bug once it started working: the rate-limited client's UI will fall out of sync with everyone else unless the UI is reset. A possible solution is to stop using the `/api` endpoints and only update the client UI when a message has been acknowledged by the server.
+
+[4 hours]
