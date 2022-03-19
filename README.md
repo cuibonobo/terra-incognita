@@ -277,3 +277,11 @@ Updated the app code to send each `Action` that changes the state as a message b
 Unfortunately there's an unexpected side-effect where the loading screen is triggered whenever a message is received. Getting to the bottom of that and filtering messages from the same sender on the server side are probably what I will tackle next.
 
 [6 hours]
+
+### 2022-03-18
+
+I had to put checks on the client and server side, add timestamp checking, and reject messages that didn't have the expected properties but I _finally_ am able to get 2 clients talking to each other without the message ping-ponging back and forth. I was seeing the screen reload after each change because the ping-ponging would trigger the rate-limiter, which in turn would trigger an error, which would cause the page to reload. The page reload is disabled for now while I squash the bugs, and I added a lot more logging.
+
+One strange thing is that messages still go through even if the response is a rate-limit error. That's part of the reason the pages would ping-pong. I need to add error handlers on the client side so that the interface is disabled while the IP is rate-limited, but the server also shouldn't send the message if the client is in rate-limit jail.
+
+[3 hours]

@@ -1,6 +1,7 @@
 import { h, Fragment, ComponentChildren } from "preact";
 import { useEffect } from "preact/hooks";
-import { ActionTypes } from "../actions";
+import { JSONObject } from "../../../shared";
+import { Action, ActionTypes } from "../actions";
 import { useStore } from "../hooks";
 import apiFactory from "../lib/api";
 import { getImageResizeOpts, getResizedImageUrls } from "../lib/images";
@@ -45,17 +46,18 @@ const DataInitializer = (props: {children: ComponentChildren}) => {
     console.log("Data initializer finished loading");
   };
 
-  const messageHandler = (data: any): void => {
+  const messageHandler = (data: JSONObject): void => {
     if (data.type === undefined) {
       console.error("Unrecognized message format", data);
       return;
     }
     console.debug("Received message", data);
-    dispatch(data);
+    dispatch((data as unknown) as Action);
   };
   const errorHandler = (error: Error): void => {
     console.error("Messenger Error", error);
-    window.location.reload();
+    // TODO: Uncomment below once we have a handle on bugs
+    // window.location.reload();
   };
 
   useEffect(() => {

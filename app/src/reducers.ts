@@ -2,9 +2,14 @@ import { Action, ActionTypes } from "./actions";
 import { AppState } from "./store";
 
 export const appReducer = (state: AppState, action: Action): AppState => {
-  // For every state change, send a message through the messenger
+  // For every state change that didn't come from the messenger and
+  // isn't about updating the messenger itself, send a message
   if (state.messenger && action.type !== ActionTypes.UpdateMessenger) {
-    state.messenger.send(action);
+    const message = action as any;
+    if (!message.sessionId && !message.timestamp) {
+      console.debug("Sending action message", action);
+      state.messenger.send(action);
+    }
   }
   switch(action.type) {
     case ActionTypes.UpdateLoadingStatus:
