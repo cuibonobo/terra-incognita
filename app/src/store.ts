@@ -1,12 +1,13 @@
 import { createContext } from "preact";
 import { Meta } from "../../shared";
-import { Action } from "./actions";
+import { DispatchActions } from "./actions";
 
 export interface AppState {
   isLoading: boolean,
   meta: Meta | null,
   numImagesSqrt: number | null,
   imgSquareSize: number | null,
+  imgArray: number[] | null,
   resizedImages: string[] | null,
   messenger: {send: (data: any) => void} | null
 }
@@ -16,13 +17,14 @@ export const initialState: AppState = {
   meta: null,
   numImagesSqrt: null,
   imgSquareSize: null,
+  imgArray: null,
   resizedImages: null,
   messenger: null
 }
 
 interface ContextProps {
   state: AppState;
-  dispatch: (action: Action) => void;
+  actions: DispatchActions;
 }
 
 export const Store = createContext({} as ContextProps);

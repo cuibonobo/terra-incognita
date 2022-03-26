@@ -67,7 +67,7 @@ apiRouter.post('/imgArray', async (request: Request, env: Bindings) => {
   const newImage = getRandomUniqueValue(0, totalImages, imgArray);
   imgArray[arrayIdx] = newImage;
   await putKvData('imgArray', imgArray, env);
-  return jsonifyResponse(newImage);
+  return jsonifyResponse(imgArray);
 });
 
 apiRouter.options('/imgArray', (request: Request, env: Bindings) => {

@@ -288,3 +288,12 @@ One strange thing is that messages still go through even if the response is a ra
 The rate-limiting bug was a missing `return` on the server! I did notice another bug once it started working: the rate-limited client's UI will fall out of sync with everyone else unless the UI is reset. A possible solution is to stop using the `/api` endpoints and only update the client UI when a message has been acknowledged by the server.
 
 [4 hours]
+
+### 2022-03-26
+There is a terrible bug where swapping the images or changing the number of images will cause render issues and errors when other users receive the update messages because I'm sending the resized image URLs, which correspond to binary blobs that are specific to each user's browser. Receiving a blob URL from a different user is non-sensical, so instead each user will have to get the updated image array and download/resize any missing images on their own browser.
+
+Fixing this will require some huge changes. I've updated the API to return the whole image array whenever there's a change and done some prep work to (hopefully) create an async reducer. The idea is to dispatch the change to the image array and update the session's resized image URLs in the background.
+
+There will be a few 'WIP' commits where I break the app, but I'd rather do that than accidentally lose work.
+
+[1.5 hours]

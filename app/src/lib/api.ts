@@ -66,8 +66,8 @@ const apiFactory = () => {
     getImgArray: async (): Promise<number[]> => {
       return get<number[]>('/imgArray');
     },
-    postImgArray: async (imgIndex: number): Promise<number> => {
-      return post<number, number>('/imgArray', imgIndex);
+    postImgArray: async (imgIndex: number): Promise<number[]> => {
+      return post<number, number[]>('/imgArray', imgIndex);
     }
   }
 };

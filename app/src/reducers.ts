@@ -5,8 +5,7 @@ export const appReducer = (state: AppState, action: Action): AppState => {
   // For every state change that didn't come from the messenger and
   // isn't about updating the messenger itself, send a message
   if (state.messenger && action.type !== ActionTypes.UpdateMessenger) {
-    const message = action as any;
-    if (!message.sessionId && !message.timestamp) {
+    if (!action.sessionId && !action.timestamp) {
       console.debug("Sending action message", action);
       state.messenger.send(action);
     }
@@ -32,11 +31,11 @@ export const appReducer = (state: AppState, action: Action): AppState => {
         ...state,
         imgSquareSize: action.imgSquareSize
       };
-    case ActionTypes.UpdateResizedImages:
+    case ActionTypes.UpdateImgArray:
       return {
         ...state,
-        resizedImages: action.resizedImages
-      };
+        imgArray: action.imgArray
+      }
     case ActionTypes.UpdateMessenger:
       return {
         ...state,
