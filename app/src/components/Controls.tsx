@@ -34,7 +34,7 @@ const Controls = () => {
   };
 
   return (
-    <div class="mx-auto flex flex-col p-4">
+    <div class="mx-auto flex flex-col p-4 w-full 2xl:w-1/2 xl:w-3/5 md:w-4/5">
       <div>
         <Slider
           min={state.meta.minImgSquareSize}
