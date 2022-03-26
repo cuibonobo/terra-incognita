@@ -1,25 +1,46 @@
 import { h, Fragment, ComponentChildren } from "preact";
-import { useEffect } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import { JSONObject } from "../../../shared";
 import { Action } from "../actions";
 import { useStore } from "../hooks";
 import apiFactory from "../lib/api";
+import { getDiffResizedImageUrls } from "../lib/images";
 import messagesFactory from "../lib/messages";
 import Loading from "./Loading";
 
 const DataInitializer = (props: {children: ComponentChildren}) => {
   const {state, actions} = useStore();
+  // Keep a copy of values that cause secondary effects so we can use them for comparison
+  const [imgArray, setImgArray] = useState<number[]>([]);
+  const [numImagesSqrt, setNumImagesSqrt] = useState<number>(0);
 
   const api = apiFactory();
 
   const init = async () => {
-    actions.updateMeta(await api.getMeta());
-    actions.updateNumImagesSqrt(await api.getNumImagesSqrt());
-    actions.updateImgSquareSize(await api.getImgSquareSize());
-    actions.updateImgArray(await api.getImgArray());
+    // Request all init values in parallel and update them
+    const [meta, numImagesSqrt, imgArray, imgSquareSize] = await Promise.all([api.getMeta(), api.getNumImagesSqrt(), api.getImgArray(), api.getImgSquareSize()]);
+    actions.updateMeta(meta);
+    actions.updateNumImagesSqrt(numImagesSqrt);
+    actions.updateImgArray(imgArray);
+    actions.updateImgSquareSize(imgSquareSize);
+    // Update secondary values
+    actions.updateResizedImages(await getDiffResizedImageUrls(meta.imgWidth, meta.imgHeight, null, imgArray, null, numImagesSqrt, null));
+    // Save a copy of values that will affect secondaries
+    setNumImagesSqrt(numImagesSqrt);
+    setImgArray(imgArray);
+    // Finalize init
     actions.updateMessenger(messagesFactory(messageHandler, errorHandler));
     actions.updateLoadingStatus(false);
-    console.log("Data initializer finished loading");
+    console.log("Finished initialization.");
+  };
+  
+  const updateSecondaryValues = async () => {
+    if (state.meta === null || state.numImagesSqrt === null || state.imgArray === null) {
+      return;
+    }
+    actions.updateResizedImages(await getDiffResizedImageUrls(state.meta.imgWidth, state.meta.imgHeight, imgArray, state.imgArray, numImagesSqrt, state.numImagesSqrt, state.resizedImages));
+    setImgArray(state.imgArray);
+    setNumImagesSqrt(state.numImagesSqrt);
   };
 
   const messageHandler = (data: JSONObject): void => {
@@ -36,9 +57,15 @@ const DataInitializer = (props: {children: ComponentChildren}) => {
     // state. Reload the page for other errors.
   };
 
+  // Fires once on first load to get init values
   useEffect(() => {
     init();
   }, []);
+
+  // Fires whenever values that have secondary effects are changed
+  useEffect(() => {
+    updateSecondaryValues();
+  }, [state.imgArray, state.numImagesSqrt]);
 
   if (state.isLoading) {
     return (

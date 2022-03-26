@@ -6,6 +6,7 @@ export enum ActionTypes {
   UpdateNumImagesSqrt,
   UpdateImgSquareSize,
   UpdateImgArray,
+  UpdateResizedImages,
   UpdateMessenger
 }
 
@@ -37,12 +38,16 @@ interface UpdateImgArray extends BaseAction {
   type: ActionTypes.UpdateImgArray,
   imgArray: number[]
 }
+interface UpdateResizedImages extends BaseAction {
+  type: ActionTypes.UpdateResizedImages,
+  resizedImages: string[]
+}
 interface UpdateMessenger extends BaseAction {
   type: ActionTypes.UpdateMessenger,
   messenger: Messenger
 }
 
-export type Action = UpdateLoadingStatus | UpdateMeta | UpdateNumImagesSqrt | UpdateImgSquareSize | UpdateImgArray | UpdateMessenger;
+export type Action = UpdateLoadingStatus | UpdateMeta | UpdateNumImagesSqrt | UpdateImgSquareSize | UpdateImgArray | UpdateResizedImages | UpdateMessenger;
 
 export interface DispatchActions {
   updateLoadingStatus: (isLoading: boolean) => void,
@@ -50,6 +55,7 @@ export interface DispatchActions {
   updateNumImagesSqrt: (numImagesSqrt: number) => void,
   updateImgSquareSize: (imgSquareSize: number) => void,
   updateImgArray: (imgArray: number[]) => void,
+  updateResizedImages: (resizedUrls: string[]) => void,
   updateMessenger: (messenger: Messenger) => void,
   updateFromMessage: (action: Action) => void
 }
@@ -61,6 +67,7 @@ export const createDispatchActions = (dispatch: (action: Action) => void): Dispa
     updateNumImagesSqrt: (numImagesSqrt: number) => dispatch({type: ActionTypes.UpdateNumImagesSqrt, numImagesSqrt}),
     updateImgSquareSize: (imgSquareSize: number) => dispatch({type: ActionTypes.UpdateImgSquareSize, imgSquareSize}),
     updateImgArray: (imgArray: number[]) => dispatch({type: ActionTypes.UpdateImgArray, imgArray}),
+    updateResizedImages: (resizedImages: string[]) => dispatch({type: ActionTypes.UpdateResizedImages, resizedImages}),
     updateMessenger: (messenger: Messenger) => dispatch({type: ActionTypes.UpdateMessenger, messenger}),
     updateFromMessage: (action: Action) => dispatch(action)
   };

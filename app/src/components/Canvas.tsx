@@ -49,7 +49,7 @@ const Canvas = (props: {
         }
       }
     }
-  }, [drawCtx, images, splitSize, pixelSize]);
+  }, [drawCtx, images, splitSize]);
 
   useEffect(() => {
     if (canvasRef.current) {
