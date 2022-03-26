@@ -1,11 +1,14 @@
 import { h, JSX } from 'preact';
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { getRandomString } from '../../../shared';
 
 const ID_LENGTH = 6;
+const DEBOUNCE_TIMEOUT = 500;
 
 const Slider = (props: {min: number, max: number, value: number, setValue: (value: number)=>Promise<void>, step?: number, label?: JSX.Element}) => {
   const [sliderId] = useState<string>(getRandomString(ID_LENGTH, 'slider-'));
+  const [sliderValue, setSliderValue] = useState<number>(0);
+  const [lastChange, setLastChange] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const step = props.step ? props.step : 1;
 
@@ -16,11 +19,27 @@ const Slider = (props: {min: number, max: number, value: number, setValue: (valu
     if (isLoading) {
       return;
     }
+    const now = Date.now();
+    if ((now - lastChange) < DEBOUNCE_TIMEOUT) {
+      // Ignore bounced input
+      return;
+    }
+    setLastChange(now);
     const inputEl = event.target as HTMLInputElement;
+    const newValue = parseInt(inputEl.value, 10);
+    if (newValue === props.value) {
+      return;
+    }
     setIsLoading(true);
-    await props.setValue(parseInt(inputEl.value, 10));
-    setIsLoading(false);
+    await props.setValue(newValue);
   };
+
+  useEffect(() => {
+    if (props.value !== sliderValue) {
+      setSliderValue(props.value);
+    }
+    setIsLoading(false);
+  }, [props.value]);
 
   if (props.min > props.max) {
     throw new Error("Min must be less than max!");
@@ -40,7 +59,7 @@ const Slider = (props: {min: number, max: number, value: number, setValue: (valu
         min={props.min}
         max={props.max}
         step={step}
-        value={props.value}
+        value={sliderValue}
         onInput={onInput}
       />
     </div>

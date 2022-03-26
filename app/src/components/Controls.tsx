@@ -9,9 +9,10 @@ const Controls = () => {
 
   const touchHandler = async (imgIndex: number) => {
     if (state.meta === null || state.numImagesSqrt === null || state.resizedImages === null || state.imgSquareSize === null) {
+      console.error("Attempting to update image array before app is ready.");
       return;
     }
-    actions.updateImgArray(await api.postImgArray(imgIndex))
+    actions.updateImgArray(await api.postImgArray(imgIndex));
   };
 
   if (state.meta === null || state.numImagesSqrt === null || state.resizedImages === null || state.imgSquareSize === null) {
@@ -36,20 +37,20 @@ const Controls = () => {
     <div class="mx-auto flex flex-col p-4">
       <div>
         <Slider
-          min={state.meta.minNumImagesSqrt}
-          max={state.meta.maxNumImagesSqrt}
-          value={state.numImagesSqrt}
-          setValue={numImagesHandler}
-          label={<Fragment>Number of images: {state.numImagesSqrt}</Fragment>}
-        />
-      </div>
-      <div>
-        <Slider
           min={state.meta.minImgSquareSize}
           max={state.meta.maxImgSquareSize}
           value={state.imgSquareSize}
           setValue={imgSquareSizeHandler}
           label={<Fragment>Image square size: {state.imgSquareSize}</Fragment>}
+        />
+      </div>
+      <div>
+        <Slider
+          min={state.meta.minNumImagesSqrt}
+          max={state.meta.maxNumImagesSqrt}
+          value={state.numImagesSqrt}
+          setValue={numImagesHandler}
+          label={<Fragment>Number of images: {state.numImagesSqrt}</Fragment>}
         />
       </div>
       <ImageReplacer resizedImageUrls={state.resizedImages} touchHandler={touchHandler} />

@@ -296,4 +296,12 @@ Fixing this will require some huge changes. I've updated the API to return the w
 
 There will be a few 'WIP' commits where I break the app, but I'd rather do that than accidentally lose work.
 
-[1.5 hours]
+---
+Attempting to make an asynchronous reducer failed miserably. Instead, I'm using the `useEffect` hook in the `DataInitializer` component to detect when values that have secondary effects have changed. This will kick off a secondary effect function that updates the resized image URLs. I had to add some logic to the reducer so that it wouldn't send a message for updates that should only happen on the current user's browser. I also changed the image resizing logic so that it would only request images that have changed and leave everything else alone.
+
+One thing I re-discovered while I was making this work is that changing the number of images will trigger a resize for _all_ images, so it wouldn't be practical to save the resized versions. I'm caching the images pretty aggressively so I'm not worried about needing to re-download files, however I will need to cache the full-sized versions in a local database if I want the app to work offline.
+
+---
+Debounced the slider input and made it keep some internal state so that the value won't update until we're finished loading. Also changed the order so that the slider for the number of images appears next to the image replacer (because they are related).
+
+[5 hours]
