@@ -18,7 +18,8 @@ export interface Meta {
   minNumImagesSqrt: number,
   maxNumImagesSqrt: number,
   minImgSquareSize: number,
-  maxImgSquareSize: number
+  maxImgSquareSize: number,
+  cooldownTimeout: number
 }
 
 export const getNumArray = (minimum: number, maximum: number, length: number): number[] => {

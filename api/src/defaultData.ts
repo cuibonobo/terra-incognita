@@ -12,7 +12,8 @@ const baseData: KvStore = {
       minNumImagesSqrt: 2,
       maxNumImagesSqrt,
       minImgSquareSize: 2,
-      maxImgSquareSize: 25
+      maxImgSquareSize: 25,
+      cooldownTimeout: 3
     },
     numImagesSqrt: 5,
     imgSquareSize: 10,
@@ -32,7 +33,12 @@ const defaultData = async (): Promise<KvStore> => {
   for (const namespace in baseData) {
     output[namespace] = {};
     for (const key in baseData[namespace]) {
-      output[namespace][key] = await getWranglerKv(namespace, key, await getKvValue(baseData[namespace][key]));
+      const defaultValue = await getKvValue(baseData[namespace][key]);
+      let value = await getWranglerKv(namespace, key, defaultValue);
+      if (typeof value === 'object' && !Array.isArray(value) && typeof defaultValue === 'object' && !Array.isArray(defaultValue)) {
+        value = Object.assign(defaultValue, value);
+      }
+      output[namespace][key] = value;
     }
   }
   return output;

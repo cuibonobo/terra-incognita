@@ -304,4 +304,9 @@ One thing I re-discovered while I was making this work is that changing the numb
 ---
 Debounced the slider input and made it keep some internal state so that the value won't update until we're finished loading. Also changed the order so that the slider for the number of images appears next to the image replacer (because they are related).
 
-[5 hours]
+---
+Added the cooldown timeout value to the app metadata so that it could be accessed on the client side. I use this information to disable the controls for the specified cooldown period.
+
+I got stuck for a while because I kept trying to use the environment bindings that are passed to a durable object's `fetch` method, but those bindings are actually empty. The correct environment bindings are passed when the durable object is instantiated, so I need to save those if I want to use KV data.
+
+[8 hours]

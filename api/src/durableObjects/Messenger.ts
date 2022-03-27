@@ -138,7 +138,7 @@ export default class Messenger {
         // in the session list if they haven't timed out
         const sessionInitTimedOut = Date.now() - s.timestamp < SESSION_INIT_TIMEOUT * 1000;
         if (sessionInitTimedOut) {
-          console.warn("Timing out a session", message);
+          console.warn("Timing out a session", s);
         }
         return sessionInitTimedOut;
       }

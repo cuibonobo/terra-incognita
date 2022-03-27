@@ -1,7 +1,5 @@
-import { stringify } from "../../../shared";
-import { handleErrors } from "../lib/workers";
-
-const COOLDOWN_TIMEOUT = 3;
+import { stringify, Meta } from "../../../shared";
+import { getKvData, handleErrors } from "../lib/workers";
 
 /**
  * A new RateLimiter object is created for each IP address. The object
@@ -10,19 +8,27 @@ const COOLDOWN_TIMEOUT = 3;
  */
 export default class RateLimiter {
   nextAllowedTime: number;
+  cooldownTimeout: null | number;
+  env: Bindings;
 
   constructor(state: DurableObjectState, env: Bindings) {
     this.nextAllowedTime = 0;
+    this.cooldownTimeout = null;
+    this.env = env;
   }
 
   async fetch(request: Request, env: Bindings) {
     return handleErrors(request, async () => {
+      if (this.cooldownTimeout === null) {
+        const meta: Meta = await getKvData('meta', this.env);
+        this.cooldownTimeout = meta.cooldownTimeout;
+      }
       const now = Date.now() / 1000;
       this.nextAllowedTime = Math.max(now, this.nextAllowedTime);
 
       if (request.method === 'POST') {
         // Whenever a POST action is performed, bump the next allowed time
-        this.nextAllowedTime += COOLDOWN_TIMEOUT;
+        this.nextAllowedTime += this.cooldownTimeout;
       }
 
       const cooldown = Math.max(0, this.nextAllowedTime - now);
