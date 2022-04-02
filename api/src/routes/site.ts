@@ -1,4 +1,4 @@
-import { Router } from 'itty-router';
+import itty from 'itty-router';
 
 const CACHE_NAME = 'terra';
 
@@ -7,7 +7,7 @@ const getBaseUrl = (request: Request, env: Bindings): string => {
   return env.ENVIRONMENT === 'production' ? 'https://f000.backblazeb2.com/file/terra-public/site' : `http://${hostname}:8000`;
 };
 
-const siteRouter = Router({ base: '/' });
+const siteRouter = itty.Router({ base: '/' });
 
 siteRouter.get('*', async (request: Request, env: Bindings) => {
   // Return a cached response if we have one

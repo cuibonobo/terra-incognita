@@ -1,7 +1,7 @@
-import { Router } from 'itty-router';
+import itty from 'itty-router';
 
 const messengerName = 'messenger';
-const messagesRouter = Router({ base: '/messages' });
+const messagesRouter = itty.Router({ base: '/messages' });
 
 messagesRouter.get('/', async (request: Request, env: Bindings) => {
   const messengerId = env.messenger.idFromName(messengerName);

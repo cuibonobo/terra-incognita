@@ -1,9 +1,9 @@
-import { Router } from 'itty-router';
+import itty from 'itty-router';
 import { handleErrors } from './lib/workers';
 import { apiRouter, messagesRouter, siteRouter } from './routes';
 import { Messenger, RateLimiter } from './durableObjects';
 
-const rootRouter = Router();
+const rootRouter = itty.Router();
 
 // Set relative routes
 rootRouter.all('/api/*', apiRouter.handle);

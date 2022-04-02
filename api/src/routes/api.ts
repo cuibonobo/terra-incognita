@@ -1,8 +1,8 @@
-import { Router } from 'itty-router';
+import itty from 'itty-router';
 import { jsonifyResponse, optionsResponse, validationError, getKvData, putKvData } from '../lib/workers';
 import { Meta, getRandomUniqueValue } from '../../../shared';
 
-const apiRouter = Router({ base: '/api' });
+const apiRouter = itty.Router({ base: '/api' });
 
 apiRouter.get('/meta', async (request: Request, env: Bindings) => {
   return jsonifyResponse(await getKvData('meta', env));
