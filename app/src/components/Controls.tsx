@@ -1,6 +1,11 @@
 import { Fragment, h } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { ImageReplacer, Slider } from '../components';
+import Arrows from 'url:../media/Arrows.svg';
+import ImageSizeMin from 'url:../media/ImageSizeMin.svg';
+import ImageSizeMax from 'url:../media/ImageSizeMax.svg';
+import NumImagesMin from 'url:../media/NumImagesMin.svg';
+import NumImagesMax from 'url:../media/NumImagesMax.svg';
 import { useStore } from '../hooks';
 import apiFactory from '../lib/api';
 
@@ -47,20 +52,34 @@ const Controls = () => {
 
   return (
     <div class="mx-auto relative w-full 2xl:w-1/2 xl:w-3/5 md:w-4/5">
-      <div class="flex flex-col p-4">
+      <div class="flex flex-col p-4 space-y-8">
         <Slider
           min={state.meta.minImgSquareSize}
           max={state.meta.maxImgSquareSize}
           value={state.imgSquareSize}
           setValue={imgSquareSizeHandler}
-          label={<Fragment>Image square size: {state.imgSquareSize}</Fragment>}
+          label={<div class="flex flex-row space-x-4 items-center max-w-md mx-auto">
+            <img class='w-full h-full' src={ImageSizeMin} />
+            <div class="">
+              <img class='md:w-96 w-72 mt-4' src={Arrows} />
+              <div class='text-center leading-5'>{state.imgSquareSize}</div>
+            </div>
+            <img class='w-full h-full' src={ImageSizeMax} />
+          </div>}
         />
         <Slider
           min={state.meta.minNumImagesSqrt}
           max={state.meta.maxNumImagesSqrt}
           value={state.numImagesSqrt}
           setValue={numImagesHandler}
-          label={<Fragment>Number of images: {state.numImagesSqrt}</Fragment>}
+          label={<div class="flex flex-row space-x-4 items-center max-w-md mx-auto">
+          <img class='w-full h-full' src={NumImagesMin} />
+          <div class="">
+            <img class='md:w-96 w-72 mt-4' src={Arrows} />
+            <div class='text-center leading-5'>{state.numImagesSqrt}</div>
+          </div>
+          <img class='w-full h-full' src={NumImagesMax} />
+        </div>}
         />
         <ImageReplacer resizedImageUrls={state.resizedImages} touchHandler={touchHandler} />
       </div>

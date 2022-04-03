@@ -16,6 +16,12 @@
   .prose {
     @apply max-w-6xl;
   }
+  .prose p code::before {
+    content: '';
+  }
+  .prose p code::after {
+    content: '';
+  }
   .container {
     @apply px-4;
   }

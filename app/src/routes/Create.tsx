@@ -10,7 +10,7 @@ const Create = () => {
   }
 
   return (
-    <div class='mx-auto flex flex-col'>
+    <div class='mx-auto flex flex-col space-y-6'>
       <Canvas
         class='w-full'
         images={state.resizedImages}
