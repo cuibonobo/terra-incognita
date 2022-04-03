@@ -5,7 +5,7 @@ import { Artwork } from '../components';
 const ArtworkPage = () => {
   return (
     <FullscreenPage>
-      <Artwork />
+      <Artwork canvasClass='w-full' />
     </FullscreenPage>
   );
 };
