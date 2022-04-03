@@ -7,8 +7,9 @@ import Controls from './Controls';
 import DataInitializer from './DataInitializer';
 import Footer from './Footer';
 import ImageReplacer from './ImageReplacer';
+import Messages from './Messages';
 import Provider from './Provider';
 import Slider from './Slider';
 import Spinner from './Spinner';
 
-export { ArtistStatement, Artwork, BioJen, BioRon, Canvas, Controls, DataInitializer, Footer, ImageReplacer, Provider, Slider, Spinner };
+export { ArtistStatement, Artwork, BioJen, BioRon, Canvas, Controls, DataInitializer, Footer, ImageReplacer, Messages, Provider, Slider, Spinner };

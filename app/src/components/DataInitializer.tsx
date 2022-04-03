@@ -7,6 +7,7 @@ import apiFactory from "../lib/api";
 import { getDiffResizedImageUrls } from "../lib/images";
 import messagesFactory from "../lib/messages";
 import Spinner from "./Spinner";
+import Messages from "./Messages";
 
 const DataInitializer = (props: {children: ComponentChildren}) => {
   const {state, actions} = useStore();
@@ -67,14 +68,11 @@ const DataInitializer = (props: {children: ComponentChildren}) => {
     updateSecondaryValues();
   }, [state.imgArray, state.numImagesSqrt]);
 
-  if (state.isLoading) {
-    return (
-      <Spinner />
-    );
-  }
-
   return (
-    <Fragment>{props.children}</Fragment>
+    <Fragment>
+      <Messages messages={[]} />
+      {state.isLoading ? <Spinner /> : props.children}
+    </Fragment>
   );
 };
 
