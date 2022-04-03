@@ -6,7 +6,7 @@ import { useStore } from "../hooks";
 import apiFactory from "../lib/api";
 import { getDiffResizedImageUrls } from "../lib/images";
 import messagesFactory from "../lib/messages";
-import Loading from "./Loading";
+import Spinner from "./Spinner";
 
 const DataInitializer = (props: {children: ComponentChildren}) => {
   const {state, actions} = useStore();
@@ -69,7 +69,7 @@ const DataInitializer = (props: {children: ComponentChildren}) => {
 
   if (state.isLoading) {
     return (
-      <Loading />
+      <Spinner />
     );
   }
 

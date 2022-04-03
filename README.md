@@ -342,4 +342,7 @@ Throughout this project I had struggled with setting specific pixel dimensions t
 
 Tackling my issues list. Fixed #30, #31, and #22. A few of these were small cosmetic things that weren't high priority but I wanted to get out of the way. The major fix was adjusting the math for the canvas so that it always 'overdraws' by a small amount so that the image always fills the entire canvas. I also added a small offset for the overdraw so that the edges would be de-prioritized. This causes a fractional block on the edges of the canvas when the pixel size or number of images don't add up to a whole number.
 
-[1 hour]
+---
+Added a new loading screen with a spinner. Fixes #28.
+
+[2 hours]
