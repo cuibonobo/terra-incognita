@@ -345,4 +345,7 @@ Tackling my issues list. Fixed #30, #31, and #22. A few of these were small cosm
 ---
 Added a new loading screen with a spinner. Fixes #28.
 
+---
+Modify the 'number of images' slider to show the square instead of the square root. Fixes #19.
+
 [2 hours]

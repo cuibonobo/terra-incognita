@@ -78,7 +78,7 @@ const Controls = () => {
           <img class='w-full h-full' src={NumImagesMin} />
           <div class="">
             <img class='md:w-96 w-72 mt-4' src={Arrows} />
-            <div class='text-center leading-5'>{state.numImagesSqrt}</div>
+            <div class='text-center leading-5'>{Math.pow(state.numImagesSqrt, 2)}</div>
           </div>
           <img class='w-full h-full' src={NumImagesMax} />
         </div>}
