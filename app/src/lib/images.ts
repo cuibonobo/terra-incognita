@@ -4,11 +4,11 @@ import { handleMediaFile, MediaFileHandlerData, MediaFileHandlerOptions } from '
 const IMG_NAME_PADDING = 8;
 const imagesBaseUrl = 'https://terra-images.cuibonobo.com';
 
-const getImageResizeOpts = (imgWidth: number, imgHeight: number, numImagesSqrt: number): Partial<MediaFileHandlerOptions> => {
+const getImageResizeOpts = (imgWidth: number, imgHeight: number, numImagesSqrt: number, imgSquareSize: number): Partial<MediaFileHandlerOptions> => {
   return {
     mimeType: 'image/jpeg',
-    width: imgWidth / numImagesSqrt,
-    height: imgHeight / numImagesSqrt,
+    width: imgWidth / numImagesSqrt + imgSquareSize,
+    height: imgHeight / numImagesSqrt + imgSquareSize,
     quality: 0.8
   };
 };
@@ -23,9 +23,9 @@ const getFileFromUrl = async (url: string): Promise<File> => {
   const blob = await response.blob();
   return getFileFromBlob(blob, imgName);
 };
-const getResizedImage = async (url: string, imgWidth: number, imgHeight: number, numImagesSqrt: number): Promise<MediaFileHandlerData> => {
+const getResizedImage = async (url: string, imgWidth: number, imgHeight: number, numImagesSqrt: number, imgSquareSize: number): Promise<MediaFileHandlerData> => {
   const file = await getFileFromUrl(url);
-  return handleMediaFile(file, getImageResizeOpts(imgWidth, imgHeight, numImagesSqrt));
+  return handleMediaFile(file, getImageResizeOpts(imgWidth, imgHeight, numImagesSqrt, imgSquareSize));
 };
 const getIndexedName = (idx: number, imageExt: string = '.jpg', namePadding: number = IMG_NAME_PADDING): string => {
   // Convert the index to a string, pad it with zeroes, and add an extension
@@ -43,7 +43,7 @@ const copyArrayToLength = <T extends string | number | boolean | null | undefine
   return copiedArray;
 };
 export const getDiffResizedImageUrls = async (
-  imgWidth: number, imgHeight: number, oldImgArray: number[] | null, newImgArray: number[], oldNumImagesSqrt: number | null, newNumImagesSqrt: number, cachedResizedUrls: null | string[]
+  imgWidth: number, imgHeight: number, imgSquareSize: number, oldImgArray: number[] | null, newImgArray: number[], oldNumImagesSqrt: number | null, newNumImagesSqrt: number, cachedResizedUrls: null | string[]
 ): Promise<string[]> => {
   const numImages = Math.pow(newNumImagesSqrt, 2);
   const baseImgArray = copyArrayToLength(oldImgArray, newImgArray.length);
@@ -53,7 +53,7 @@ export const getDiffResizedImageUrls = async (
     if (oldNumImagesSqrt === newNumImagesSqrt && baseImgArray[i] === newImgArray[i] && cachedUrls[i]) {
       return cachedUrls[i];
     }
-    const resizedImage = await getResizedImage(imgUrl, imgWidth, imgHeight, newNumImagesSqrt);
+    const resizedImage = await getResizedImage(imgUrl, imgWidth, imgHeight, newNumImagesSqrt, imgSquareSize);
     return resizedImage.url;
   }));
 };

@@ -310,3 +310,36 @@ Added the cooldown timeout value to the app metadata so that it could be accesse
 I got stuck for a while because I kept trying to use the environment bindings that are passed to a durable object's `fetch` method, but those bindings are actually empty. The correct environment bindings are passed when the durable object is instantiated, so I need to save those if I want to use KV data.
 
 [8 hours]
+
+### 03/28/2022
+Got a few requests from Ron but I got stuck on the first one: the slider has a behavior where if you tap on it you can jump to the tapped value, but if you try to grab the slider it will only let you increment a single value. I was trying to make it so you can grab the slider and drop it wherever you wanted, but I kept getting inconsistent behavior on mobile vs. desktop.
+
+I tried a different slider fron `npm` but it behaved the same! This might be fixed in one of the component libraries but it's a difficult problem to google for. I'll move on to other things for now.
+
+[2 hours]
+
+### 03/30/2022
+Visited the museum to drop off the laptop for the show. While I was there I had to troubleshoot the settings a little bit because the display would take on different settings depending on if the lid was open or closed. Another weird behavior is that if you move the cursor offscreen and then close the lid, the cursor would jump back to the middle of the screen. We needed to attach a mouse to get the cursor off screen while the lid was closed.
+
+One _very_ concerning aspect of the trip was that the musuem's internet was much slower than I anticipated. A visit to the meta API page should be nearly instantaneous, but it took a good 10 seconds to load on the museum WiFi. We had thought about contingencies for the internet being offline, but I hadn't considered such a slow connection.
+
+[2 hours]
+
+### 04/02/2022
+Took some time to do an honest assessment of everything that's left and created [a few more issues](https://github.com/cuibonobo/terra-incognita/issues) for those items. I also added a new `P1` label for items that should be prioritized.
+
+---
+I'm extremely worried about the slow internet in the museum so I ordered a cellular hotspot as a 'Plan B' in case I don't get a handle on the offline features in time. I found one that was available today so I'll test it out tomorrow and deliver it to the museum early next week.
+
+---
+Spent most of the day tackling the design tasks that were left so I wouldn't be left scrambling at the last minute. I updated the About page to add the artist statement and bios, I made a header logo and a favicon for the site, and I made the explainer graphics for the sliders. I also added some text to the footer and the home page and made a ton of style changes.
+
+Throughout this project I had struggled with setting specific pixel dimensions to the elements with [Tailwind CSS](https://tailwindcss.com), for example setting an element to 320 pixels wide with `w-80`, and today I finally discovered that it has been a browser caching issue. If I add new Tailwind classes my changes don't show up if I rely on the automatic refresh from the Parcel server, so I have to always hard refresh.
+
+[6 hours]
+
+### 04/03/2022
+
+Tackling my issues list. Fixed #30, #31, and #22. A few of these were small cosmetic things that weren't high priority but I wanted to get out of the way. The major fix was adjusting the math for the canvas so that it always 'overdraws' by a small amount so that the image always fills the entire canvas. I also added a small offset for the overdraw so that the edges would be de-prioritized. This causes a fractional block on the edges of the canvas when the pixel size or number of images don't add up to a whole number.
+
+[1 hour]

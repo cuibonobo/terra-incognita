@@ -24,7 +24,7 @@ const DataInitializer = (props: {children: ComponentChildren}) => {
     actions.updateImgArray(imgArray);
     actions.updateImgSquareSize(imgSquareSize);
     // Update secondary values
-    actions.updateResizedImages(await getDiffResizedImageUrls(meta.imgWidth, meta.imgHeight, null, imgArray, null, numImagesSqrt, null));
+    actions.updateResizedImages(await getDiffResizedImageUrls(meta.imgWidth, meta.imgHeight, imgSquareSize, null, imgArray, null, numImagesSqrt, null));
     // Save a copy of values that will affect secondaries
     setNumImagesSqrt(numImagesSqrt);
     setImgArray(imgArray);
@@ -35,10 +35,10 @@ const DataInitializer = (props: {children: ComponentChildren}) => {
   };
   
   const updateSecondaryValues = async () => {
-    if (state.meta === null || state.numImagesSqrt === null || state.imgArray === null) {
+    if (state.meta === null || state.numImagesSqrt === null || state.imgArray === null || state.imgSquareSize === null) {
       return;
     }
-    actions.updateResizedImages(await getDiffResizedImageUrls(state.meta.imgWidth, state.meta.imgHeight, imgArray, state.imgArray, numImagesSqrt, state.numImagesSqrt, state.resizedImages));
+    actions.updateResizedImages(await getDiffResizedImageUrls(state.meta.imgWidth, state.meta.imgHeight, state.imgSquareSize, imgArray, state.imgArray, numImagesSqrt, state.numImagesSqrt, state.resizedImages));
     setImgArray(state.imgArray);
     setNumImagesSqrt(state.numImagesSqrt);
   };

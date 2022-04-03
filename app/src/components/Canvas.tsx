@@ -25,9 +25,12 @@ const Canvas = (props: {
     });
   };
   const drawImages = useMemo(async () => {
-    if (!drawCtx) {
+    if (!drawCtx || !canvasRef.current) {
       return;
     }
+    // Clear the canvas before we draw on it
+    drawCtx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+
     const w = props.width / pixelSize;
     const h = props.height / pixelSize;
     const s = splitSize;
@@ -35,9 +38,15 @@ const Canvas = (props: {
     if (s > w || s > h) {
       throw new Error("Square size exceeds dimensions of the image!");
     }
-    const yMax = Math.floor(h / s);
-    const xMax = Math.floor(w / s);
+    const yMax = Math.ceil(h / s);
+    const xMax = Math.ceil(w / s);
     const pixelWidth = s * p;
+
+    const outputHeight = yMax * pixelWidth;
+    const outputWidth = xMax * pixelWidth;
+
+    const offsetY = outputHeight > props.height ? (outputHeight - props.height) / 2 : 0;
+    const offsetX = outputWidth > props.width ? (outputWidth - props.width) / 2 : 0;
     
     for (let imgIdx = 0; imgIdx < images.length; imgIdx++) {
       const image = await getImage(images[imgIdx]);
@@ -45,7 +54,7 @@ const Canvas = (props: {
       for (let x = 0; x < xMax; x++) {
         for (let y = 0; y < yMax; y++) {
           // ctx.drawImage(image, srcX, srcY, srcWidth, srcHeight, dstX, dstY, dstWidth, dstHeight);
-          drawCtx.drawImage(image, x * s, y * s, s, s, x * pixelWidth + imgX * s, y * pixelWidth + imgY * s, s, s);
+          drawCtx.drawImage(image, x * s, y * s, s, s, x * pixelWidth + imgX * s - offsetX, y * pixelWidth + imgY * s - offsetY, s, s);
         }
       }
     }
