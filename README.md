@@ -350,4 +350,7 @@ Modify the 'number of images' slider to show the square instead of the square ro
 
 Also starting setting up basic styles for a messaging component. This will be useful to show errors and for debugging.
 
-[3 hours]
+---
+Added a framework for adding alerts for errors and debugging. Fixes #26.
+
+[4 hours]

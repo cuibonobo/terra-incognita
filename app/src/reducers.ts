@@ -2,7 +2,11 @@ import { Action, ActionTypes } from "./actions";
 import { AppState } from "./store";
 
 const isSessionAction = (action: Action): boolean => {
-  return action.type === ActionTypes.UpdateMessenger || action.type === ActionTypes.UpdateResizedImages || action.type === ActionTypes.UpdateLoadingStatus;
+  return action.type === ActionTypes.UpdateMessenger ||
+    action.type === ActionTypes.UpdateResizedImages ||
+    action.type === ActionTypes.UpdateLoadingStatus ||
+    action.type === ActionTypes.UpdateAlerts ||
+    action.type === ActionTypes.AddAlert;
 };
 
 const isReceivedAction = (action: Action): boolean => {
@@ -51,6 +55,16 @@ export const appReducer = (state: AppState, action: Action): AppState => {
       return {
         ...state,
         messenger: action.messenger
+      }
+    case ActionTypes.UpdateAlerts:
+      return {
+        ...state,
+        alerts: action.alerts
+      }
+    case ActionTypes.AddAlert:
+      return {
+        ...state,
+        alerts: [...state.alerts, action.alert]
       }
   }
 };

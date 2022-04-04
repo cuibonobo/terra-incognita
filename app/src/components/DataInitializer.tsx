@@ -7,7 +7,7 @@ import apiFactory from "../lib/api";
 import { getDiffResizedImageUrls } from "../lib/images";
 import messagesFactory from "../lib/messages";
 import Spinner from "./Spinner";
-import Messages from "./Messages";
+import Alerts from "./Alerts";
 
 const DataInitializer = (props: {children: ComponentChildren}) => {
   const {state, actions} = useStore();
@@ -46,14 +46,18 @@ const DataInitializer = (props: {children: ComponentChildren}) => {
 
   const messageHandler = (data: JSONObject): void => {
     if (data.type === undefined) {
-      console.error("Unrecognized message format", data);
+      const content = "Unrecognized message format";
+      console.error(content, data);
+      actions.addAlert({content, isError: true});
       return;
     }
     console.debug("Received message", data);
     actions.updateFromMessage((data as unknown) as Action);
   };
   const errorHandler = (error: Error): void => {
-    console.error("Messenger Error", error);
+    const content = error.message;
+    console.error("Messenger Error", content);
+    actions.addAlert({content, isError: true});
     // TODO: Block the UI for rate-limiter errors and reset to the last
     // state. Reload the page for other errors.
   };
@@ -70,7 +74,7 @@ const DataInitializer = (props: {children: ComponentChildren}) => {
 
   return (
     <Fragment>
-      <Messages messages={[]} />
+      <Alerts />
       {state.isLoading ? <Spinner /> : props.children}
     </Fragment>
   );

@@ -25,7 +25,7 @@ const messagesFactory = (messageHandler: (data: JSONObject) => void, errorHandle
 
   const rejoin = async () => {
     if (rejoined) {
-      console.error("Can't rejoin yet...");
+      errorHandler(new Error("Can't rejoin server yet..."));
       return;
     }
     rejoined = true;
@@ -39,7 +39,7 @@ const messagesFactory = (messageHandler: (data: JSONObject) => void, errorHandle
 
   const send = (data: JSONObject) => {
     if (sessionId === null) {
-      console.error("WebSocket is not ready for messages yet!");
+      errorHandler(new Error("WebSocket is not ready for messages yet!"));
       return;
     }
     ws.send(stringify(data));
@@ -53,11 +53,11 @@ const messagesFactory = (messageHandler: (data: JSONObject) => void, errorHandle
     ws.send(stringify({}));
   });
   ws.addEventListener('close', (event: CloseEvent) => {
-    console.error("WebSocket closed, reconnecting:", event.code, event.reason);
+    errorHandler(new Error(`WebSocket closed, reconnecting: ${event.code}, ${event.reason}`));
     rejoin();
   });
   ws.addEventListener('error', (_: Event) => {
-    console.error("WebSocket error, reconnecting.");
+    errorHandler(new Error("WebSocket error, reconnecting."));
     rejoin();
   });
 

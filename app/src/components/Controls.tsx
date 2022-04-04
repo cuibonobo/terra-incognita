@@ -17,7 +17,9 @@ const Controls = () => {
 
   const touchHandler = async (imgIndex: number) => {
     if (state.meta === null || state.numImagesSqrt === null || state.resizedImages === null || state.imgSquareSize === null) {
-      console.error("Attempting to update image array before app is ready.");
+      const content = "Attempting to update image array before app is ready.";
+      console.error(content);
+      actions.addAlert({content, isError: true});
       return;
     }
     actions.updateImgArray(await api.postImgArray(imgIndex));

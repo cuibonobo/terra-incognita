@@ -7,7 +7,9 @@ export enum ActionTypes {
   UpdateImgSquareSize,
   UpdateImgArray,
   UpdateResizedImages,
-  UpdateMessenger
+  UpdateMessenger,
+  UpdateAlerts,
+  AddAlert
 }
 
 interface BaseAction {
@@ -46,8 +48,16 @@ interface UpdateMessenger extends BaseAction {
   type: ActionTypes.UpdateMessenger,
   messenger: Messenger
 }
+interface UpdateAlerts extends BaseAction {
+  type: ActionTypes.UpdateAlerts,
+  alerts: AlertItem[]
+}
+interface AddAlert extends BaseAction {
+  type: ActionTypes.AddAlert,
+  alert: AlertItem
+}
 
-export type Action = UpdateLoadingStatus | UpdateMeta | UpdateNumImagesSqrt | UpdateImgSquareSize | UpdateImgArray | UpdateResizedImages | UpdateMessenger;
+export type Action = UpdateLoadingStatus | UpdateMeta | UpdateNumImagesSqrt | UpdateImgSquareSize | UpdateImgArray | UpdateResizedImages | UpdateMessenger | UpdateAlerts | AddAlert;
 
 export interface DispatchActions {
   updateLoadingStatus: (isLoading: boolean) => void,
@@ -57,7 +67,9 @@ export interface DispatchActions {
   updateImgArray: (imgArray: number[]) => void,
   updateResizedImages: (resizedUrls: string[]) => void,
   updateMessenger: (messenger: Messenger) => void,
-  updateFromMessage: (action: Action) => void
+  updateFromMessage: (action: Action) => void,
+  updateAlerts: (alerts: AlertItem[]) => void,
+  addAlert: (alert: AlertItem) => void
 }
 
 export const createDispatchActions = (dispatch: (action: Action) => void): DispatchActions => {
@@ -69,6 +81,8 @@ export const createDispatchActions = (dispatch: (action: Action) => void): Dispa
     updateImgArray: (imgArray: number[]) => dispatch({type: ActionTypes.UpdateImgArray, imgArray}),
     updateResizedImages: (resizedImages: string[]) => dispatch({type: ActionTypes.UpdateResizedImages, resizedImages}),
     updateMessenger: (messenger: Messenger) => dispatch({type: ActionTypes.UpdateMessenger, messenger}),
-    updateFromMessage: (action: Action) => dispatch(action)
+    updateFromMessage: (action: Action) => dispatch(action),
+    updateAlerts: (alerts: AlertItem[]) => dispatch({type: ActionTypes.UpdateAlerts, alerts}),
+    addAlert: (alert: AlertItem) => dispatch({type: ActionTypes.AddAlert, alert})
   };
 };
