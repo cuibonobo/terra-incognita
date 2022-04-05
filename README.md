@@ -354,3 +354,17 @@ Also starting setting up basic styles for a messaging component. This will be us
 Added a framework for adding alerts for errors and debugging. Fixes #26.
 
 [4 hours]
+
+### 04/04/2022
+Read through [this tutorial](https://medium.com/swlh/how-to-make-your-web-apps-work-offline-be6f27dd28e) and the [Parcel Service Workers](https://parceljs.org/languages/javascript/#service-workers) documentation to get a feel for how to get the page to work offline. I'm not sure if service workers must be written in JavaScript or if I can write them in TypeScript and have Parcel compile them at build time.
+
+---
+Adding TypeScript support didn't end up being hard, but I'm having a lot of trouble actually testing the offline support because Parcel adds `?<timestamp>` to the URL of an asset when I'm previewing the site. This doesn't seem to be the case when run a full build, but it's making debugging difficult.
+
+---
+The `--no-hmr` flag disables the timestamps, so I've added a script to start the app in 'offline mode' to test the service worker.
+
+---
+I'm seeing inconsistent behavior on Chrome and I'm not sure what to do about it. Service workers are extremely difficult to test.
+
+[4 hours]

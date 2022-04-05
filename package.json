@@ -15,7 +15,9 @@
     "scrape": "cd api && npm run scrape",
     "start:api": "cd api && npm run start",
     "start:app": "cd app && npm run start",
-    "start": "concurrently -k -p \"[{name}]\" -c \"cyan.bold,green.bold\" \"npm:start:api\" \"npm:start:app\""
+    "start:app:offline": "cd app && npm run start:offline",
+    "start": "concurrently -k -p \"[{name}]\" -c \"cyan.bold,green.bold\" \"npm:start:api\" \"npm:start:app\"",
+    "start:offline": "concurrently -k -p \"[{name}]\" -c \"cyan.bold,green.bold\" \"npm:start:api\" \"npm:start:app:offline\""
   },
   "repository": {
     "type": "git",

@@ -6,10 +6,17 @@
     <link rel="stylesheet" href="./index.css" />
     <link rel="shortcut icon" href="./media/favicon.ico" type="image/x-icon">
     <link rel="icon" href="./media/favicon.ico" type="image/x-icon">
+    <link rel="manifest" href="./app.webmanifest">
     <title>Terra Incognita 2.0</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="./index.tsx"></script>
+    <script type="module" src="./serviceWorker.ts"></script>
+    <!-- <script type="module">
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register(new URL('./serviceWorker.ts', import.meta.url), {type: 'module', scope: '/'});
+      }
+    </script> -->
   </body>
 </html>
