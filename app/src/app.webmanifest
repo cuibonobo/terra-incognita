@@ -40,6 +40,22 @@
       "src": "./icons/TerraLogo-192.png",
       "sizes": "192x192",
       "type": "image/png"
+    },
+    {
+      "src": "./icons/TerraLogo-256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/TerraLogo-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/TerraLogo-726.png",
+      "sizes": "726x726",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
