@@ -2,7 +2,7 @@
   "name": "Terra Incognita 2.0",
   "short_name": "Terra",
   "start_url": "/",
-  "display": "browser",
+  "display": "standalone",
   "background_color": "#ffffff",
   "description": "Terra Incognita 2.0 is a digital interactive collage that invites viewers to collaborate to generate/build/create their own landscape.",
   "dir": "ltr",

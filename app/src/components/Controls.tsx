@@ -63,12 +63,12 @@ const Controls = () => {
           value={state.imgSquareSize}
           setValue={imgSquareSizeHandler}
           label={<div class="flex flex-row space-x-4 items-center max-w-md mx-auto">
-            <img class='w-full h-full' src={ImageSizeMin} />
+            <img class='w-full h-full max-w-[10rem]' src={ImageSizeMin} alt="The minimum number of pixels in a square" />
             <div class="">
-              <img class='md:w-96 w-72 mt-4' src={Arrows} />
+              <img class='md:w-96 w-72 mt-4' src={Arrows} alt="The range between minimum and maximum" />
               <div class='text-center leading-5'>{state.imgSquareSize}</div>
             </div>
-            <img class='w-full h-full' src={ImageSizeMax} />
+            <img class='w-full h-full max-w-[10rem]' src={ImageSizeMax}alt="The maximum number of pixels in a square" />
           </div>}
         />
         <Slider
@@ -77,12 +77,12 @@ const Controls = () => {
           value={state.numImagesSqrt}
           setValue={numImagesHandler}
           label={<div class="flex flex-row space-x-4 items-center max-w-md mx-auto">
-          <img class='w-full h-full' src={NumImagesMin} />
+          <img class='w-full h-full max-w-[10rem]' src={NumImagesMin} alt="The minimum number of images to sample" />
           <div class="">
-            <img class='md:w-96 w-72 mt-4' src={Arrows} />
+            <img class='md:w-96 w-72 mt-4' src={Arrows} alt="The range between minimum and maximum" />
             <div class='text-center leading-5'>{Math.pow(state.numImagesSqrt, 2)}</div>
           </div>
-          <img class='w-full h-full' src={NumImagesMax} />
+          <img class='w-full h-full max-w-[10rem]' src={NumImagesMax} alt="The maximum number of images to sample" />
         </div>}
         />
         <ImageReplacer resizedImageUrls={state.resizedImages} touchHandler={touchHandler} />

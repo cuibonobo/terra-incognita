@@ -14,7 +14,7 @@ const Image = (props: {idx: number, src: string, touchHandler: (imgIndex: number
   };
 
   return (
-    <img class={`w-full h-full ${isLoading ? 'opacity-50' : ''}`} src={props.src} data-key={props.idx} onClick={touchHandler} />
+    <img class={`w-full h-full ${isLoading ? 'opacity-50' : ''}`} alt={`Image #${props.idx}`} src={props.src} data-key={props.idx} onClick={touchHandler} />
   );
 };
 
