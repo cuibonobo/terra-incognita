@@ -106,6 +106,11 @@ const messagesFactory = (messageHandler: (data: JSONObject) => void, errorHandle
       return;
     }
 
+    if (data.heartbeat) {
+      // Don't do anything with heartbeats
+      return;
+    }
+
     // Reject messages that don't have expected keys
     if (!data.timestamp || !data.sessionId) {
       console.debug("Missing timestamp or session ID. Rejecting.");

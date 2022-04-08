@@ -106,8 +106,9 @@ export default class Messenger {
           return;
         }
 
-        // We don't need to do anything with heartbeats
+        // Respond to heartbeats
         if (message.heartbeat) {
+          sendWebsocketMessage(session.websocket, {heartbeat: message.heartbeat});
           return;
         }
 
