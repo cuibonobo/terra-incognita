@@ -48,14 +48,14 @@ export default class Messenger {
     (websocket as any).accept();  // FIXME: Cloudflare WebSocket definition conflicts with DOM
     
     // Set up the rate limiter for this session
-    const limiterId = this.env.limiters.idFromName(ip);
-    const limiter = RateLimiterClient(
-      () => this.env.limiters.get(limiterId),
-      (err: Error) => {
-        console.error("Rate-limiter error", err.stack);
-        closeWebsocket(websocket, err.stack);
-      }
-    );
+    // const limiterId = this.env.limiters.idFromName(ip);
+    // const limiter = RateLimiterClient(
+    //   () => this.env.limiters.get(limiterId),
+    //   (err: Error) => {
+    //     console.error("Rate-limiter error", err.stack);
+    //     closeWebsocket(websocket, err.stack);
+    //   }
+    // );
 
     // Create a new session and add it to the sessions list
     const session: Session = {
@@ -85,11 +85,11 @@ export default class Messenger {
           return;
         }
 
-        if (!limiter.canPost()) {
-          console.info("Rate-limiting this session", ip, session.id);
-          sendWebsocketError(websocket, ErrorTypes.RateLimitError, 'Your IP is being rate-limited. Please try again later.');
-          return;
-        }
+        // if (!limiter.canPost()) {
+        //   console.info("Rate-limiting this session", ip, session.id);
+        //   sendWebsocketError(websocket, ErrorTypes.RateLimitError, 'Your IP is being rate-limited. Please try again later.');
+        //   return;
+        // }
 
         if (!session.id) {
           // Having an ID is a signal that the session is ready to receive messages
