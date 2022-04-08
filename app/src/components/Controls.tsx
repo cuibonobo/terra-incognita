@@ -10,6 +10,19 @@ import { useStore } from '../hooks';
 import apiFactory from '../lib/api';
 import Spinner from './Spinner';
 
+const SliderGraphics = (props: {value: number, minSrc: string, minAlt: string, maxSrc: string, maxAlt: string}) => {
+  return (
+    <div class="flex flex-row space-x-4 items-center max-w-md mx-auto">
+      <img class='w-full md:h-24 h-12 md:max-w-[10rem] max-w-[6rem]' src={props.minSrc} alt={props.minAlt} />
+      <div class="w-full">
+        <img class='w-full md:h-6 h-4 md:max-w-[10rem] max-w-[6rem] mt-4' src={Arrows} alt="The range between minimum and maximum" />
+        <div class='text-center md:text-base text-sm leading-5'>{props.value}</div>
+      </div>
+      <img class='w-full md:h-24 h-12 md:max-w-[10rem] max-w-[6rem]' src={props.maxSrc}alt={props.maxAlt} />
+    </div>
+  );
+};
+
 const Controls = () => {
   const {state, actions} = useStore();
   const [isCooling, setIsCooling] = useState<boolean>(false);
@@ -62,28 +75,20 @@ const Controls = () => {
           max={state.meta.maxImgSquareSize}
           value={state.imgSquareSize}
           setValue={imgSquareSizeHandler}
-          label={<div class="flex flex-row space-x-4 items-center max-w-md mx-auto">
-            <img class='w-full h-full md:max-w-[10rem] max-w-[6rem]' src={ImageSizeMin} alt="The minimum number of pixels in a square" />
-            <div class="">
-              <img class='md:w-96 w-72 mt-4' src={Arrows} alt="The range between minimum and maximum" />
-              <div class='text-center leading-5'>{state.imgSquareSize}</div>
-            </div>
-            <img class='w-full h-full md:max-w-[10rem] max-w-[6rem]' src={ImageSizeMax}alt="The maximum number of pixels in a square" />
-          </div>}
+          label={<SliderGraphics value={state.imgSquareSize}
+            minSrc={ImageSizeMin} minAlt="The minimum number of pixels in a square"
+            maxSrc={ImageSizeMax} maxAlt="The maximum number of pixels in a square"
+          />}
         />
         <Slider
           min={state.meta.minNumImagesSqrt}
           max={state.meta.maxNumImagesSqrt}
           value={state.numImagesSqrt}
           setValue={numImagesHandler}
-          label={<div class="flex flex-row space-x-4 items-center max-w-md mx-auto">
-          <img class='w-full h-full md:max-w-[10rem] max-w-[6rem]' src={NumImagesMin} alt="The minimum number of images to sample" />
-          <div class="">
-            <img class='md:w-96 w-72 mt-4' src={Arrows} alt="The range between minimum and maximum" />
-            <div class='text-center leading-5'>{Math.pow(state.numImagesSqrt, 2)}</div>
-          </div>
-          <img class='w-full h-full md:max-w-[10rem] max-w-[6rem]' src={NumImagesMax} alt="The maximum number of images to sample" />
-        </div>}
+          label={<SliderGraphics value={Math.pow(state.numImagesSqrt, 2)}
+            minSrc={NumImagesMin} minAlt="The minimum number of images to sample"
+            maxSrc={NumImagesMax} maxAlt="The range between minimum and maximum"
+          />}
         />
         <ImageReplacer resizedImageUrls={state.resizedImages} touchHandler={touchHandler} />
       </div>
