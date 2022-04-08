@@ -8,11 +8,13 @@ import { getDiffResizedImageUrls } from "../lib/images";
 import messagesFactory, { RateLimitError } from "../lib/messages";
 import Spinner from "./Spinner";
 import Alerts from "./Alerts";
+import { useLocation } from "react-router-dom";
 
 const RELOAD_TIMEOUT = 3;
 
 const DataInitializer = (props: {children: ComponentChildren}) => {
   const {state, actions} = useStore();
+  const location = useLocation();
   // Keep a copy of values that cause secondary effects so we can use them for comparison
   const [imgArray, setImgArray] = useState<number[]>([]);
   const [numImagesSqrt, setNumImagesSqrt] = useState<number>(0);
@@ -20,6 +22,10 @@ const DataInitializer = (props: {children: ComponentChildren}) => {
   const api = apiFactory();
 
   const init = async () => {
+    // Don't block loading for pages that don't show artwork
+    if (location.pathname === '/about' || location.pathname === '/qrcode') {
+      actions.updateLoadingStatus(false);
+    }
     // Request all init values in parallel and update them
     const [meta, numImagesSqrt, imgArray, imgSquareSize] = await Promise.all([api.getMeta(), api.getNumImagesSqrt(), api.getImgArray(), api.getImgSquareSize()]);
     actions.updateMeta(meta);
