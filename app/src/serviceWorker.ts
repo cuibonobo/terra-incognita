@@ -27,7 +27,7 @@ self.addEventListener('fetch', (e: Event) => {
       }
       return response;
     } catch(err: unknown) {
-      return await caches.match(event.request) || new Response("Offline", {status: 404});
+      return await caches.match(event.request) || new Response("url:./index.html");
     }
   })());
 });

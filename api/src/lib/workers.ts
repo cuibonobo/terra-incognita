@@ -1,4 +1,4 @@
-import { stringify } from "../../../shared";
+import { ErrorTypes, stringify } from "../../../shared";
 
 export const getKvData = async <T>(key: string, env: Bindings): Promise<T> => {
   const result = await env.DATA.get(key);
@@ -50,8 +50,8 @@ export const sendWebsocketReady = (websocket: WebSocket, sessionId: string) => {
   sendWebsocketMessage(websocket, {ready: true, sessionId});
 };
 
-export const sendWebsocketError = (websocket: WebSocket, message?: string) => {
-  sendWebsocketMessage(websocket, {error: message});
+export const sendWebsocketError = (websocket: WebSocket, errorType: ErrorTypes, message?: string) => {
+  sendWebsocketMessage(websocket, {error: message ? message : errorType, type: errorType});
 };
 
 export const handleErrors = (request: Request, func: () => Promise<Response>) => {
@@ -64,7 +64,7 @@ export const handleErrors = (request: Request, func: () => Promise<Response>) =>
         // we return an HTTP error. Instead we show a WebSocket error response.
         const [client, worker] = Object.values(new WebSocketPair());
         (worker as any).accept();  // FIXME: @cloudflare/workers-types isn't working here
-        sendWebsocketError(worker, err.stack);
+        sendWebsocketError(worker, ErrorTypes.WebSocketError, err.stack);
         closeWebsocket(worker, 'Uncaught exception during session startup');
         return new Response(null, {status: 101, webSocket: client});
       }

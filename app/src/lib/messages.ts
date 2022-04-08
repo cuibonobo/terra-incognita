@@ -1,6 +1,31 @@
-import { JSONObject, JSONValue, stringify } from "../../../shared";
+import { JSONObject, JSONValue, stringify,ErrorTypes } from "../../../shared";
 
 const REJOIN_TIMEOUT = 10;
+
+export class RateLimitError extends Error {};
+export class WebSocketError extends Error {};
+export class ConnectionError extends Error {};
+export class ServerError extends Error {};
+
+export interface WebSocketErrorMessage {
+  type: ErrorTypes,
+  error: string
+}
+
+export const getErrorFromWebSocketMessage = (err: WebSocketErrorMessage): Error  => {
+  switch(err.type) {
+    case ErrorTypes.RateLimitError:
+      return new RateLimitError(err.error);
+    case ErrorTypes.WebSocketError:
+      return new WebSocketError(err.error);
+    case ErrorTypes.ConnectionError:
+      return new ConnectionError(err.error);
+    case ErrorTypes.ServerError:
+      return new ServerError(err.error);
+    default:
+      return new Error(err.error);
+  }
+};
 
 const messagesFactory = (messageHandler: (data: JSONObject) => void, errorHandler: (error: Error) => void) => {
   const hostname = (new URL(window.location.href).hostname);
@@ -25,7 +50,7 @@ const messagesFactory = (messageHandler: (data: JSONObject) => void, errorHandle
 
   const rejoin = async () => {
     if (rejoined) {
-      errorHandler(new Error("Can't rejoin server yet..."));
+      console.log("Rejoin request is too soon. Can't rejoin yet...");
       return;
     }
     rejoined = true;
@@ -47,17 +72,17 @@ const messagesFactory = (messageHandler: (data: JSONObject) => void, errorHandle
 
   init();
 
-  ws.addEventListener('open', (event: Event) => {
+  ws.addEventListener('open', (_: Event) => {
     // Send an empty object as our first message
     console.debug("WebSocket has opened.");
     ws.send(stringify({}));
   });
-  ws.addEventListener('close', (event: CloseEvent) => {
-    errorHandler(new Error(`WebSocket closed, reconnecting: ${event.code}, ${event.reason}`));
+  ws.addEventListener('close', (_: CloseEvent) => {
+    errorHandler(new Error("Server connection closed"));
     rejoin();
   });
   ws.addEventListener('error', (_: Event) => {
-    errorHandler(new Error("WebSocket error, reconnecting."));
+    errorHandler(new Error("Connection error!"));
     rejoin();
   });
 
@@ -70,8 +95,9 @@ const messagesFactory = (messageHandler: (data: JSONObject) => void, errorHandle
     }
 
     if (data.error) {
-      // TODO: Errors should have specific types so that we can handle them differently
-      return errorHandler(new Error(data.error as string));
+      const error = (data as unknown) as WebSocketErrorMessage;
+      console.log("handling event listener error", error)
+      return errorHandler(getErrorFromWebSocketMessage(error));
     }
 
     if (data.ready) {

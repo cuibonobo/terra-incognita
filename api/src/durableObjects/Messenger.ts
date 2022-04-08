@@ -1,4 +1,4 @@
-import { getRandomString, JSONValue, stringify } from "../../../shared";
+import { ErrorTypes, getRandomString, JSONValue, stringify } from "../../../shared";
 import { handleErrors, closeWebsocket, sendWebsocketError, sendWebsocketReady, sendWebsocketMessage } from "../lib/workers";
 import { RateLimiterClient } from "./RateLimiter";
 
@@ -87,7 +87,7 @@ export default class Messenger {
 
         if (!limiter.canPost()) {
           console.info("Rate-limiting this session", ip, session.id);
-          sendWebsocketError(websocket, 'Your IP is being rate-limited. Please try again later.');
+          sendWebsocketError(websocket, ErrorTypes.RateLimitError, 'Your IP is being rate-limited. Please try again later.');
           return;
         }
 
@@ -119,7 +119,7 @@ export default class Messenger {
       } catch (e) {
         const err = e as Error;
         console.error("Message event listener error", err.stack);
-        sendWebsocketError(websocket, err.stack);
+        sendWebsocketError(websocket, ErrorTypes.ServerError, err.stack);
       }
     });
   }

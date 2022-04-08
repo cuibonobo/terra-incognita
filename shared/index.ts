@@ -22,6 +22,13 @@ export interface Meta {
   cooldownTimeout: number
 }
 
+export enum ErrorTypes {
+  RateLimitError = "RateLimitError",
+  WebSocketError = "WebSocketError",
+  ConnectionError = "ConnectionError",
+  ServerError = "ServerError"
+}
+
 export const getNumArray = (minimum: number, maximum: number, length: number): number[] => {
   const output: number[] = [];
   if (maximum - minimum < length) {

@@ -5,9 +5,11 @@ import { Action } from "../actions";
 import { useStore } from "../hooks";
 import apiFactory from "../lib/api";
 import { getDiffResizedImageUrls } from "../lib/images";
-import messagesFactory from "../lib/messages";
+import messagesFactory, { RateLimitError } from "../lib/messages";
 import Spinner from "./Spinner";
 import Alerts from "./Alerts";
+
+const RELOAD_TIMEOUT = 3;
 
 const DataInitializer = (props: {children: ComponentChildren}) => {
   const {state, actions} = useStore();
@@ -54,12 +56,13 @@ const DataInitializer = (props: {children: ComponentChildren}) => {
     console.debug("Received message", data);
     actions.updateFromMessage((data as unknown) as Action);
   };
-  const errorHandler = (error: Error): void => {
-    const content = error.message;
-    console.error("Messenger Error", content);
-    actions.addAlert({content, isError: true});
-    // TODO: Block the UI for rate-limiter errors and reset to the last
-    // state. Reload the page for other errors.
+  const errorHandler = <T extends Error>(error: T): void => {
+    console.error(error.name, error.message);
+    actions.addAlert({content: error.message, isError: true});
+    if (!(error instanceof RateLimitError)) {
+      actions.addAlert({content: `Reloading page in ${RELOAD_TIMEOUT} seconds`});
+      setTimeout(() => window.location.reload(), RELOAD_TIMEOUT * 1000);
+    }
   };
 
   // Fires once on first load to get init values
