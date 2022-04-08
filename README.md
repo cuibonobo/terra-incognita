@@ -368,3 +368,35 @@ The `--no-hmr` flag disables the timestamps, so I've added a script to start the
 I'm seeing inconsistent behavior on Chrome and I'm not sure what to do about it. Service workers are extremely difficult to test.
 
 [4 hours]
+
+### 04/06/2022
+I ran PWA tester application and it had a lot of suggestions for how to improve the app, so I went through a bunch of those today: adding different-sized icons, improving the site WebManifest, adding some missing `<meta>` tags, etc. I also fixed an issue related to slider sizes being too large on mobile.
+
+---
+Started work on fixing some of the error messages but got stuck on how to transmit the error types.
+
+[3 hours]
+
+### 04/07/2022
+I was stuck yesterday because for some reason the classes and functions that I defined in the shared library aren't getting compiled correctly. I ended up just moving the definitions to the app project and that fixed the problem. It's puzzling because I have other functions in the shared library that work fine. It seems like it hates classes for some reason, but I don't have time to investigate that now.
+
+---
+Ron was doing more testing at the museum today and based on how I hear him and the curator talking about the error messages, I feel like they are actually confusing people more than transmitting any helpful information. I think I'm going to just remove all the error messages except for the rate-limiter (so that people have feedback about why they can't send commands). Also, Ron sent me a picture of his phone and I noticed that the slider graphics were still too large, so there's still more work to do there.
+
+---
+Added some new state variables to save whether the app is offline or in the process of reloading. If we're on the artwork page and detect a server error, it should just refresh automatically. If we're on a page that shows controls it will show that the interface is offline. It has been surprising just how many icons need to be generated for a project like this.
+
+[3 hours]
+
+### 04/08/2022
+The curator expressed some frustration about the rate-limiter messages so I'm just going to comment out that feature for now.
+
+---
+I've left a browser on the production site on both Chrome and Firefox and on both browsers I noticed that the websocket closes itself after a few minutes!! When I run the page on localhost it would just remain up indefinitely, which is why I never noticed this behavior. This explains why we've been having so much trouble! It's not that the connection has been spotty (though that probably didn't help). Seeing this, I will probably implement some heartbeat logic and see if the socket ever reconnects or if refreshing is the only option at that point.
+
+I also noticed the slider jumping behavior on Firefox that Ron mentioned before, so I will need to tackle that as well.
+
+---
+Updated the server so that it saves the full state of the artwork whenever there is a request. Fixes #11. Technically not a priority but I really wanted to save the full history of the artwork as it changes over time.
+
+[1.5 hour]

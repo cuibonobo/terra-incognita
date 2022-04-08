@@ -126,13 +126,36 @@ export default class Messenger {
 
         this.broadcast(broadcastMessage);
 
-        // TODO: Save the message
+        // Save the current state
+        const [numImagesSqrt, imgSquareSize, totalImages, imgArray] = await Promise.all([
+          this.env.DATA.get('numImagesSqrt'),
+          this.env.DATA.get('imgSquareSize'),
+          this.env.DATA.get('totalImages'),
+          this.env.DATA.get('imgArray')
+        ]);
+        await this.env.LOGS.put(this.getTimeKey(), JSON.stringify({
+          ...broadcastMessage,
+          ip, numImagesSqrt, imgSquareSize, totalImages, imgArray
+        }));
       } catch (e) {
         const err = e as Error;
         console.error("Message event listener error", err.stack);
         sendWebsocketError(websocket, ErrorTypes.ServerError, err.stack);
       }
     });
+  }
+
+  getTimeKey(): string {
+    const date = new Date();
+    const year = String(date.getFullYear()).padStart(4, '0');
+    // We add 1 to the month because it's zero-indexed
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    const second = String(date.getSeconds()).padStart(2, '0');
+    const millisecond = String(date.getMilliseconds()).padStart(3, '0');
+    return `${year}:${month}:${day}:${hour}:${minute}:${second}:${millisecond}`;
   }
 
   async broadcast(message: JSONValue) {

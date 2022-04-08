@@ -10,7 +10,8 @@ compatibility_date = "2021-11-15"
 compatibility_flags = []
 
 kv_namespaces = [
-  { binding = "DATA", id = "b0dd6f3a041e4f48939e47e900f42a9c" }
+  { binding = "DATA", id = "b0dd6f3a041e4f48939e47e900f42a9c" },
+  { binding = "LOGS", id = "a4300d13073f4c56ae1c4ea1bc87a233" }
 ]
 
 [vars]
