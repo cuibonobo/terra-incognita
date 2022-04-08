@@ -402,4 +402,7 @@ Updated the server so that it saves the full state of the artwork whenever there
 ---
 I noticed a few error responses in the Cloudflare dashboard but I have no way of inspecting logs unless I'm constantly tailing them. The way workers handle logging is honestly pretty annoying. I've updated the error handler to accept the environment so that we can save to the `LOGS` KV when there's an error.
 
-[2.5 hour]
+---
+I've just confirmed that [Cloudflare will close WebSocket connections that are dormant for 100 seconds](https://stackoverflow.com/a/41031976/2001558), so I've implemented a heartbeat on the client side that sends a short message every 30 seconds. Fixes #24. Originally I wanted to implement the heartbeat on the server side but I didn't see an obvious way to do that.
+
+[3 hours]

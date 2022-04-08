@@ -106,6 +106,11 @@ export default class Messenger {
           return;
         }
 
+        // We don't need to do anything with heartbeats
+        if (message.heartbeat) {
+          return;
+        }
+
         // Sanitize the message and add some metadata
         const msgKeys = Object.keys(message);
         if (msgKeys.length !== 2) {

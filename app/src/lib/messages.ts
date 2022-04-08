@@ -1,6 +1,7 @@
 import { JSONObject, JSONValue, stringify,ErrorTypes } from "../../../shared";
 
-const REJOIN_TIMEOUT = 10;
+const REJOIN_TIMEOUT = 3;
+const HEARTBEAT_TIMEOUT = 30;
 
 export class RateLimitError extends Error {};
 export class WebSocketError extends Error {};
@@ -125,6 +126,14 @@ const messagesFactory = (messageHandler: (data: JSONObject) => void, errorHandle
     }
     messageHandler(data);
   });
+
+  // Create a heartbeat
+  setInterval(() => {
+    if (!sessionId) {
+      return;
+    }
+    send({heartbeat: sessionId});
+  }, HEARTBEAT_TIMEOUT * 1000);
 
   return {
     send
