@@ -1,4 +1,4 @@
-import { ErrorTypes, getRandomString, JSONValue, stringify } from "../../../shared";
+import { ErrorTypes, getRandomString, JSONObject, JSONValue, stringify } from "../../../shared";
 import { handleErrors, closeWebsocket, sendWebsocketError, sendWebsocketReady, sendWebsocketMessage } from "../lib/workers";
 import { RateLimiterClient } from "./RateLimiter";
 
@@ -106,14 +106,25 @@ export default class Messenger {
           return;
         }
 
-        // TODO: Sanitize message
-        message.sessionId = session.id;
+        // Sanitize the message and add some metadata
+        const msgKeys = Object.keys(message);
+        if (msgKeys.length !== 2) {
+          return;
+        }
+        const typeIdx = msgKeys.indexOf('type');
+        if (typeIdx < 0) {
+          return;
+        }
+        const broadcastMessage: JSONObject = {
+          ...message,
+          sessionId: session.id,
+          timestamp: Math.max(Date.now(), this.lastTimestamp + 1)
+        };
 
         // Set a timestamp on the message
-        message.timestamp = Math.max(Date.now(), this.lastTimestamp + 1);
-        this.lastTimestamp = message.timestamp;
+        this.lastTimestamp = broadcastMessage.timestamp as number;
 
-        this.broadcast(message);
+        this.broadcast(broadcastMessage);
 
         // TODO: Save the message
       } catch (e) {
