@@ -10,7 +10,7 @@ import Spinner from "./Spinner";
 import Alerts from "./Alerts";
 import { useLocation } from "react-router-dom";
 
-const RELOAD_TIMEOUT = 3;
+const RELOAD_TIMEOUT = 0.5;
 
 const DataInitializer = (props: {children: ComponentChildren}) => {
   const {state, actions} = useStore();
