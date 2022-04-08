@@ -12,7 +12,7 @@ rootRouter.all('*', siteRouter.handle);
 
 const worker: ExportedHandler<Bindings> = {
   fetch: async (request: Request, env: Bindings) => {
-    return handleErrors(request, () => {
+    return handleErrors(request, env, () => {
       return rootRouter.handle(request, env);
     });
   }

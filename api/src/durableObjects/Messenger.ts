@@ -1,5 +1,5 @@
 import { ErrorTypes, getRandomString, JSONObject, JSONValue, stringify } from "../../../shared";
-import { handleErrors, closeWebsocket, sendWebsocketError, sendWebsocketReady, sendWebsocketMessage } from "../lib/workers";
+import { handleErrors, closeWebsocket, sendWebsocketError, sendWebsocketReady, sendWebsocketMessage, getTimeKey } from "../lib/workers";
 import { RateLimiterClient } from "./RateLimiter";
 
 const SESSION_ID_LENGTH = 12;
@@ -23,7 +23,7 @@ export default class Messenger {
   }
 
   async fetch(request: Request, env: Bindings) {
-    return handleErrors(request, async () => {
+    return handleErrors(request, this.env, async () => {
       if (request.headers.get('Upgrade') !== 'websocket') {
         return new Response("Expected websocket", {status: 400});
       }
@@ -133,7 +133,7 @@ export default class Messenger {
           this.env.DATA.get('totalImages'),
           this.env.DATA.get('imgArray')
         ]);
-        await this.env.LOGS.put(this.getTimeKey(), JSON.stringify({
+        await this.env.LOGS.put(getTimeKey(), JSON.stringify({
           ...broadcastMessage,
           ip, numImagesSqrt, imgSquareSize, totalImages, imgArray
         }));
@@ -143,19 +143,6 @@ export default class Messenger {
         sendWebsocketError(websocket, ErrorTypes.ServerError, err.stack);
       }
     });
-  }
-
-  getTimeKey(): string {
-    const date = new Date();
-    const year = String(date.getFullYear()).padStart(4, '0');
-    // We add 1 to the month because it's zero-indexed
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hour = String(date.getHours()).padStart(2, '0');
-    const minute = String(date.getMinutes()).padStart(2, '0');
-    const second = String(date.getSeconds()).padStart(2, '0');
-    const millisecond = String(date.getMilliseconds()).padStart(3, '0');
-    return `${year}:${month}:${day}:${hour}:${minute}:${second}:${millisecond}`;
   }
 
   async broadcast(message: JSONValue) {

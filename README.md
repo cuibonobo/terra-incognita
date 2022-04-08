@@ -399,4 +399,7 @@ I also noticed the slider jumping behavior on Firefox that Ron mentioned before,
 ---
 Updated the server so that it saves the full state of the artwork whenever there is a request. Fixes #11. Technically not a priority but I really wanted to save the full history of the artwork as it changes over time.
 
-[1.5 hour]
+---
+I noticed a few error responses in the Cloudflare dashboard but I have no way of inspecting logs unless I'm constantly tailing them. The way workers handle logging is honestly pretty annoying. I've updated the error handler to accept the environment so that we can save to the `LOGS` KV when there's an error.
+
+[2.5 hour]

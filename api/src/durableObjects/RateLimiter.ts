@@ -18,7 +18,7 @@ export default class RateLimiter {
   }
 
   async fetch(request: Request, env: Bindings) {
-    return handleErrors(request, async () => {
+    return handleErrors(request, this.env, async () => {
       if (this.cooldownTimeout === null) {
         const meta: Meta = await getKvData('meta', this.env);
         this.cooldownTimeout = meta.cooldownTimeout;
