@@ -6,6 +6,7 @@ import ImageSizeMin from 'url:../media/ImageSizeMin.svg';
 import ImageSizeMax from 'url:../media/ImageSizeMax.svg';
 import NumImagesMin from 'url:../media/NumImagesMin.svg';
 import NumImagesMax from 'url:../media/NumImagesMax.svg';
+import TerraOffline from 'url:../media/TerraOffline.png';
 import { useStore } from '../hooks';
 import apiFactory from '../lib/api';
 import Spinner from './Spinner';
@@ -68,7 +69,13 @@ const Controls = () => {
 
   return (
     <div class="mx-auto relative w-full 2xl:w-1/2 xl:w-3/5 md:w-4/5">
-      {isCooling ? <Spinner textContent='Updating...' overlay={true} /> : ''}
+      <Spinner
+        imageSrc={TerraOffline}
+        textContent='Your session is currently offline. Try refreshing the page or checking back in a few minutes...'
+        overlay={true}
+        isHidden={!state.isOffline}
+      />
+      <Spinner textContent='Updating...' overlay={true} isHidden={!isCooling} />
       <div class="flex relative flex-col p-4 space-y-8">
         <Slider
           min={state.meta.minImgSquareSize}

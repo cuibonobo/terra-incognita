@@ -10,7 +10,9 @@ export interface AppState {
   imgArray: number[] | null,
   resizedImages: string[] | null,
   messenger: {send: (data: any) => void} | null,
-  alerts: AlertItem[]
+  alerts: AlertItem[],
+  isReloading: boolean,
+  isOffline: boolean
 }
 
 export const initialState: AppState = {
@@ -21,7 +23,9 @@ export const initialState: AppState = {
   imgArray: null,
   resizedImages: null,
   messenger: null,
-  alerts: []
+  alerts: [],
+  isReloading: false,
+  isOffline: false
 }
 
 interface ContextProps {

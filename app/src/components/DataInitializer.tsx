@@ -65,9 +65,14 @@ const DataInitializer = (props: {children: ComponentChildren}) => {
   const errorHandler = <T extends Error>(error: T): void => {
     console.error(error.name, error.message);
     actions.addAlert({content: error.message, isError: true});
-    if (!(error instanceof RateLimitError)) {
-      actions.addAlert({content: `Reloading page in ${RELOAD_TIMEOUT} seconds`});
-      setTimeout(() => window.location.reload(), RELOAD_TIMEOUT * 1000);
+    if (!(error instanceof RateLimitError) && !state.isReloading) {
+      if (location.pathname === '/artwork') {
+        actions.addAlert({content: `Reloading page in ${RELOAD_TIMEOUT} seconds`});
+        setTimeout(() => window.location.reload(), RELOAD_TIMEOUT * 1000);
+        actions.updateIsReloading(true);
+      } else {
+        actions.updateIsOffline(true);
+      }
     }
   };
 

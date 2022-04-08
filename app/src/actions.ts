@@ -9,7 +9,9 @@ export enum ActionTypes {
   UpdateResizedImages,
   UpdateMessenger,
   UpdateAlerts,
-  AddAlert
+  AddAlert,
+  UpdateIsReloading,
+  UpdateIsOffline
 }
 
 interface BaseAction {
@@ -56,8 +58,17 @@ interface AddAlert extends BaseAction {
   type: ActionTypes.AddAlert,
   alert: AlertItem
 }
+interface UpdateIsReloading extends BaseAction {
+  type: ActionTypes.UpdateIsReloading,
+  isReloading: boolean
+}
+interface UpdateIsOffline extends BaseAction {
+  type: ActionTypes.UpdateIsOffline,
+  isOffline: boolean
+}
 
-export type Action = UpdateLoadingStatus | UpdateMeta | UpdateNumImagesSqrt | UpdateImgSquareSize | UpdateImgArray | UpdateResizedImages | UpdateMessenger | UpdateAlerts | AddAlert;
+export type Action = UpdateLoadingStatus | UpdateMeta | UpdateNumImagesSqrt | UpdateImgSquareSize |
+  UpdateImgArray | UpdateResizedImages | UpdateMessenger | UpdateAlerts | AddAlert | UpdateIsReloading | UpdateIsOffline;
 
 export interface DispatchActions {
   updateLoadingStatus: (isLoading: boolean) => void,
@@ -69,7 +80,9 @@ export interface DispatchActions {
   updateMessenger: (messenger: Messenger) => void,
   updateFromMessage: (action: Action) => void,
   updateAlerts: (alerts: AlertItem[]) => void,
-  addAlert: (alert: AlertItem) => void
+  addAlert: (alert: AlertItem) => void,
+  updateIsReloading: (isReloading: boolean) => void,
+  updateIsOffline: (isOffline: boolean) => void
 }
 
 export const createDispatchActions = (dispatch: (action: Action) => void): DispatchActions => {
@@ -83,6 +96,8 @@ export const createDispatchActions = (dispatch: (action: Action) => void): Dispa
     updateMessenger: (messenger: Messenger) => dispatch({type: ActionTypes.UpdateMessenger, messenger}),
     updateFromMessage: (action: Action) => dispatch(action),
     updateAlerts: (alerts: AlertItem[]) => dispatch({type: ActionTypes.UpdateAlerts, alerts}),
-    addAlert: (alert: AlertItem) => dispatch({type: ActionTypes.AddAlert, alert})
+    addAlert: (alert: AlertItem) => dispatch({type: ActionTypes.AddAlert, alert}),
+    updateIsReloading: (isReloading: boolean) => dispatch({type: ActionTypes.UpdateIsReloading, isReloading}),
+    updateIsOffline: (isOffline: boolean) => dispatch({type: ActionTypes.UpdateIsOffline, isOffline})
   };
 };

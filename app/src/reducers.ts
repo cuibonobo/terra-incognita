@@ -6,7 +6,9 @@ const isSessionAction = (action: Action): boolean => {
     action.type === ActionTypes.UpdateResizedImages ||
     action.type === ActionTypes.UpdateLoadingStatus ||
     action.type === ActionTypes.UpdateAlerts ||
-    action.type === ActionTypes.AddAlert;
+    action.type === ActionTypes.AddAlert ||
+    action.type === ActionTypes.UpdateIsOffline ||
+    action.type === ActionTypes.UpdateIsReloading;
 };
 
 const isReceivedAction = (action: Action): boolean => {
@@ -45,26 +47,36 @@ export const appReducer = (state: AppState, action: Action): AppState => {
       return {
         ...state,
         imgArray: action.imgArray
-      }
+      };
     case ActionTypes.UpdateResizedImages:
       return {
         ...state,
         resizedImages: action.resizedImages
-      }
+      };
     case ActionTypes.UpdateMessenger:
       return {
         ...state,
         messenger: action.messenger
-      }
+      };
     case ActionTypes.UpdateAlerts:
       return {
         ...state,
         alerts: action.alerts
-      }
+      };
     case ActionTypes.AddAlert:
       return {
         ...state,
         alerts: [...state.alerts, action.alert]
-      }
+      };
+    case ActionTypes.UpdateIsReloading:
+      return {
+        ...state,
+        isReloading: action.isReloading
+      };
+    case ActionTypes.UpdateIsOffline:
+      return {
+        ...state,
+        isOffline: action.isOffline
+      };
   }
 };
