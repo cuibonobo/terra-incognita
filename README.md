@@ -415,4 +415,7 @@ I think the next step is probably sending the entire server state on reconnect s
 ---
 I'm doing way fewer requests on initialization by setting up the app state based on the ready message. Now I don't have to worry about possibly falling out of sync between initialization and the first message. Fixes #23.
 
-[4.5 hours]
+---
+Added an information button to the controls page. It always takes me WAY too long to do CSS changes... Fixes #27.
+
+[6 hours]

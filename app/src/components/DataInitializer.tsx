@@ -37,6 +37,7 @@ const DataInitializer = (props: {children: ComponentChildren}) => {
       return;
     }
     actions.updateResizedImages(await getDiffResizedImageUrls(state.meta.imgWidth, state.meta.imgHeight, state.imgSquareSize, imgArray, state.imgArray, numImagesSqrt, state.numImagesSqrt, state.resizedImages));
+    actions.updateLoadingStatus(false);
     setImgArray(state.imgArray);
     setNumImagesSqrt(state.numImagesSqrt);
   };
@@ -45,7 +46,6 @@ const DataInitializer = (props: {children: ComponentChildren}) => {
     if (data.ready) {
       actions.updateAppState(data.imgArray as number[], data.imgSquareSize as number, data.numImagesSqrt as number);
       actions.updateIsOffline(false);
-      actions.updateLoadingStatus(false);
       return;
     }
     if (data.type === undefined) {

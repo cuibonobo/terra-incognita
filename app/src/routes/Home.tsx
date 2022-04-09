@@ -8,7 +8,7 @@ const Home = () => {
       <Artwork canvasClass='w-full' />
       <article class='prose'>
         <blockquote class="italic text-gray-500 quote">
-          <p class="my-2 text-3xl">A sort of luminous, geometric, incandescent immensity.</p>
+          <p class="my-2 md:text-3xl text-2xl">A sort of luminous, geometric, incandescent immensity.</p>
           <cite><span class="text-base">Jean Baudrillard</span></cite>
         </blockquote>
         <p>Terra Incognita 2.0 is a digital interactive collage that invites viewers to collaborate to generate/build/create their own landscape.</p>
