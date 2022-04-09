@@ -38,6 +38,25 @@ export const optionsResponse = (options: string = '*'): Response => {
   }});
 };
 
+const parseEnvData = (data: string | null) => {
+  return data === null ? null : JSON.parse(data);
+};
+
+export const getAppState = async (env: Bindings) => {
+  const [numImagesSqrt, imgSquareSize, totalImages, imgArray] = await Promise.all([
+    env.DATA.get('numImagesSqrt'),
+    env.DATA.get('imgSquareSize'),
+    env.DATA.get('totalImages'),
+    env.DATA.get('imgArray')
+  ]);
+  return {
+    numImagesSqrt: parseEnvData(numImagesSqrt),
+    imgSquareSize: parseEnvData(imgSquareSize),
+    totalImages: parseEnvData(totalImages),
+    imgArray: parseEnvData(imgArray)
+  };
+};
+
 export const getTimeKey = (): string => {
   const date = new Date();
   const year = String(date.getFullYear()).padStart(4, '0');
@@ -59,8 +78,8 @@ export const sendWebsocketMessage = (websocket: WebSocket, message: any) => {
   websocket.send(stringify(message));
 };
 
-export const sendWebsocketReady = (websocket: WebSocket, sessionId: string) => {
-  sendWebsocketMessage(websocket, {ready: true, sessionId});
+export const sendWebsocketReady = (websocket: WebSocket, sessionId: string, appState: object) => {
+  sendWebsocketMessage(websocket, {...appState, ready: true, sessionId});
 };
 
 export const sendWebsocketError = (websocket: WebSocket, errorType: ErrorTypes, message?: string) => {

@@ -11,7 +11,8 @@ export enum ActionTypes {
   UpdateAlerts,
   AddAlert,
   UpdateIsReloading,
-  UpdateIsOffline
+  UpdateIsOffline,
+  UpdateAppState
 }
 
 interface BaseAction {
@@ -66,9 +67,16 @@ interface UpdateIsOffline extends BaseAction {
   type: ActionTypes.UpdateIsOffline,
   isOffline: boolean
 }
+interface UpdateAppState extends BaseAction {
+  type: ActionTypes.UpdateAppState,
+  imgArray: number[],
+  imgSquareSize: number,
+  numImagesSqrt: number
+}
 
 export type Action = UpdateLoadingStatus | UpdateMeta | UpdateNumImagesSqrt | UpdateImgSquareSize |
-  UpdateImgArray | UpdateResizedImages | UpdateMessenger | UpdateAlerts | AddAlert | UpdateIsReloading | UpdateIsOffline;
+  UpdateImgArray | UpdateResizedImages | UpdateMessenger | UpdateAlerts | AddAlert | UpdateIsReloading |
+  UpdateIsOffline | UpdateAppState;
 
 export interface DispatchActions {
   updateLoadingStatus: (isLoading: boolean) => void,
@@ -82,7 +90,8 @@ export interface DispatchActions {
   updateAlerts: (alerts: AlertItem[]) => void,
   addAlert: (alert: AlertItem) => void,
   updateIsReloading: (isReloading: boolean) => void,
-  updateIsOffline: (isOffline: boolean) => void
+  updateIsOffline: (isOffline: boolean) => void,
+  updateAppState: (imgArray: number[], imgSquareSize: number, numImagesSqrt: number) => void
 }
 
 export const createDispatchActions = (dispatch: (action: Action) => void): DispatchActions => {
@@ -98,6 +107,7 @@ export const createDispatchActions = (dispatch: (action: Action) => void): Dispa
     updateAlerts: (alerts: AlertItem[]) => dispatch({type: ActionTypes.UpdateAlerts, alerts}),
     addAlert: (alert: AlertItem) => dispatch({type: ActionTypes.AddAlert, alert}),
     updateIsReloading: (isReloading: boolean) => dispatch({type: ActionTypes.UpdateIsReloading, isReloading}),
-    updateIsOffline: (isOffline: boolean) => dispatch({type: ActionTypes.UpdateIsOffline, isOffline})
+    updateIsOffline: (isOffline: boolean) => dispatch({type: ActionTypes.UpdateIsOffline, isOffline}),
+    updateAppState: (imgArray: number[], imgSquareSize: number, numImagesSqrt: number) => dispatch({type: ActionTypes.UpdateAppState, imgArray, imgSquareSize, numImagesSqrt})
   };
 };

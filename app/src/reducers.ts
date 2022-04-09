@@ -8,7 +8,8 @@ const isSessionAction = (action: Action): boolean => {
     action.type === ActionTypes.UpdateAlerts ||
     action.type === ActionTypes.AddAlert ||
     action.type === ActionTypes.UpdateIsOffline ||
-    action.type === ActionTypes.UpdateIsReloading;
+    action.type === ActionTypes.UpdateIsReloading ||
+    action.type === ActionTypes.UpdateAppState;
 };
 
 const isReceivedAction = (action: Action): boolean => {
@@ -77,6 +78,13 @@ export const appReducer = (state: AppState, action: Action): AppState => {
       return {
         ...state,
         isOffline: action.isOffline
+      };
+    case ActionTypes.UpdateAppState:
+      return {
+        ...state,
+        imgSquareSize: action.imgSquareSize,
+        numImagesSqrt: action.numImagesSqrt,
+        imgArray: action.imgArray
       };
   }
 };

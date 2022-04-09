@@ -133,6 +133,7 @@ const messagesFactory = (messageHandler: (data: JSONObject) => void, errorHandle
   
       if (data.ready) {
         sessionId = data.sessionId as string;
+        messageHandler(data);
         return;
       }
   

@@ -1,5 +1,5 @@
 import { ErrorTypes, getRandomString, JSONObject, JSONValue, stringify } from "../../../shared";
-import { handleErrors, closeWebsocket, sendWebsocketError, sendWebsocketReady, sendWebsocketMessage, getTimeKey } from "../lib/workers";
+import { handleErrors, closeWebsocket, sendWebsocketError, sendWebsocketReady, sendWebsocketMessage, getTimeKey, getAppState } from "../lib/workers";
 import { RateLimiterClient } from "./RateLimiter";
 
 const SESSION_ID_LENGTH = 12;
@@ -95,7 +95,7 @@ export default class Messenger {
           // Having an ID is a signal that the session is ready to receive messages
           session.id = getRandomString(SESSION_ID_LENGTH);
           console.debug("Session is ready to receive messages", session.id);
-          sendWebsocketReady(websocket, session.id);
+          sendWebsocketReady(websocket, session.id, await getAppState(this.env));
           return;
         }
 
@@ -133,15 +133,10 @@ export default class Messenger {
         this.broadcast(broadcastMessage);
 
         // Save the current state
-        const [numImagesSqrt, imgSquareSize, totalImages, imgArray] = await Promise.all([
-          this.env.DATA.get('numImagesSqrt'),
-          this.env.DATA.get('imgSquareSize'),
-          this.env.DATA.get('totalImages'),
-          this.env.DATA.get('imgArray')
-        ]);
         await this.env.LOGS.put(getTimeKey(), JSON.stringify({
           ...broadcastMessage,
-          ip, numImagesSqrt, imgSquareSize, totalImages, imgArray
+          ...(await getAppState(this.env)),
+          ip
         }));
       } catch (e) {
         const err = e as Error;

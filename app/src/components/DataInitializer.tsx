@@ -26,20 +26,9 @@ const DataInitializer = (props: {children: ComponentChildren}) => {
     if (location.pathname === '/about' || location.pathname === '/qrcode') {
       actions.updateLoadingStatus(false);
     }
-    // Request all init values in parallel and update them
-    const [meta, numImagesSqrt, imgArray, imgSquareSize] = await Promise.all([api.getMeta(), api.getNumImagesSqrt(), api.getImgArray(), api.getImgSquareSize()]);
-    actions.updateMeta(meta);
-    actions.updateNumImagesSqrt(numImagesSqrt);
-    actions.updateImgArray(imgArray);
-    actions.updateImgSquareSize(imgSquareSize);
-    // Update secondary values
-    actions.updateResizedImages(await getDiffResizedImageUrls(meta.imgWidth, meta.imgHeight, imgSquareSize, null, imgArray, null, numImagesSqrt, null));
-    // Save a copy of values that will affect secondaries
-    setNumImagesSqrt(numImagesSqrt);
-    setImgArray(imgArray);
-    // Finalize init
+    // Request artwork metadata and start the messenger
+    actions.updateMeta(await api.getMeta());
     actions.updateMessenger(messagesFactory(messageHandler, errorHandler));
-    actions.updateLoadingStatus(false);
     console.log("Finished initialization.");
   };
   
@@ -53,6 +42,12 @@ const DataInitializer = (props: {children: ComponentChildren}) => {
   };
 
   const messageHandler = (data: JSONObject): void => {
+    if (data.ready) {
+      actions.updateAppState(data.imgArray as number[], data.imgSquareSize as number, data.numImagesSqrt as number);
+      actions.updateIsOffline(false);
+      actions.updateLoadingStatus(false);
+      return;
+    }
     if (data.type === undefined) {
       console.error("Unrecognized message format", data);
       return;

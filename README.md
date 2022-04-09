@@ -412,4 +412,7 @@ I also added some logic to quick a join a attempt if it's taking too long. I've 
 
 I think the next step is probably sending the entire server state on reconnect so that the app can quickly get back up to speed. I should also turn the 'offline' flag off to re-enable the controls.
 
-[4 hours]
+---
+I'm doing way fewer requests on initialization by setting up the app state based on the ready message. Now I don't have to worry about possibly falling out of sync between initialization and the first message. Fixes #23.
+
+[4.5 hours]
