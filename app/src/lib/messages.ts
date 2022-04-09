@@ -80,8 +80,9 @@ const messagesFactory = (messageHandler: (data: JSONObject) => void, errorHandle
     rejoining = true;
 
     const timeSinceLastJoin = Date.now() - startTime;
-    if (timeSinceLastJoin < REJOIN_TIMEOUT * 1000) {
-      await new Promise((resolve) => setTimeout(resolve, (REJOIN_TIMEOUT * 1000) - timeSinceLastJoin));
+    const rejoinTime = REJOIN_TIMEOUT * 1000 * ((joinRetries / 5) + 1)
+    if (timeSinceLastJoin < rejoinTime) {
+      await new Promise((resolve) => setTimeout(resolve, rejoinTime - timeSinceLastJoin));
     }
     connect();
   };

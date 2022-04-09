@@ -421,4 +421,7 @@ Added an information button to the controls page. It always takes me WAY too lon
 ---
 Randomize the app values on the server side. Fixes #20.
 
-[7 hours]
+---
+Add an offline indicator to the artwork as a clue about why it's not updating. Also extend the time that we wait for retries with each retry so that we aren't spamming the network.
+
+[8 hours]
