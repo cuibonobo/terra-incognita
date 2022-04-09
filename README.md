@@ -424,4 +424,12 @@ Randomize the app values on the server side. Fixes #20.
 ---
 Add an offline indicator to the artwork as a clue about why it's not updating. Also extend the time that we wait for retries with each retry so that we aren't spamming the network.
 
+---
+Adjusted the image size for scraped images to be slightly smaller. Images 1299 and below can be sized down.
+
 [8 hours]
+
+### 04/09/2022
+Added Twitter and Open Graph `meta` tags so that the site looks good when it's shared on social media.
+
+[0.5 hours]
