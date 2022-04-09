@@ -38,7 +38,7 @@ export const optionsResponse = (options: string = '*'): Response => {
   }});
 };
 
-const parseEnvData = (data: string | null) => {
+export const parseEnvData = (data: string | null) => {
   return data === null ? null : JSON.parse(data);
 };
 

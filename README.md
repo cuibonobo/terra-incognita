@@ -418,4 +418,7 @@ I'm doing way fewer requests on initialization by setting up the app state based
 ---
 Added an information button to the controls page. It always takes me WAY too long to do CSS changes... Fixes #27.
 
-[6 hours]
+---
+Randomize the app values on the server side. Fixes #20.
+
+[7 hours]

@@ -1,9 +1,10 @@
 import { ErrorTypes, getRandomString, JSONObject, JSONValue, stringify } from "../../../shared";
-import { handleErrors, closeWebsocket, sendWebsocketError, sendWebsocketReady, sendWebsocketMessage, getTimeKey, getAppState } from "../lib/workers";
+import { handleErrors, closeWebsocket, sendWebsocketError, sendWebsocketReady, sendWebsocketMessage, getTimeKey, getAppState, parseEnvData } from "../lib/workers";
 import { RateLimiterClient } from "./RateLimiter";
 
 const SESSION_ID_LENGTH = 12;
 const SESSION_INIT_TIMEOUT = 5;
+const RANDOMIZER_TIMEOUT = 5 * 60;
 
 /**
  * There should only be a single Messenger object
@@ -14,12 +15,14 @@ export default class Messenger {
   env: Bindings;
   sessions: Session[];
   lastTimestamp: number;
+  lastRandomValue: number;
 
   constructor(state: DurableObjectState, env: Bindings) {
     this.state = state;
     this.env = env;
     this.sessions = [];
     this.lastTimestamp = 0;
+    this.lastRandomValue = 0;
   }
 
   async fetch(request: Request, env: Bindings) {
@@ -133,7 +136,7 @@ export default class Messenger {
         this.broadcast(broadcastMessage);
 
         // Save the current state
-        await this.env.LOGS.put(getTimeKey(), JSON.stringify({
+        await this.env.LOGS.put(getTimeKey(), stringify({
           ...broadcastMessage,
           ...(await getAppState(this.env)),
           ip
@@ -144,6 +147,42 @@ export default class Messenger {
         sendWebsocketError(websocket, ErrorTypes.ServerError, err.stack);
       }
     });
+
+    // NOTE: This interval will run for every socket connection
+    const meta = parseEnvData(await this.env.DATA.get('meta'));
+    setInterval(async () => {
+      if (this.lastRandomValue + RANDOMIZER_TIMEOUT * 1000 > Date.now()) {
+        return;
+      }
+      this.lastRandomValue = Date.now();
+      const op = Math.floor(Math.random() * 3);
+      switch(op) {
+        case 0:
+          const numImagesSqrt = Math.round(Math.random() * (meta.maxNumImagesSqrt - meta.minNumImagesSqrt)) + meta.minNumImagesSqrt;
+          await this.env.DATA.put('numImagesSqrt', stringify(numImagesSqrt));
+          this.broadcast({type: 2, numImagesSqrt, timestamp: Date.now(), sessionId: 'server'});
+          return;
+        case 1:
+          const imgSquareSize = Math.round(Math.random() * (meta.maxImgSquareSize - meta.minImgSquareSize)) + meta.minImgSquareSize;
+          await this.env.DATA.put('imgSquareSize', stringify(imgSquareSize));
+          this.broadcast({type: 3, imgSquareSize, timestamp: Date.now(), sessionId: 'server'});
+          return;
+        case 2:
+          const imgArray = parseEnvData(await this.env.DATA.get('imgArray'));
+          const totalImages = parseEnvData(await this.env.DATA.get('totalImages'));
+          if (imgArray === null || totalImages === null) {
+            return;
+          }
+          const idx = Math.floor(Math.random()) * 100;
+          const img = Math.floor(Math.random()) * totalImages;
+          imgArray[idx] = img;
+          await this.env.DATA.put('imgArray', stringify(imgArray));
+          this.broadcast({type: 4, imgArray, timestamp: Date.now(), sessionId: 'server'});
+          return;
+        default:
+          console.warn("Got unexpected random operation", op);
+      }
+    }, RANDOMIZER_TIMEOUT * 1000);
   }
 
   async broadcast(message: JSONValue) {
