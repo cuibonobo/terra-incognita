@@ -1,8 +1,11 @@
 import { JSONObject, JSONValue, stringify,ErrorTypes } from "../../../shared";
+import { reloadIfOnline } from "./api";
 
 const JOIN_TIMEOUT = 1;
 const JOIN_RETRIES = 30;
 const REJOIN_TIMEOUT = 3;
+const RELOAD_TIMEOUT = 30;
+const RELOAD_RETRIES = 30;
 const HEARTBEAT_TIMEOUT = 30;
 
 export class RateLimitError extends Error {};
@@ -60,7 +63,7 @@ const messagesFactory = (messageHandler: (data: JSONObject) => void, errorHandle
         joining = false;
         joinRetries += 1;
         if (joinRetries >= JOIN_RETRIES) {
-          window.location.reload();
+          reloadIfOnline(RELOAD_TIMEOUT, RELOAD_RETRIES);
         } else {
           console.log("Rejoin attempt #", joinRetries);
         }

@@ -10,6 +10,39 @@ const throwOnResponseError = async (response: Response) => {
   }
 };
 
+export const isApiOnline = async (): Promise<boolean> => {
+  const api = apiFactory();
+  try {
+    const result = await api.getHealthy();
+    console.log("API result", result);
+    if (!result) {
+      throw new Error(`Bad API result: ${result}`);
+    }
+    return true;
+  } catch(e) {
+    return false;
+  }
+};
+
+export const reloadIfOnline = async (reloadTimeout: number, maxRetries: number = 0) => {
+  let retries = 0;
+  setTimeout(async () => {
+    try {
+      const apiResult = await isApiOnline();
+      if (apiResult) {
+        window.location.reload();
+      } else {
+        throw new Error("API is offline");
+      }
+    } catch(e) {
+      retries += 1;
+      if (retries <= maxRetries) {
+        reloadIfOnline(reloadTimeout, maxRetries - 1);
+      }
+    }
+  }, reloadTimeout * 1000);
+};
+
 const apiFactory = () => {
   const hostname = (new URL(window.location.href).hostname);
   const baseUrl = process.env.NODE_ENV == 'production' ? 'https://terra.cuibonobo.com' : `http://${hostname}:8787`;
@@ -45,6 +78,9 @@ const apiFactory = () => {
   };
 
   return {
+    getHealthy: async (): Promise<boolean> => {
+      return (await get<{healthy: boolean}>('/healthy')).healthy;
+    },
     getMeta: async (): Promise<Meta> => {
       return get<Meta>('/meta');
     },

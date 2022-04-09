@@ -432,4 +432,7 @@ Adjusted the image size for scraped images to be slightly smaller. Images 1299 a
 ### 04/09/2022
 Added Twitter and Open Graph `meta` tags so that the site looks good when it's shared on social media.
 
-[0.5 hours]
+---
+Added a new `/healthy` endpoint that should never be cached so that the app can quickly determine if it has access to the API. Based on this it will only trigger window reloads if the API is online. I'm honestly not 100% sure about this change though... The Service Worker was caching the result of `/healthy` despite setting it up with headers to never cache.
+
+[2 hours]

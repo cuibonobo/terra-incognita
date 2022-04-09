@@ -21,7 +21,10 @@ self.addEventListener('fetch', (e: Event) => {
   return event.respondWith((async () => {
     try {
       const response = await fetch(event.request);
-      if (event.request.method === 'GET') {
+      const parsedUrl = new URL(event.request.url);
+      let path = parsedUrl.pathname;
+      // Don't cache the /healthy endpoint
+      if (event.request.method === 'GET' && (path.indexOf('healthy') < 0)) {
         const cache = await caches.open(version);
         cache.put(event.request, response.clone());
       }

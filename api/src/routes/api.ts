@@ -4,6 +4,10 @@ import { Meta, getRandomUniqueValue } from '../../../shared';
 
 const apiRouter = itty.Router({ base: '/api' });
 
+apiRouter.get('/healthy', async (request: Request, env: Bindings) => {
+  return jsonifyResponse({healthy: true}, {headers: {'Cache-Control': 'no-cache'}});
+});
+
 apiRouter.get('/meta', async (request: Request, env: Bindings) => {
   return jsonifyResponse(await getKvData('meta', env));
 });

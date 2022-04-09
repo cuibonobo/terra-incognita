@@ -3,14 +3,15 @@ import { useEffect, useState } from "preact/hooks";
 import { JSONObject } from "../../../shared";
 import { Action } from "../actions";
 import { useStore } from "../hooks";
-import apiFactory from "../lib/api";
+import apiFactory, { reloadIfOnline } from "../lib/api";
 import { getDiffResizedImageUrls } from "../lib/images";
 import messagesFactory, { RateLimitError } from "../lib/messages";
 import Spinner from "./Spinner";
 import Alerts from "./Alerts";
 import { useLocation } from "react-router-dom";
 
-const RELOAD_TIMEOUT = 0.5;
+const OFFLINE_TIMEOUT = 60;
+const OFFLINE_RETRIES = 30;
 
 const DataInitializer = (props: {children: ComponentChildren}) => {
   const {state, actions} = useStore();
@@ -61,7 +62,7 @@ const DataInitializer = (props: {children: ComponentChildren}) => {
       actions.addAlert({content: error.message, isError: true});
     } else {
       if (location.pathname === '/artwork' && !state.isReloading) {
-        setTimeout(() => window.location.reload(), RELOAD_TIMEOUT * 1000);
+        reloadIfOnline(OFFLINE_TIMEOUT, OFFLINE_RETRIES);
         actions.updateIsReloading(true);
       }
       actions.updateIsOffline(true);
