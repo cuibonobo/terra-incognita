@@ -405,4 +405,11 @@ I noticed a few error responses in the Cloudflare dashboard but I have no way of
 ---
 I've just confirmed that [Cloudflare will close WebSocket connections that are dormant for 100 seconds](https://stackoverflow.com/a/41031976/2001558), so I've implemented a heartbeat on the client side that sends a short message every 30 seconds. Fixes #24. Originally I wanted to implement the heartbeat on the server side but I didn't see an obvious way to do that.
 
-[3 hours]
+---
+Found a huge bug in how I was initializing the websocket on the client side! Despite implementing heartbeats the connection is still not being kept open consistently so I went looking for why my connection wasn't just resetting automatically and I found out! The way I had structured my code made it so that the event handlers were only added to the initial connection -- subsequent connections would open (and I would see them on my network tab) but not react to messages from the server. I've tested this by killing my connection manually and it's working great: I see several retry attempts while the connection comes back and then when it finally does I see a new session ID and heartbeats.
+
+I also added some logic to quick a join a attempt if it's taking too long. I've seen multiple join attempts happen at once when there's an error so I wanted to mitigate that.
+
+I think the next step is probably sending the entire server state on reconnect so that the app can quickly get back up to speed. I should also turn the 'offline' flag off to re-enable the controls.
+
+[4 hours]

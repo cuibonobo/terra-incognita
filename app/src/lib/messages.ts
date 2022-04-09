@@ -1,5 +1,7 @@
 import { JSONObject, JSONValue, stringify,ErrorTypes } from "../../../shared";
 
+const JOIN_TIMEOUT = 1;
+const JOIN_RETRIES = 30;
 const REJOIN_TIMEOUT = 3;
 const HEARTBEAT_TIMEOUT = 30;
 
@@ -36,101 +38,132 @@ const messagesFactory = (messageHandler: (data: JSONObject) => void, errorHandle
   let sessionId: string | null;
   let startTime: number;
   let lastSeenTimestamp: number;
-  let rejoined: boolean;
-  let ws: WebSocket = new WebSocket(messagesUrl);
+  let joining: boolean = false;
+  let joinRetries: number = 0;
+  let rejoining: boolean;
+  let ws: WebSocket;
 
-  const init = () => {
+  const connect = () => {
+    if (joining) {
+      return;
+    }
     console.debug("Initializing WebSocket...");
     sessionId = null;
     startTime = Date.now();
     lastSeenTimestamp = 0;
-    rejoined = false;
+    joining = true;
+    rejoining = false;
     ws = new WebSocket(messagesUrl);
-    // TODO: Reload the page if the WebSocket hasn't opened before a timeout
+    setTimeout(() => {
+      if (joining) {
+        ws.close();
+        joining = false;
+        joinRetries += 1;
+        if (joinRetries >= JOIN_RETRIES) {
+          window.location.reload();
+        } else {
+          console.log("Rejoin attempt #", joinRetries);
+        }
+      }
+    }, JOIN_TIMEOUT * 1000);
+    initializeWebsocket(ws);
   };
 
   const rejoin = async () => {
-    if (rejoined) {
+    if (joining) {
+      return;
+    }
+    if (rejoining) {
       console.log("Rejoin request is too soon. Can't rejoin yet...");
       return;
     }
-    rejoined = true;
+    rejoining = true;
 
     const timeSinceLastJoin = Date.now() - startTime;
     if (timeSinceLastJoin < REJOIN_TIMEOUT * 1000) {
       await new Promise((resolve) => setTimeout(resolve, (REJOIN_TIMEOUT * 1000) - timeSinceLastJoin));
     }
-    init();
+    connect();
   };
 
   const send = (data: JSONObject) => {
-    if (sessionId === null) {
+    if (sessionId === null || !ws) {
       errorHandler(new Error("WebSocket is not ready for messages yet!"));
       return;
     }
     ws.send(stringify(data));
   };
 
-  init();
+  const initializeWebsocket = (ws: WebSocket) => {
+    ws.addEventListener('open', (_: Event) => {
+      // Send an empty object as our first message
+      console.debug("WebSocket has opened.");
+      joining = false;
+      joinRetries = 0;
+      ws.send(stringify({}));
+    });
+    ws.addEventListener('close', (_: CloseEvent) => {
+      if (!rejoining) {
+        errorHandler(new Error("Server connection closed"));
+        rejoin();
+      }
+    });
+    ws.addEventListener('error', (_: Event) => {
+      if (!ws.CLOSED) {
+        ws.close();
+      }
+      if (!rejoining) {
+        errorHandler(new Error("Connection error!"));
+        rejoin();
+      }
+    });
+    ws.addEventListener('message', (event: MessageEvent) => {
+      const data: JSONValue = JSON.parse(event.data);
+  
+      if (!(typeof data === 'object' && !Array.isArray(data))) {
+        // Ignore all messages that don't parse to an object
+        return;
+      }
+  
+      if (data.error) {
+        const error = (data as unknown) as WebSocketErrorMessage;
+        console.log("handling event listener error", error)
+        return errorHandler(getErrorFromWebSocketMessage(error));
+      }
+  
+      if (data.ready) {
+        sessionId = data.sessionId as string;
+        return;
+      }
+  
+      if (data.heartbeat) {
+        // Don't do anything with heartbeats
+        return;
+      }
+  
+      // Reject messages that don't have expected keys
+      if (!data.timestamp || !data.sessionId) {
+        console.debug("Missing timestamp or session ID. Rejecting.");
+        return;
+      }
+  
+      // Reject messages we've already seen before
+      if (data.timestamp < lastSeenTimestamp) {
+        console.debug("Duplicate timestamp. Rejecting.");
+        return;
+      } else {
+        lastSeenTimestamp = data.timestamp as number;
+      }
+  
+      if (sessionId && data.sessionId && sessionId === data.sessionId) {
+        console.debug("Ignoring message from same sender", sessionId);
+        return;
+      }
+      messageHandler(data);
+    });
+  };
 
-  ws.addEventListener('open', (_: Event) => {
-    // Send an empty object as our first message
-    console.debug("WebSocket has opened.");
-    ws.send(stringify({}));
-  });
-  ws.addEventListener('close', (_: CloseEvent) => {
-    errorHandler(new Error("Server connection closed"));
-    rejoin();
-  });
-  ws.addEventListener('error', (_: Event) => {
-    errorHandler(new Error("Connection error!"));
-    rejoin();
-  });
-
-  ws.addEventListener('message', (event: MessageEvent) => {
-    const data: JSONValue = JSON.parse(event.data);
-
-    if (!(typeof data === 'object' && !Array.isArray(data))) {
-      // Ignore all messages that don't parse to an object
-      return;
-    }
-
-    if (data.error) {
-      const error = (data as unknown) as WebSocketErrorMessage;
-      console.log("handling event listener error", error)
-      return errorHandler(getErrorFromWebSocketMessage(error));
-    }
-
-    if (data.ready) {
-      sessionId = data.sessionId as string;
-      return;
-    }
-
-    if (data.heartbeat) {
-      // Don't do anything with heartbeats
-      return;
-    }
-
-    // Reject messages that don't have expected keys
-    if (!data.timestamp || !data.sessionId) {
-      console.debug("Missing timestamp or session ID. Rejecting.");
-      return;
-    }
-
-    // Reject messages we've already seen before
-    if (data.timestamp < lastSeenTimestamp) {
-      console.debug("Duplicate timestamp. Rejecting.");
-      return;
-    } else {
-      lastSeenTimestamp = data.timestamp as number;
-    }
-
-    if (sessionId && data.sessionId && sessionId === data.sessionId) {
-      console.debug("Ignoring message from same sender", sessionId);
-      return;
-    }
-    messageHandler(data);
-  });
+  connect();
 
   // Create a heartbeat
   setInterval(() => {
