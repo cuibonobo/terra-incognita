@@ -20,7 +20,7 @@ const getEndpointUrl = (endpoint: string): string => {
 };
 
 // Cycle through image candidates to see which URL to use
-const getImageUrl = (media: any, maxWidth: number = 1080): string => {
+const getImageUrl = (media: any, maxWidth: number = 800): string => {
   const candidates = media.carousel_media ? media.carousel_media[0]['image_versions2']['candidates'] : media['image_versions2']['candidates'];
   let imageUrl = '';
   for (let i = 0; i < candidates.length; i++) {
