@@ -436,3 +436,10 @@ Added Twitter and Open Graph `meta` tags so that the site looks good when it's s
 Added a new `/healthy` endpoint that should never be cached so that the app can quickly determine if it has access to the API. Based on this it will only trigger window reloads if the API is online. I'm honestly not 100% sure about this change though... The Service Worker was caching the result of `/healthy` despite setting it up with headers to never cache.
 
 [2 hours]
+
+### 04/11/2022
+Enabled a cron job on my home machine to run the Instagram image collection every 30 minutes. The original idea was to run this as a Scheduled Worker, but the job will sometimes run longer than 30 seconds, which is the limit for Cloudflare's 'Unbound' workers. The other issue was that the current Instagram scraping code relies on a lot of APIs that aren't available in Workers (like `fs`, for example), so making all of the necessary changes would have taken too much time.
+
+I discovered that the WSL implementation of Ubuntu is a little odd: it's not using `systemd`, `cron` doesn't start by default, etc. I followed [this guide](https://blog.snowme34.com/post/schedule-tasks-using-crontab-on-windows-10-with-wsl/index.html) to get `cron` running on startup, but the better long-term solution would be to fix the code so that it can actually run as a Scheduled Worker.
+
+[1 hour]
