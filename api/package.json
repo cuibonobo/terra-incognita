@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "authenticate": "npm run cli -- authenticate",
     "build": "npm run clean && npm run cli -- build",
     "clean": "rimraf ./dist",
     "cli": "node --loader ts-node/esm --experimental-vm-modules --es-module-specifier-resolution=node --no-warnings ./src/cli.ts",
