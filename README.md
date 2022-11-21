@@ -443,3 +443,9 @@ Enabled a cron job on my home machine to run the Instagram image collection ever
 I discovered that the WSL implementation of Ubuntu is a little odd: it's not using `systemd`, `cron` doesn't start by default, etc. I followed [this guide](https://blog.snowme34.com/post/schedule-tasks-using-crontab-on-windows-10-with-wsl/index.html) to get `cron` running on startup, but the better long-term solution would be to fix the code so that it can actually run as a Scheduled Worker.
 
 [1 hour]
+
+### 04/13/2022
+
+Found that the cron job stopped working suddenly because of a DNS error. Followed [these instructions](https://gist.github.com/coltenkrauter/608cfe02319ce60facd76373249b8ca6) to get DNS working again in WSL.
+
+[0.5 hours]
