@@ -1,10 +1,8 @@
 name = "terra-incognita"
-type = "javascript"
 
-account_id = ""
 workers_dev = true
-zone_id = "02ca717d690fc02e1f07bcc9b0806928"
 route = "terra.cuibonobo.com/*"
+main = "dist/worker.mjs"
 
 compatibility_date = "2021-11-15"
 compatibility_flags = []
@@ -33,11 +31,6 @@ route = "terra.cuibonobo.com/*"
 
 [build]
 command = "npm run build"
-
-[build.upload]
-format = "modules"
-dir = "dist"
-main = "./worker.mjs"
 
 [miniflare]
 durable_objects_persist = true
