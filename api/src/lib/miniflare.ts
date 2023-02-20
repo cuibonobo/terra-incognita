@@ -8,7 +8,9 @@ export const getMiniflareKvNamespace = async (namespace: string, wranglerConfigP
     wranglerConfigPath: wranglerConfigPath,
     modules: true
   });
-  return mf.getKVNamespace(namespace);
+  // FIXME: Strange type incompatibility that might be resolved in a future version
+  let ns: unknown = await mf.getKVNamespace(namespace);
+  return ns as KVNamespace;
 }
 
 export const setMiniflareKv = async <T>(namespace: string, key: string, value: T, wranglerConfigPath: string = wranglerConfig): Promise<void> => {
